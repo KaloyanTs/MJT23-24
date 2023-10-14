@@ -5,6 +5,7 @@ public class Main {
         System.out.println(IPValidator.validateIPv4Address("192.168.1.0") == true);
         System.out.println(IPValidator.validateIPv4Address("192.168.1.00") == false);
         System.out.println(IPValidator.validateIPv4Address("192.168@1.1") == false);
+        System.out.println(IPValidator.validateIPv4Address("168 ") == false);
         System.out.println(JumpGame.canWin(new int[]{2, 3, 1, 1, 0}) == true);
         System.out.println(JumpGame.canWin(new int[]{3, 2, 1, 0, 0}) == false);
         System.out.println(BrokenKeyboard.calculateFullyTypedWords("i love mjt", "qsf3o") == 2);

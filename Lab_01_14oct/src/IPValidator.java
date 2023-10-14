@@ -5,6 +5,7 @@ public class IPValidator {
     private static boolean isNumber(String s) {
         if (s.isEmpty()) return false;
         if (s.equals("0")) return true;
+        for (char c : s.toCharArray()) if (!Character.isDigit(c)) return false;
         if (s.charAt(0) == '0') return false;
         int res = Integer.parseInt(s);
         return res > 0 && res <= 255;
