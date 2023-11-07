@@ -9,16 +9,16 @@ import java.util.Scanner;
 public class Client {
     static int serverPort = 5555;
     static int elementCount;
-    static ACTION action;
+    static Action action;
     static Scanner scanner = new Scanner(System.in);
 
-    static ACTION readReply() {
-        MESSAGE.TYPES.print();
+    static Action readReply() {
+        Message.TYPES.print();
         String reply = scanner.nextLine();
         return switch (reply.toLowerCase()) {
-            case "single" -> ACTION.SINGLE_QSORT;
-            case "multi" -> ACTION.MULTI_QSORT;
-            case "both" -> ACTION.BOTH;
+            case "single" -> Action.SINGLE_QSORT;
+            case "multi" -> Action.MULTI_QSORT;
+            case "both" -> Action.BOTH;
             default -> null;
         };
     }
@@ -33,7 +33,7 @@ public class Client {
         ) {
             List<Integer> data = new ArrayList<>();
 
-            MESSAGE.COUNT.print();
+            Message.COUNT.print();
 
             elementCount = scanner.nextInt();
 

@@ -42,15 +42,15 @@ class ClientHandler extends Thread {
                 List<Integer> res = null;
 
                 switch (data.action()) {
-                    case ACTION.SINGLE_QSORT:
+                    case Action.SINGLE_QSORT:
                         System.out.println("single");
                         res = quickSort(data.data());
                         break;
-                    case ACTION.MULTI_QSORT:
+                    case Action.MULTI_QSORT:
                         System.out.println("multi");
                         res = parallelQuickSort(data.data());
                         break;
-                    case ACTION.BOTH:
+                    case Action.BOTH:
                         System.out.println("Not implemented yet...");
                         break;
                     default:
