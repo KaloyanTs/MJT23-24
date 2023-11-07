@@ -30,6 +30,8 @@ public class Server {
 class ClientHandler extends Thread {
     private final Socket clientSocket;
 
+    private static ExecutorService executor = Executors.newFixedThreadPool(1000);
+
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
     }
@@ -113,7 +115,6 @@ class ClientHandler extends Thread {
         List<Integer> equal = data.stream().filter(x -> x == pivot).toList();
         List<Integer> greater = data.stream().filter(x -> x > pivot).toList();
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
 
         Future<List<Integer>> lessSorted = executor.submit(() -> parallelQuickSort(less));
         Future<List<Integer>> greaterSorted = executor.submit(() -> parallelQuickSort(greater));
