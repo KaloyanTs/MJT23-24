@@ -7,15 +7,13 @@ import java.util.stream.Collectors;
 
 public class Server {
     public static void main(String[] args) {
-        int portNumber = 5555; // Порт, на който сървърът ще слуша.
+        final int portNumber = 5555;
 
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
             System.out.println("Server listens on port " + portNumber);
 
             while (true) {
-                Socket clientSocket = serverSocket.accept(); // Изчакваме клиентска връзка.
-
-                // Създаваме отделна нишка за обслужване на връзката.
+                Socket clientSocket = serverSocket.accept();
                 new ClientHandler(clientSocket).start();
             }
         } catch (IOException e) {
@@ -25,26 +23,24 @@ public class Server {
 }
 
 class ClientHandler extends Thread {
-    private Socket clientSocket;
+    private final Socket clientSocket;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
     }
 
     public void run() {
-        try (
-            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())
-        ) {
-            @SuppressWarnings("unchecked")
-            List<Integer> data = (List<Integer>) in.readObject(); // Получаваме входните данни от клиента.
+        try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())) {
+            try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
+                @SuppressWarnings("unchecked")
+                List<Integer> data = (List<Integer>) in.readObject();
 
-            // Използваме паралелен quicksort за сортиране на данните.
-            List<Integer> sortedData = parallelQuickSort(data);
+                List<Integer> sortedData = parallelQuickSort(data);
 
-            out.writeObject(sortedData); // Изпращаме сортираните данни обратно на клиента.
+                out.writeObject(sortedData);
+            }
         } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Грешка при обслужване на клиент: " + e.getMessage());
+            System.err.println("Error on Client handling: " + e.getMessage());
         }
     }
 
@@ -58,7 +54,7 @@ class ClientHandler extends Thread {
         List<Integer> equal = data.stream().filter(x -> x == pivot).collect(Collectors.toList());
         List<Integer> greater = data.stream().filter(x -> x > pivot).collect(Collectors.toList());
 
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
 
         Future<List<Integer>> lessSorted = executor.submit(() -> parallelQuickSort(less));
         Future<List<Integer>> greaterSorted = executor.submit(() -> parallelQuickSort(greater));
