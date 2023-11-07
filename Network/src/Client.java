@@ -8,6 +8,20 @@ import java.util.Scanner;
 
 public class Client {
     static int serverPort = 5555;
+    static int elementCount;
+    static ACTION action;
+    static Scanner scanner = new Scanner(System.in);
+
+    static ACTION readReply() {
+        MESSAGE.TYPES.print();
+        String reply = scanner.nextLine();
+        return switch (reply.toLowerCase()) {
+            case "single" -> ACTION.SINGLE_QSORT;
+            case "multi" -> ACTION.MULTI_QSORT;
+            case "both" -> ACTION.BOTH;
+            default -> null;
+        };
+    }
 
     public static void main(String[] args) {
 
@@ -19,18 +33,19 @@ public class Client {
         ) {
             List<Integer> data = new ArrayList<>();
 
-            Scanner scanner = new Scanner(System.in);
+            MESSAGE.COUNT.print();
 
-            System.out.print("Enter count of elements: ");
+            elementCount = scanner.nextInt();
 
-            int n = scanner.nextInt();
-
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < elementCount; i++) {
                 System.out.print("Element " + (i + 1) + ": ");
                 data.add(scanner.nextInt());
             }
 
-            out.writeObject(data);
+            while ((action = readReply()) == null) {
+            }
+
+            out.writeObject(new InputData(data, action));
 
             @SuppressWarnings("unchecked")
             List<Integer> sortedData = (List<Integer>) in.readObject();

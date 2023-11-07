@@ -37,16 +37,54 @@ class ClientHandler extends Thread {
     public void run() {
         try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())) {
             try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
-                @SuppressWarnings("unchecked")
-                List<Integer> data = (List<Integer>) in.readObject();
+                InputData data = (InputData) in.readObject();
 
-                List<Integer> sortedData = parallelQuickSort(data);
+                List<Integer> res = null;
 
-                out.writeObject(sortedData);
+                switch (data.action()) {
+                    case ACTION.SINGLE_QSORT:
+                        System.out.println("single");
+                        res = quickSort(data.data());
+                        break;
+                    case ACTION.MULTI_QSORT:
+                        System.out.println("multi");
+                        res = parallelQuickSort(data.data());
+                        break;
+                    case ACTION.BOTH:
+                        System.out.println("Not implemented yet...");
+                        break;
+                    default:
+                        throw new IllegalArgumentException();
+                }
+
+                out.writeObject(res);
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error on Client handling: " + e.getMessage());
         }
+    }
+
+    private List<Integer> quickSort(List<Integer> data) {
+        if (data.size() <= 1) {
+            return data;
+        }
+
+        int pivot = data.get(data.size() / 2);
+        List<Integer> less = data.stream().filter(x -> x < pivot).toList();
+        List<Integer> equal = data.stream().filter(x -> x == pivot).toList();
+        List<Integer> greater = data.stream().filter(x -> x > pivot).toList();
+
+        //todo use smarter and faster function
+
+        List<Integer> lessSorted = quickSort(less);
+        List<Integer> greaterSorted = quickSort(greater);
+
+        List<Integer> result = new ArrayList<>();
+        result.addAll(lessSorted);
+        result.addAll(equal);
+        result.addAll(greaterSorted);
+
+        return result;
     }
 
     private List<Integer> parallelQuickSort(List<Integer> data) {
