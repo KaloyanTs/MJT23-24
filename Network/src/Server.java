@@ -1,9 +1,14 @@
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
 public class Server {
     public static void main(String[] args) {
@@ -50,9 +55,9 @@ class ClientHandler extends Thread {
         }
 
         int pivot = data.get(data.size() / 2);
-        List<Integer> less = data.stream().filter(x -> x < pivot).collect(Collectors.toList());
-        List<Integer> equal = data.stream().filter(x -> x == pivot).collect(Collectors.toList());
-        List<Integer> greater = data.stream().filter(x -> x > pivot).collect(Collectors.toList());
+        List<Integer> less = data.stream().filter(x -> x < pivot).toList();
+        List<Integer> equal = data.stream().filter(x -> x == pivot).toList();
+        List<Integer> greater = data.stream().filter(x -> x > pivot).toList();
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
