@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Client {
     public static void main(String[] args) {
         String serverHost = "localhost";
-        int serverPort = 5555;
+        static int serverPort = 5555;
 
         try (Socket socket = new Socket(serverHost, serverPort);
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -18,7 +18,12 @@ public class Client {
             List<Integer> data = new ArrayList<>();
 
             Scanner scanner = new Scanner(System.in);
-            for (int i = 0; i < 5; i++) {
+
+            System.out.print("Enter count of elements: ");
+
+            int n = scanner.nextInt();
+
+            for (int i = 0; i < n; i++) {
                 System.out.print("Element " + (i + 1) + ": ");
                 data.add(scanner.nextInt());
             }
