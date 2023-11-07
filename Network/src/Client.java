@@ -8,7 +8,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Client {
-    static int serverPort = 5555;
+    static final int SERVER_PORT = 5555;
+    static final int MAX_NUMBER = 1000;
     static int elementCount;
     static Action action;
     static Scanner scanner = new Scanner(System.in);
@@ -19,7 +20,7 @@ public class Client {
 
         // Fill the array with random numbers
         for (int i = 0; i < count; i++) {
-            res.add(random.nextInt(100));
+            res.add(random.nextInt(MAX_NUMBER));
         }
         return res;
     }
@@ -40,7 +41,7 @@ public class Client {
 
         String serverHost = "localhost";
 
-        try (Socket socket = new Socket(serverHost, serverPort);
+        try (Socket socket = new Socket(serverHost, SERVER_PORT);
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream in = new ObjectInputStream(socket.getInputStream())
         ) {
