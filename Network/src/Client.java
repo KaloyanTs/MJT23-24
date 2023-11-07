@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Client {
+    static int serverPort = 5555;
+
     public static void main(String[] args) {
+
         String serverHost = "localhost";
-        static int serverPort = 5555;
 
         try (Socket socket = new Socket(serverHost, serverPort);
              ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
