@@ -37,27 +37,43 @@ class ClientHandler extends Thread {
     public void run() {
         try (ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())) {
             try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream())) {
-                InputData data = (InputData) in.readObject();
+                List<Integer> data = (List<Integer>) in.readObject();
+                Action action = (Action) in.readObject();
 
-                List<Integer> res = null;
+                List<Integer> res;
 
-                switch (data.action()) {
+                String singleInfo = null;
+                String multiInfo = null;
+
+                switch (action) {
                     case Action.SINGLE_QSORT:
                         System.out.println("single");
-                        res = quickSort(data.data());
+                        res = quickSort(data);
                         break;
                     case Action.MULTI_QSORT:
                         System.out.println("multi");
-                        res = parallelQuickSort(data.data());
+                        res = parallelQuickSort(data);
                         break;
                     case Action.BOTH:
-                        System.out.println("Not implemented yet...");
+                        System.out.println("both");
+                        long startTime = System.currentTimeMillis();
+                        quickSort(data);
+                        long endTime = System.currentTimeMillis();
+                        singleInfo = "Single threaded quicksort executed in " + (endTime - startTime) + "ms";
+                        startTime = System.currentTimeMillis();
+                        res = parallelQuickSort(data);
+                        endTime = System.currentTimeMillis();
+                        multiInfo = "Multi threaded quicksort executed in " + (endTime - startTime) + "ms";
                         break;
                     default:
                         throw new IllegalArgumentException();
                 }
 
                 out.writeObject(res);
+                if (singleInfo != null) {
+                    out.writeObject(singleInfo);
+                    out.writeObject(multiInfo);
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error on Client handling: " + e.getMessage());
