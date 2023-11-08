@@ -30,7 +30,7 @@ public class Server {
 class ClientHandler extends Thread {
     private final Socket clientSocket;
 
-    private static ExecutorService executor = Executors.newFixedThreadPool(1000);
+    private static ExecutorService executor;
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
@@ -54,7 +54,10 @@ class ClientHandler extends Thread {
                         break;
                     case Action.MULTI_QSORT:
                         System.out.println("multi");
+                        //todo why not working????
+                        executor = Executors.newFixedThreadPool(50);
                         res = parallelQuickSort(data);
+                        executor.shutdown();
                         break;
                     case Action.BOTH:
                         System.out.println("both");
@@ -63,7 +66,9 @@ class ClientHandler extends Thread {
                         long endTime = System.currentTimeMillis();
                         singleInfo = "Single threaded quicksort executed in " + (endTime - startTime) + "ms";
                         startTime = System.currentTimeMillis();
+                        executor = Executors.newFixedThreadPool(50);
                         res = parallelQuickSort(data);
+                        executor.shutdown();
                         endTime = System.currentTimeMillis();
                         multiInfo = "Multi threaded quicksort executed in " + (endTime - startTime) + "ms";
                         break;
@@ -93,6 +98,7 @@ class ClientHandler extends Thread {
         List<Integer> greater = data.stream().filter(x -> x > pivot).toList();
 
         //todo use smarter and faster function
+        //todo Rearrange
 
         List<Integer> lessSorted = quickSort(less);
         List<Integer> greaterSorted = quickSort(greater);
@@ -110,11 +116,12 @@ class ClientHandler extends Thread {
             return data;
         }
 
+        System.out.println("size: " + data.size());
+
         int pivot = data.get(data.size() / 2);
         List<Integer> less = data.stream().filter(x -> x < pivot).toList();
         List<Integer> equal = data.stream().filter(x -> x == pivot).toList();
         List<Integer> greater = data.stream().filter(x -> x > pivot).toList();
-
 
         Future<List<Integer>> lessSorted = executor.submit(() -> parallelQuickSort(less));
         Future<List<Integer>> greaterSorted = executor.submit(() -> parallelQuickSort(greater));
@@ -128,8 +135,6 @@ class ClientHandler extends Thread {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
-        executor.shutdown();
 
         return result;
     }
