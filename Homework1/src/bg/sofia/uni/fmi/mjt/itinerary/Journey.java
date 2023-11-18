@@ -7,7 +7,8 @@ import java.math.BigDecimal;
 
 //todo make
 
-public record Journey(VehicleType vehicleType, City from, City to, BigDecimal price) implements WeightedEdge<City> {
+public record Journey(VehicleType vehicleType, City from, City to, BigDecimal price) implements WeightedEdge<City>,
+    Comparable<Journey> {
 
     @Override
     public City getFrom() {
@@ -22,5 +23,10 @@ public record Journey(VehicleType vehicleType, City from, City to, BigDecimal pr
     @Override
     public BigDecimal getWeight() {
         return (vehicleType.getGreenTax().add(BigDecimal.valueOf(1))).multiply(price);
+    }
+
+    @Override
+    public int compareTo(Journey other) {
+        return getWeight().compareTo(other.getWeight());
     }
 }

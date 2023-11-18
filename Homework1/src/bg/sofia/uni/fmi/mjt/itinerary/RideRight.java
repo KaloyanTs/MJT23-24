@@ -7,6 +7,8 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.VertexNotFoundException;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.WeightedGraph;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,9 @@ public class RideRight implements ItineraryPlanner {
         }
 
         try {
-
+            if (!allowTransfer) {
+                return new ArrayList<>(Collections.singleton(graph.findLightestEdge(start, destination)));
+            }
             return graph.findLightestPath(start, destination, heuristic);
         } catch (VertexNotFoundException e) {
             throw new CityNotKnownException("Given city could not be found...", e);
