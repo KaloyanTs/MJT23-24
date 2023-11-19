@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class IntelligentHomeCenterTest {
@@ -200,6 +199,7 @@ public class IntelligentHomeCenterTest {
         homeCenter.register(a1);
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> homeCenter.getDeviceById(null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> homeCenter.getDeviceById(""));
         Assertions.assertThrows(DeviceNotFoundException.class, () -> homeCenter.getDeviceById(a2.getId()));
         Assertions.assertDoesNotThrow(() -> homeCenter.getDeviceById(a1.getId()));
         Assertions.assertEquals(homeCenter.getDeviceById(a1.getId()), a1);
