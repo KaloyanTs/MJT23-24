@@ -8,6 +8,14 @@ import java.time.LocalDateTime;
 public class RgbBulbTest {
 
     @Test
+    void testRGBWithDifferentIDNotEqual() {
+        RgbBulb a1 = new RgbBulb("Vladi", 34, LocalDateTime.now());
+        RgbBulb a2 = new RgbBulb("Vladi", 34, LocalDateTime.now());
+
+        Assertions.assertFalse(a1.equals(a2));
+    }
+
+    @Test
     void testRgbBulbTestDifferentId() {
         RgbBulb a1 = new RgbBulb("Vladi", 34, LocalDateTime.now());
         RgbBulb a2 = new RgbBulb("Krastev", 4, LocalDateTime.now());

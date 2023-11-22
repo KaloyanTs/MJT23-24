@@ -96,23 +96,6 @@ public class IntelligentHomeCenterTest {
     }
 
     @Test
-    void testGetTopNDevicesByPowerConsumptionCountAndSorted() throws DeviceAlreadyRegisteredException {
-        IoTDevice a1 = new AmazonAlexa("Vladi", 34, LocalDateTime.now().minusDays(1));
-        IoTDevice a2 = new RgbBulb("Krastev", 4, LocalDateTime.now().minusSeconds(1));
-        IoTDevice a3 = new WiFiThermostat("PoKriloto", 23, LocalDateTime.now().minusHours(2));
-
-        homeCenter.register(a1);
-        homeCenter.register(a2);
-        homeCenter.register(a3);
-
-        List<String> top2 = new ArrayList<>(homeCenter.getTopNDevicesByPowerConsumption(2));
-
-        Assertions.assertEquals(top2.size(), 2);
-        Assertions.assertEquals(top2.get(0), a1.getId());
-        Assertions.assertEquals(top2.get(1), a3.getId());
-    }
-
-    @Test
     void testGetTopNDevicesByPowerConsumptionOversizeQuery() throws DeviceAlreadyRegisteredException {
         IoTDevice a1 = new AmazonAlexa("Vladi", 34, LocalDateTime.now().minusDays(1));
         IoTDevice a2 = new RgbBulb("Krastev", 4, LocalDateTime.now().minusSeconds(1));

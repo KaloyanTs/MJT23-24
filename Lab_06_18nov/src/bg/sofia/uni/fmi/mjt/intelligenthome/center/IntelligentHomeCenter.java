@@ -127,14 +127,6 @@ public class IntelligentHomeCenter {
         return arrList;
     }
 
-    /**
-     * Returns a collection of the first @n registered devices, i.e. the first @n that were added
-     * in the IntelligentHomeCenter (registration != installation).
-     * <p>
-     * If @n exceeds the total number of devices, return all devices available sorted by the given criterion.
-     *
-     * @throws IllegalArgumentException in case @n is a negative number.
-     */
     public Collection<IoTDevice> getFirstNDevicesByRegistration(int n) {
         if (n <= 0) {
             throw new IllegalArgumentException();

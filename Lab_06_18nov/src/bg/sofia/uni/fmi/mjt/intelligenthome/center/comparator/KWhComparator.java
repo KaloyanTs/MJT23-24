@@ -8,7 +8,7 @@ public class KWhComparator implements Comparator<IoTDevice> {
 
     @Override
     public int compare(IoTDevice firstDevice, IoTDevice secondDevice) {
-        return (int) (secondDevice.getPowerConsumptionKWh() - firstDevice.getPowerConsumptionKWh());
+        return (int) (firstDevice.getPowerConsumptionKWh() - secondDevice.getPowerConsumptionKWh());
     }
 
 }

@@ -43,8 +43,8 @@ public abstract class IoTDeviceBase implements IoTDevice {
     public abstract DeviceType getType();
 
     @Override
-    public LocalDateTime getRegistration() {
-        return registration;
+    public long getRegistration() {
+        return Duration.between(registration, LocalDateTime.now()).toHours();
     }
 
     @Override

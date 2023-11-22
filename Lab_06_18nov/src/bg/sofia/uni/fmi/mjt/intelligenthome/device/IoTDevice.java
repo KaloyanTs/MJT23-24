@@ -31,7 +31,7 @@ public interface IoTDevice {
      */
     DeviceType getType();
 
-    public LocalDateTime getRegistration();
+    public long getRegistration();
 
     public void setRegistration(LocalDateTime registration);
 
