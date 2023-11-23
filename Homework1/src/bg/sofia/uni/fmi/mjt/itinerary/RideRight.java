@@ -9,6 +9,7 @@ import bg.sofia.uni.fmi.mjt.itinerary.graph.Astar;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.AstarInput;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.WeightedGraph;
 
+import javax.lang.model.type.UnknownTypeException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +48,7 @@ public class RideRight implements ItineraryPlanner {
         } catch (NoPathToVertexFoundException e) {
             throw new NoPathToDestinationException("No path to destination exists...", e);
         } catch (GraphAlgorithmException e) {
-            throw new RuntimeException(e);//todo repair badly looking
+            throw new IllegalStateException("Unexpected exception has been thrown", e);
         }
     }
 }
