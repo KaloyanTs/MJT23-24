@@ -1,9 +1,12 @@
 package bg.sofia.uni.fmi.mjt.itinerary;
 
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
+import bg.sofia.uni.fmi.mjt.itinerary.exception.GraphAlgorithmException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToVertexFoundException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.VertexNotFoundException;
+import bg.sofia.uni.fmi.mjt.itinerary.graph.Astar;
+import bg.sofia.uni.fmi.mjt.itinerary.graph.AstarInput;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.WeightedGraph;
 
 import java.math.BigDecimal;
@@ -36,11 +39,15 @@ public class RideRight implements ItineraryPlanner {
             if (!allowTransfer) {
                 return new ArrayList<>(Collections.singleton(graph.findLightestEdge(start, destination)));
             }
-            return graph.findLightestPath(start, destination, heuristic);
+            Astar<City, Journey> res = new Astar<>();
+            res.run(graph, new AstarInput<>(start, destination, heuristic));
+            return res.getPath();
         } catch (VertexNotFoundException e) {
             throw new CityNotKnownException("Given city could not be found...", e);
         } catch (NoPathToVertexFoundException e) {
             throw new NoPathToDestinationException("No path to destination exists...", e);
+        } catch (GraphAlgorithmException e) {
+            throw new RuntimeException(e);//todo repair badly looking
         }
     }
 }
