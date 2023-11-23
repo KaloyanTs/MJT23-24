@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.itinerary;
 
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
+import bg.sofia.uni.fmi.mjt.itinerary.exception.VertexNotFoundException;
 import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -269,5 +270,15 @@ public class RideRightTest {
         SequencedCollection<Journey> test3 = List.of(NK, KP1);
 
         Assertions.assertEquals(l3, test3);
+    }
+
+    @Test
+    void testMyLargeGraph4() throws CityNotKnownException, NoPathToDestinationException {
+        initMyLargeGraph();
+
+        Assertions.assertThrows(CityNotKnownException.class, () -> rideRight.findCheapestPath(new City("city",
+                new Location(0, 0)),
+            P1,
+            true));
     }
 }
