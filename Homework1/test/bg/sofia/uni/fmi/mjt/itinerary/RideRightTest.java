@@ -2,7 +2,6 @@ package bg.sofia.uni.fmi.mjt.itinerary;
 
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
-import bg.sofia.uni.fmi.mjt.itinerary.exception.VertexNotFoundException;
 import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
