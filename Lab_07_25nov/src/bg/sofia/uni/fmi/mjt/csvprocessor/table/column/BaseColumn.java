@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.csvprocessor.table.column;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -7,14 +8,14 @@ import java.util.Set;
 
 public class BaseColumn implements Column {
 
-    Set<String> values;
+    List<String> values;
 
     public BaseColumn() {
         this(new HashSet<>());
     }
 
     public BaseColumn(Set<String> values) {
-        this.values = values;
+        this.values = new ArrayList<>(values);
     }
 
     @Override
@@ -24,6 +25,6 @@ public class BaseColumn implements Column {
 
     @Override
     public Collection<String> getData() {
-        return Set.copyOf(values);
+        return List.copyOf(values);
     }
 }

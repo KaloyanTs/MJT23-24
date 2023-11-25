@@ -6,10 +6,7 @@ import bg.sofia.uni.fmi.mjt.csvprocessor.table.column.Column;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.SequencedCollection;
 
 public class BaseTable implements Table {
 
@@ -34,6 +31,13 @@ public class BaseTable implements Table {
             for (String s : data) {
                 columnHeaders.add(s);
                 columns.add(new BaseColumn());
+            }
+        } else {
+            if (data.length != columnHeaders.size()) {
+                throw new CsvDataNotCorrectException("Size of data does not match number of columns...");
+            }
+            for (int i = 0; i < data.length; i++) {
+                columns.get(i).addData(data[i]);
             }
         }
     }
@@ -60,6 +64,9 @@ public class BaseTable implements Table {
 
     @Override
     public int getRowsCount() {
-        return values.size();
+        if (columnHeaders.isEmpty()) {
+            return 0;
+        }
+        return columns.get(0).getData().size();
     }
 }
