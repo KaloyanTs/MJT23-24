@@ -6,16 +6,28 @@ import bg.sofia.uni.fmi.mjt.csvprocessor.table.column.Column;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BaseTable implements Table {
 
-    List<String> columnHeaders;
-    List<Column> columns;
+    private List<String> columnHeaders;
+    private List<Column> columns;
+    private int rowCount;
 
     public BaseTable() {
         this.columnHeaders = new ArrayList<>();
         this.columns = new ArrayList<>();
+        rowCount = 0;
+    }
+
+    private <T> boolean areUnique(T[] arr) {
+        Set<T> s = new HashSet<>();
+        for (T el : arr) {
+            s.add(el);
+        }
+        return s.size() == arr.length;
     }
 
     @Override
@@ -28,10 +40,14 @@ public class BaseTable implements Table {
         }
 
         if (columnHeaders.isEmpty()) {
+            if (!areUnique(data)) {
+                throw new CsvDataNotCorrectException("Column names are not unique...");
+            }
             for (String s : data) {
                 columnHeaders.add(s);
                 columns.add(new BaseColumn());
             }
+            rowCount = 0;
         } else {
             if (data.length != columnHeaders.size()) {
                 throw new CsvDataNotCorrectException("Size of data does not match number of columns...");
@@ -39,6 +55,8 @@ public class BaseTable implements Table {
             for (int i = 0; i < data.length; i++) {
                 columns.get(i).addData(data[i]);
             }
+            ++rowCount;
+            //if (rowCount == 3) System.out.println("" + String.join(" ", data) + " " + rowCount);
         }
     }
 
@@ -67,6 +85,7 @@ public class BaseTable implements Table {
         if (columnHeaders.isEmpty()) {
             return 0;
         }
-        return columns.get(0).getData().size();
+        return rowCount;
+        //return columns.get(0).getData().size();
     }
 }
