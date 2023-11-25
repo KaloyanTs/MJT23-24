@@ -6,6 +6,7 @@ import bg.sofia.uni.fmi.mjt.csvprocessor.table.column.Column;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,9 +25,7 @@ public class BaseTable implements Table {
 
     private <T> boolean areUnique(T[] arr) {
         Set<T> s = new HashSet<>();
-        for (T el : arr) {
-            s.add(el);
-        }
+        Collections.addAll(s, arr);
         return s.size() == arr.length;
     }
 
