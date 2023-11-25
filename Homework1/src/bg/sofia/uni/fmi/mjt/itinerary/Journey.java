@@ -5,8 +5,6 @@ import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 
 import java.math.BigDecimal;
 
-//todo make
-
 public record Journey(VehicleType vehicleType, City from, City to, BigDecimal price) implements WeightedEdge<City>,
     Comparable<Journey> {
 
