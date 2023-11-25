@@ -1,6 +1,9 @@
 package bg.sofia.uni.fmi.mjt.csvprocessor.table.column;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BaseColumn implements Column {
 
@@ -16,11 +19,11 @@ public class BaseColumn implements Column {
 
     @Override
     public void addData(String data) {
-
+        values.add(data);
     }
 
     @Override
     public Collection<String> getData() {
-        return null;
+        return Set.copyOf(values);
     }
 }
