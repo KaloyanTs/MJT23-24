@@ -8,6 +8,12 @@ import java.math.BigDecimal;
 public record Journey(VehicleType vehicleType, City from, City to, BigDecimal price) implements WeightedEdge<City>,
     Comparable<Journey> {
 
+    public Journey {
+        if (vehicleType == null || from == null || to == null || price == null) {
+            throw new IllegalArgumentException("Nuu. given as argument...");
+        }
+    }
+
     @Override
     public City getFrom() {
         return from;

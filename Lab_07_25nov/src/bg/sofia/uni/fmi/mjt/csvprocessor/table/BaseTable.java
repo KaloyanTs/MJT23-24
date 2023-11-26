@@ -38,7 +38,7 @@ public class BaseTable implements Table {
             throw new CsvDataNotCorrectException("Given data length does not match column count...");
         }
 
-        if (columnHeaders.isEmpty()) {
+        if (rowCount == 0) {
             if (!areUnique(data)) {
                 throw new CsvDataNotCorrectException("Column names are not unique...");
             }
@@ -46,17 +46,12 @@ public class BaseTable implements Table {
                 columnHeaders.add(s);
                 columns.add(new BaseColumn());
             }
-            rowCount = 0;
         } else {
-            if (data.length != columnHeaders.size()) {
-                throw new CsvDataNotCorrectException("Size of data does not match number of columns...");
-            }
             for (int i = 0; i < data.length; i++) {
                 columns.get(i).addData(data[i]);
             }
-            ++rowCount;
-            //if (rowCount == 3) System.out.println("" + String.join(" ", data) + " " + rowCount);
         }
+        ++rowCount;
     }
 
     @Override
@@ -81,10 +76,6 @@ public class BaseTable implements Table {
 
     @Override
     public int getRowsCount() {
-        if (columnHeaders.isEmpty()) {
-            return 0;
-        }
         return rowCount;
-        //return columns.get(0).getData().size();
     }
 }

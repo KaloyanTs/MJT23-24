@@ -9,7 +9,6 @@ import bg.sofia.uni.fmi.mjt.itinerary.graph.Astar;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.AstarInput;
 import bg.sofia.uni.fmi.mjt.itinerary.graph.WeightedGraph;
 
-import javax.lang.model.type.UnknownTypeException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,12 +22,23 @@ public class RideRight implements ItineraryPlanner {
     WeightedGraph<City, Journey> graph;
 
     public RideRight(List<Journey> schedule) {
+        if (schedule == null) {
+            throw new IllegalArgumentException("Null given as list of journeys...");
+        }
         graph = new WeightedGraph<>(schedule);
     }
 
     @Override
     public SequencedCollection<Journey> findCheapestPath(City start, City destination, boolean allowTransfer)
         throws CityNotKnownException, NoPathToDestinationException {
+
+        if (start == null || destination == null) {
+            throw new IllegalArgumentException("Null given as start or end city...");
+        }
+
+        if (start == destination) {
+            throw new IllegalStateException("Start and end should not be the same...");
+        }
 
         Map<City, BigDecimal> heuristic = new HashMap<>();
         for (City city : graph.getVertices()) {

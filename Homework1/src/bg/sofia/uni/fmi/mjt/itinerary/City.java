@@ -4,6 +4,12 @@ import java.math.BigDecimal;
 
 public record City(String name, Location location) implements Comparable<City> {
 
+    public City {
+        if (name == null || location == null) {
+            throw new IllegalArgumentException("Null given as argument");
+        }
+    }
+
     @Override
     public int hashCode() {
         return name.hashCode();
