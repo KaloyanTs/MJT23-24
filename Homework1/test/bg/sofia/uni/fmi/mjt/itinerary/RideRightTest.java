@@ -74,299 +74,299 @@ public class RideRightTest {
 
         List<Journey> list = new ArrayList<>();
 
-        AD1 = new Journey(VehicleType.BUS, A, D1, new BigDecimal(2 * 40.0));
+        AD1 = new Journey(VehicleType.BUS, A, D1, new BigDecimal(2 * 50 * 40.0));
         list.add(AD1);
         D1A = new Journey(VehicleType.PLANE, D1, A,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 40.0)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 40.0)));
         list.add(D1A);
         D1R = new Journey(VehicleType.TRAIN, D1, R,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 100.0)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 100.0)));
         list.add(D1R);
-        RD1 = new Journey(VehicleType.BUS, R, D1, new BigDecimal(2 * 100.0));
+        RD1 = new Journey(VehicleType.BUS, R, D1, new BigDecimal(2 * 50 * 100.0));
         list.add(RD1);
         RB = new Journey(VehicleType.PLANE, R, B,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 72.11103)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 72.11103)));
         list.add(RB);
         BR = new Journey(VehicleType.PLANE, B, R,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 72.11103)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 72.11103)));
         list.add(BR);
         BB1 = new Journey(VehicleType.PLANE, B, B1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 116.61904)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 116.61904)));
         list.add(BB1);
-        B1B = new Journey(VehicleType.BUS, B1, B, new BigDecimal(2 * 116.61904));
+        B1B = new Journey(VehicleType.BUS, B1, B, new BigDecimal(2 * 50 * 116.61904));
         list.add(B1B);
-        L1E = new Journey(VehicleType.BUS, L1, E, new BigDecimal(2 * 107.7033));
+        L1E = new Journey(VehicleType.BUS, L1, E, new BigDecimal(2 * 50 * 107.7033));
         list.add(L1E);
         EL1 = new Journey(VehicleType.PLANE, E, L1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 107.7033)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 107.7033)));
         list.add(EL1);
         S1H1 = new Journey(VehicleType.PLANE, S1, H1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 234.094)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 234.094)));
         list.add(S1H1);
         H1S1 = new Journey(VehicleType.PLANE, H1, S1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 234.094)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 234.094)));
         list.add(H1S1);
-        R1F = new Journey(VehicleType.BUS, R1, F, new BigDecimal(2 * 141.42136));
+        R1F = new Journey(VehicleType.BUS, R1, F, new BigDecimal(2 * 50 * 141.42136));
         list.add(R1F);
-        FR1 = new Journey(VehicleType.BUS, F, R1, new BigDecimal(2 * 141.42136));
+        FR1 = new Journey(VehicleType.BUS, F, R1, new BigDecimal(2 * 50 * 141.42136));
         list.add(FR1);
 
-        FR1BAD = new Journey(VehicleType.BUS, F, R1, new BigDecimal(2 * 2 * 141.42136));
+        FR1BAD = new Journey(VehicleType.BUS, F, R1, new BigDecimal(2 * 50 * 2 * 50 * 141.42136));
         list.add(FR1BAD);
 
         ZQ1 = new Journey(VehicleType.TRAIN, Z, Q1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 152.31546)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 152.31546)));
         list.add(ZQ1);
         Q1Z = new Journey(VehicleType.TRAIN, Q1, Z,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 152.31546)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 152.31546)));
         list.add(Q1Z);
         Q1M1 = new Journey(VehicleType.PLANE, Q1, M1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 196.97716)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 196.97716)));
         list.add(Q1M1);
-        M1Q1 = new Journey(VehicleType.BUS, M1, Q1, new BigDecimal(2 * 196.97716));
+        M1Q1 = new Journey(VehicleType.BUS, M1, Q1, new BigDecimal(2 * 50 * 196.97716));
         list.add(M1Q1);
-        M1N = new Journey(VehicleType.BUS, M1, N, new BigDecimal(2 * 220.90722));
+        M1N = new Journey(VehicleType.BUS, M1, N, new BigDecimal(2 * 50 * 220.90722));
         list.add(M1N);
         NM1 = new Journey(VehicleType.TRAIN, N, M1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 220.90722)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 220.90722)));
         list.add(NM1);
-        NK = new Journey(VehicleType.BUS, N, K, new BigDecimal(2 * 189.73666));
+        NK = new Journey(VehicleType.BUS, N, K, new BigDecimal(2 * 50 * 189.73666));
         list.add(NK);
         KN = new Journey(VehicleType.PLANE, K, N,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 189.73666)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 189.73666)));
         list.add(KN);
-        KP1 = new Journey(VehicleType.BUS, K, P1, new BigDecimal(2 * 228.03509));
+        KP1 = new Journey(VehicleType.BUS, K, P1, new BigDecimal(2 * 50 * 228.03509));
         list.add(KP1);
-        P1K = new Journey(VehicleType.BUS, P1, K, new BigDecimal(2 * 228.03509));
+        P1K = new Journey(VehicleType.BUS, P1, K, new BigDecimal(2 * 50 * 228.03509));
         list.add(P1K);
         P1O = new Journey(VehicleType.PLANE, P1, O,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 196.97716)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 196.97716)));
         list.add(P1O);
         OP1 = new Journey(VehicleType.TRAIN, O, P1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 196.97716)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 196.97716)));
         list.add(OP1);
         OC = new Journey(VehicleType.TRAIN, O, C,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 72.11103)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 72.11103)));
         list.add(OC);
-        CO = new Journey(VehicleType.BUS, C, O, new BigDecimal(2 * 72.11103));
+        CO = new Journey(VehicleType.BUS, C, O, new BigDecimal(2 * 50 * 72.11103));
         list.add(CO);
-        CN1 = new Journey(VehicleType.BUS, C, N1, new BigDecimal(2 * 180.0));
+        CN1 = new Journey(VehicleType.BUS, C, N1, new BigDecimal(2 * 50 * 180.0));
         list.add(CN1);
         N1C = new Journey(VehicleType.PLANE, N1, C,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 180.0)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 180.0)));
         list.add(N1C);
-        N1G1 = new Journey(VehicleType.BUS, N1, G1, new BigDecimal(2 * 63.24555));
+        N1G1 = new Journey(VehicleType.BUS, N1, G1, new BigDecimal(2 * 50 * 63.24555));
         list.add(N1G1);
         G1N1 = new Journey(VehicleType.PLANE, G1, N1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 63.24555)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 63.24555)));
         list.add(G1N1);
-        H1T1 = new Journey(VehicleType.BUS, H1, T1, new BigDecimal(2 * 141.42136));
+        H1T1 = new Journey(VehicleType.BUS, H1, T1, new BigDecimal(2 * 50 * 141.42136));
         list.add(H1T1);
         T1H1 = new Journey(VehicleType.PLANE, T1, H1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 141.42136)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 141.42136)));
         list.add(T1H1);
         T1C1 = new Journey(VehicleType.TRAIN, T1, C1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 243.3105)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 243.3105)));
         list.add(T1C1);
-        C1T1 = new Journey(VehicleType.BUS, C1, T1, new BigDecimal(2 * 243.3105));
+        C1T1 = new Journey(VehicleType.BUS, C1, T1, new BigDecimal(2 * 50 * 243.3105));
         list.add(C1T1);
         LT = new Journey(VehicleType.PLANE, L, T,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 72.11103)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 72.11103)));
         list.add(LT);
-        TL = new Journey(VehicleType.BUS, T, L, new BigDecimal(2 * 72.11103));
+        TL = new Journey(VehicleType.BUS, T, L, new BigDecimal(2 * 50 * 72.11103));
         list.add(TL);
-        E1F1 = new Journey(VehicleType.BUS, E1, F1, new BigDecimal(2 * 121.65525));
+        E1F1 = new Journey(VehicleType.BUS, E1, F1, new BigDecimal(2 * 50 * 121.65525));
         list.add(E1F1);
         F1E1 = new Journey(VehicleType.PLANE, F1, E1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 121.65525)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 121.65525)));
         list.add(F1E1);
-        VI1 = new Journey(VehicleType.BUS, V, I1, new BigDecimal(2 * 100.0));
+        VI1 = new Journey(VehicleType.BUS, V, I1, new BigDecimal(2 * 50 * 100.0));
         list.add(VI1);
-        I1V = new Journey(VehicleType.BUS, I1, V, new BigDecimal(2 * 100.0));
+        I1V = new Journey(VehicleType.BUS, I1, V, new BigDecimal(2 * 50 * 100.0));
         list.add(I1V);
-        J1B1 = new Journey(VehicleType.BUS, J1, B1, new BigDecimal(2 * 141.42136));
+        J1B1 = new Journey(VehicleType.BUS, J1, B1, new BigDecimal(2 * 50 * 141.42136));
         list.add(J1B1);
         B1J1 = new Journey(VehicleType.TRAIN, B1, J1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 141.42136)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 141.42136)));
         list.add(B1J1);
-        A1E = new Journey(VehicleType.BUS, A1, E, new BigDecimal(2 * 89.44272));
+        A1E = new Journey(VehicleType.BUS, A1, E, new BigDecimal(2 * 50 * 89.44272));
         list.add(A1E);
         EA1 = new Journey(VehicleType.PLANE, E, A1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 89.44272)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 89.44272)));
         list.add(EA1);
-        WH = new Journey(VehicleType.BUS, W, H, new BigDecimal(2 * 116.61904));
+        WH = new Journey(VehicleType.BUS, W, H, new BigDecimal(2 * 50 * 116.61904));
         list.add(WH);
         HW = new Journey(VehicleType.TRAIN, H, W,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 116.61904)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 116.61904)));
         list.add(HW);
         GJ = new Journey(VehicleType.PLANE, G, J,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 126.49111)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 126.49111)));
         list.add(GJ);
-        JG = new Journey(VehicleType.BUS, J, G, new BigDecimal(2 * 126.49111));
+        JG = new Journey(VehicleType.BUS, J, G, new BigDecimal(2 * 50 * 126.49111));
         list.add(JG);
-        UJ1 = new Journey(VehicleType.BUS, U, J1, new BigDecimal(2 * 121.65525));
+        UJ1 = new Journey(VehicleType.BUS, U, J1, new BigDecimal(2 * 50 * 121.65525));
         list.add(UJ1);
         J1U = new Journey(VehicleType.TRAIN, J1, U,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 121.65525)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 121.65525)));
         list.add(J1U);
         Q1D1 = new Journey(VehicleType.PLANE, Q1, D1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 241.66092)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 241.66092)));
         list.add(Q1D1);
-        D1Q1 = new Journey(VehicleType.BUS, D1, Q1, new BigDecimal(2 * 241.66092));
+        D1Q1 = new Journey(VehicleType.BUS, D1, Q1, new BigDecimal(2 * 50 * 241.66092));
         list.add(D1Q1);
         VR = new Journey(VehicleType.PLANE, V, R,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 63.24555)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 63.24555)));
         list.add(VR);
-        RV = new Journey(VehicleType.BUS, R, V, new BigDecimal(2 * 63.24555));
+        RV = new Journey(VehicleType.BUS, R, V, new BigDecimal(2 * 50 * 63.24555));
         list.add(RV);
-        SO1 = new Journey(VehicleType.BUS, S, O1, new BigDecimal(2 * 144.22205));
+        SO1 = new Journey(VehicleType.BUS, S, O1, new BigDecimal(2 * 50 * 144.22205));
         list.add(SO1);
         O1S = new Journey(VehicleType.PLANE, O1, S,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 144.22205)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 144.22205)));
         list.add(O1S);
         O1A1 = new Journey(VehicleType.TRAIN, O1, A1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 243.3105)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 243.3105)));
         list.add(O1A1);
-        A1O1 = new Journey(VehicleType.BUS, A1, O1, new BigDecimal(2 * 243.3105));
+        A1O1 = new Journey(VehicleType.BUS, A1, O1, new BigDecimal(2 * 50 * 243.3105));
         list.add(A1O1);
-        ZF = new Journey(VehicleType.BUS, Z, F, new BigDecimal(2 * 63.24555));
+        ZF = new Journey(VehicleType.BUS, Z, F, new BigDecimal(2 * 50 * 63.24555));
         list.add(ZF);
-        FZ = new Journey(VehicleType.BUS, F, Z, new BigDecimal(2 * 63.24555));
+        FZ = new Journey(VehicleType.BUS, F, Z, new BigDecimal(2 * 50 * 63.24555));
         list.add(FZ);
-        R1P1 = new Journey(VehicleType.BUS, R1, P1, new BigDecimal(2 * 200.99751));
+        R1P1 = new Journey(VehicleType.BUS, R1, P1, new BigDecimal(2 * 50 * 200.99751));
         list.add(R1P1);
         P1R1 = new Journey(VehicleType.PLANE, P1, R1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 200.99751)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 200.99751)));
         list.add(P1R1);
         F1J = new Journey(VehicleType.TRAIN, F1, J,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 101.98039)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 101.98039)));
         list.add(F1J);
-        JF1 = new Journey(VehicleType.BUS, J, F1, new BigDecimal(2 * 101.98039));
+        JF1 = new Journey(VehicleType.BUS, J, F1, new BigDecimal(2 * 50 * 101.98039));
         list.add(JF1);
-        E1F = new Journey(VehicleType.BUS, E1, F, new BigDecimal(2 * 141.42136));
+        E1F = new Journey(VehicleType.BUS, E1, F, new BigDecimal(2 * 50 * 141.42136));
         list.add(E1F);
         FE1 = new Journey(VehicleType.PLANE, F, E1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 141.42136)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 141.42136)));
         list.add(FE1);
-        HM1 = new Journey(VehicleType.BUS, H, M1, new BigDecimal(2 * 140.0));
+        HM1 = new Journey(VehicleType.BUS, H, M1, new BigDecimal(2 * 50 * 140.0));
         list.add(HM1);
         M1H = new Journey(VehicleType.TRAIN, M1, H,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 140.0)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 140.0)));
         list.add(M1H);
         DO1 = new Journey(VehicleType.PLANE, D, O1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 184.39089)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 184.39089)));
         list.add(DO1);
         O1D = new Journey(VehicleType.TRAIN, O1, D,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 184.39089)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 184.39089)));
         list.add(O1D);
         DM = new Journey(VehicleType.TRAIN, D, M,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 72.11103)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 72.11103)));
         list.add(DM);
         MD = new Journey(VehicleType.TRAIN, M, D,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 72.11103)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 72.11103)));
         list.add(MD);
-        MA = new Journey(VehicleType.BUS, M, A, new BigDecimal(2 * 56.568));
+        MA = new Journey(VehicleType.BUS, M, A, new BigDecimal(2 * 50 * 56.568));
         list.add(MA);
         AM = new Journey(VehicleType.PLANE, A, M,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 56.568)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 56.568)));
         list.add(AM);
-        LN1 = new Journey(VehicleType.BUS, L, N1, new BigDecimal(2 * 215.406));
+        LN1 = new Journey(VehicleType.BUS, L, N1, new BigDecimal(2 * 50 * 215.406));
         list.add(LN1);
-        N1L = new Journey(VehicleType.BUS, N1, L, new BigDecimal(2 * 215.406));
+        N1L = new Journey(VehicleType.BUS, N1, L, new BigDecimal(2 * 50 * 215.406));
         list.add(N1L);
-        WS1 = new Journey(VehicleType.BUS, W, S1, new BigDecimal(2 * 82.462));
+        WS1 = new Journey(VehicleType.BUS, W, S1, new BigDecimal(2 * 50 * 82.462));
         list.add(WS1);
         S1W = new Journey(VehicleType.PLANE, S1, W,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.PLANE.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 82.462)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 82.462)));
         list.add(S1W);
-        I1R1 = new Journey(VehicleType.BUS, I1, R1, new BigDecimal(2 * 152.315));
+        I1R1 = new Journey(VehicleType.BUS, I1, R1, new BigDecimal(2 * 50 * 152.315));
         list.add(I1R1);
         R1I1 = new Journey(VehicleType.TRAIN, R1, I1,
             VehicleType.BUS.getGreenTax().add(BigDecimal.valueOf(1))
                 .divide(VehicleType.TRAIN.getGreenTax().add(BigDecimal.valueOf(1)))
-                .multiply(BigDecimal.valueOf(2 * 152.315)));
+                .multiply(BigDecimal.valueOf(2 * 50 * 152.315)));
         list.add(R1I1);
         rideRight = new RideRight(list);
     }
