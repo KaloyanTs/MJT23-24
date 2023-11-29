@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
 import bg.sofia.uni.fmi.mjt.itinerary.vehicle.VehicleType;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -433,5 +434,71 @@ public class RideRightTest {
         SequencedCollection<Journey> test6 = List.of(FR1);
 
         assertEquals(l6, test6);
+    }
+
+    @Test
+    void mainTest() {
+        City sofia = new City("Sofia", new Location(0, 2000));
+        City blagoevgrad = new City("Blagoevgrad", new Location(0, 1000));
+        City plovdiv = new City("Plovdiv", new Location(4000, 1000));
+        City tarnovo = new City("Tarnovo", new Location(5000, 3000));
+        City kardzhali = new City("Kardzhali", new Location(3000, 0));
+        City burgas = new City("Burgas", new Location(9000, 1000));
+        City varna = new City("Varna", new Location(9000, 3000));
+        City ruse = new City("Ruse", new Location(7000, 4000));
+        List<Journey> list = new ArrayList<>();
+        list.add(new Journey(VehicleType.BUS, sofia, blagoevgrad, new BigDecimal(20)));
+        list.add(new Journey(VehicleType.BUS, blagoevgrad, sofia, new BigDecimal(20)));
+        list.add(new Journey(VehicleType.PLANE, sofia, burgas, new BigDecimal(150)));
+        list.add(new Journey(VehicleType.PLANE, burgas, sofia, new BigDecimal(150)));
+        list.add(new Journey(VehicleType.PLANE, sofia, varna, new BigDecimal(300)));
+        list.add(new Journey(VehicleType.PLANE, varna, sofia, new BigDecimal(290)));
+        list.add(new Journey(VehicleType.BUS, sofia, plovdiv, new BigDecimal(90)));
+        list.add(new Journey(VehicleType.BUS, plovdiv, sofia, new BigDecimal(90)));
+        list.add(new Journey(VehicleType.BUS, sofia, tarnovo, new BigDecimal(150)));
+        list.add(new Journey(VehicleType.BUS, tarnovo, sofia, new BigDecimal(150)));
+        list.add(new Journey(VehicleType.BUS, tarnovo, ruse, new BigDecimal(70)));
+        list.add(new Journey(VehicleType.BUS, ruse, tarnovo, new BigDecimal(70)));
+        list.add(new Journey(VehicleType.BUS, varna, ruse, new BigDecimal(70)));
+        list.add(new Journey(VehicleType.BUS, ruse, varna, new BigDecimal(70)));
+        list.add(new Journey(VehicleType.BUS, plovdiv, burgas, new BigDecimal(90)));
+        list.add(new Journey(VehicleType.BUS, burgas, plovdiv, new BigDecimal(90)));
+        list.add(new Journey(VehicleType.BUS, plovdiv, kardzhali, new BigDecimal(50)));
+        list.add(new Journey(VehicleType.BUS, kardzhali, plovdiv, new BigDecimal(50)));
+        list.add(new Journey(VehicleType.PLANE, burgas, varna, new BigDecimal(200)));
+        list.add(new Journey(VehicleType.PLANE, varna, burgas, new BigDecimal(200)));
+        list.add(new Journey(VehicleType.BUS, burgas, varna, new BigDecimal(60)));
+        list.add(new Journey(VehicleType.BUS, varna, burgas, new BigDecimal(60)));
+
+        list.add(new Journey(VehicleType.BUS, plovdiv, tarnovo, new BigDecimal(40)));
+        list.add(new Journey(VehicleType.BUS, tarnovo, plovdiv, new BigDecimal(40)));
+        RideRight rideRight = new RideRight(list);
+
+        try {
+            System.out.println(rideRight.findCheapestPath(varna, kardzhali, true).toString());
+        } catch (Exception e) {
+            System.out.println(e.getClass().getTypeName());
+        }
+
+        try {
+            System.out.println(rideRight.findCheapestPath(varna, kardzhali, false).toString());
+        } catch (Exception e) {
+            System.out.println(e.getClass().getTypeName());
+        }
+
+        try {
+            System.out.println(rideRight.findCheapestPath(varna, burgas, false).toString());
+        } catch (Exception e) {
+            System.out.println(e.getClass().getTypeName());
+        }
+
+        try {
+            assertDoesNotThrow(()-> rideRight.findCheapestPath(sofia,varna,true));
+            System.out.println(rideRight.findCheapestPath(sofia, varna, true).toString());
+        } catch (Exception e) {
+            System.out.println(e.getClass().getTypeName());
+        }
+
+
     }
 }
