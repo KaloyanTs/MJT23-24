@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.itinerary;
 
+import bg.sofia.uni.fmi.mjt.itinerary.comparators.LexicalDestinationComparator;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.GraphAlgorithmException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToDestinationException;
@@ -27,7 +28,7 @@ public class RideRight implements ItineraryPlanner {
         if (schedule == null) {
             throw new IllegalArgumentException("Null given as list of journeys...");
         }
-        graph = new WeightedGraph<>(schedule);
+        graph = new WeightedGraph<>(schedule, new LexicalDestinationComparator());
     }
 
     @Override

@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.itinerary.graph;
 
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToVertexFoundException;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,11 @@ public class WeightedGraph<V extends Comparable<V>, E extends WeightedEdge<V> & 
 
     Map<V, SortedSet<E>> graph;
 
-    public WeightedGraph(List<? extends E> adjacencyList) {
+    Comparator<E> edgeCompare;
+
+    public WeightedGraph(List<? extends E> adjacencyList, Comparator<E> edgeCompare) {
         graph = new HashMap<>();
+        this.edgeCompare = edgeCompare;
         for (E e : adjacencyList) {
             addEdge(e);
         }
@@ -30,7 +34,7 @@ public class WeightedGraph<V extends Comparable<V>, E extends WeightedEdge<V> & 
 
     public void addEdge(E edge) {
         if (graph.get(edge.getFrom()) == null) {
-            graph.put(edge.getFrom(), new TreeSet<>());
+            graph.put(edge.getFrom(), new TreeSet<>(edgeCompare));
         }
         graph.get(edge.getFrom()).add(edge);
     }
