@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.itinerary.exception.GraphAlgorithmException;
 
 import java.math.BigDecimal;
 
-public abstract class GraphAlgorithm<V extends Comparable<V>, E extends Comparable<E> & WeightedEdge<V>> {
+public abstract class GraphAlgorithm<V extends Comparable<V>, E extends WeightedEdge<V>> {
 
     boolean isRun;
     protected final static BigDecimal INFINITY = new BigDecimal(-1);

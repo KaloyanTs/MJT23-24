@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
 import java.util.SequencedCollection;
 import java.util.Set;
 
-public class Astar<V extends Comparable<V>, E extends WeightedEdge<V> & Comparable<E>> extends GraphAlgorithm<V, E> {
+public class Astar<V extends Comparable<V>, E extends WeightedEdge<V>> extends GraphAlgorithm<V, E> {
 
     private final Map<V, E> parent;
     private final Map<V, BigDecimal> distance;

@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class WeightedGraph<V extends Comparable<V>, E extends WeightedEdge<V> & Comparable<E>> {
+public class WeightedGraph<V extends Comparable<V>, E extends WeightedEdge<V>> {
 
     Map<V, SortedSet<E>> graph;
 
