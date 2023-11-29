@@ -19,7 +19,8 @@ import java.util.SequencedCollection;
 
 public class RideRight implements ItineraryPlanner {
 
-    private static BigDecimal AVERAGE_PRICE_KM = BigDecimal.valueOf(20);
+    final private static BigDecimal AVERAGE_PRICE_KM = BigDecimal.valueOf(20);
+    final private static BigDecimal M_PER_KM = BigDecimal.valueOf(1000);
     WeightedGraph<City, Journey> graph;
 
     public RideRight(List<Journey> schedule) {
@@ -43,7 +44,7 @@ public class RideRight implements ItineraryPlanner {
 
         Map<City, BigDecimal> heuristic = new HashMap<>();
         for (City city : graph.getVertices()) {
-            heuristic.put(city, city.distanceTo(start).divide(BigDecimal.valueOf(1000)).multiply(AVERAGE_PRICE_KM));
+            heuristic.put(city, city.distanceTo(start).divide(M_PER_KM).multiply(AVERAGE_PRICE_KM));
         }
 
         try {
