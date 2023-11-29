@@ -6,7 +6,7 @@ public record City(String name, Location location) implements Comparable<City> {
 
     public City {
         if (name == null || location == null) {
-            throw new IllegalArgumentException("Null given as argument");
+            throw new IllegalArgumentException("Null given as argument...");
         }
     }
 

@@ -10,7 +10,7 @@ public record Journey(VehicleType vehicleType, City from, City to, BigDecimal pr
 
     public Journey {
         if (vehicleType == null || from == null || to == null || price == null) {
-            throw new IllegalArgumentException("Nuu. given as argument...");
+            throw new IllegalArgumentException("Null given as argument...");
         }
     }
 
