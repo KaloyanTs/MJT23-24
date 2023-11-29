@@ -1,5 +1,7 @@
 package bg.sofia.uni.fmi.mjt.itinerary.graph;
 
+import bg.sofia.uni.fmi.mjt.itinerary.City;
+import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToVertexFoundException;
 
 import java.util.Comparator;
@@ -36,10 +38,16 @@ public class WeightedGraph<V extends Comparable<V>, E extends WeightedEdge<V>> {
         if (graph.get(edge.getFrom()) == null) {
             graph.put(edge.getFrom(), new TreeSet<>(edgeCompare));
         }
+        if (graph.get(edge.getTo()) == null) {
+            graph.put(edge.getTo(), new TreeSet<>(edgeCompare));
+        }
         graph.get(edge.getFrom()).add(edge);
     }
 
-    public E findLightestEdge(V from, V to) throws NoPathToVertexFoundException {
+    public E findLightestEdge(V from, V to) throws NoPathToVertexFoundException, CityNotKnownException {
+        if (!graph.keySet().contains(from) || !graph.keySet().contains(to)) {
+            throw new CityNotKnownException("One of the cities could not be found...");
+        }
         E lightest = null;
         for (E edge : graph.get(from)) {
             if (edge.getTo() == to) {

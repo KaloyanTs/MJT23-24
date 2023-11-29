@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.itinerary.graph;
 
+import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.GraphAlgorithmException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToVertexFoundException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.VertexNotFoundException;
@@ -68,6 +69,10 @@ public class Astar<V extends Comparable<V>, E extends WeightedEdge<V>> extends G
 
         if (graph == null || input == null) {
             throw new IllegalArgumentException("Bad arguments given...");
+        }
+
+        if (!graph.getVertices().contains(input.getFrom()) || !graph.getVertices().contains(input.getTo())) {
+            throw new VertexNotFoundException("One of the cities could not be found...");
         }
 
         //each vertex knows the edge who discovered it
