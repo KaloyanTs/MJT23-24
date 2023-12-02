@@ -1,6 +1,10 @@
 package bg.sofia.uni.fmi.mjt.football;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -24,7 +28,32 @@ public class FootballPlayerAnalyzer {
      * @param reader Reader from which the dataset can be read.
      */
     public FootballPlayerAnalyzer(Reader reader) {
-        throw new UnsupportedOperationException("Method not yet implemented");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+
+        String str = "";
+        char[] readBuf = new char[4096];
+        try {
+            while (reader.read(readBuf) != -1) {
+                str += readBuf;
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Problems on reading...", e);
+        }
+        players = Arrays.stream(str.toString().split("\n")).skip(1).map(line -> line.split(";")).map(
+            lineArr -> new Player(lineArr[0],
+                lineArr[1],
+                LocalDate.parse(lineArr[2], formatter),
+                Integer.parseInt(lineArr[3]),
+                Double.parseDouble(lineArr[4]),
+                Double.parseDouble(lineArr[5]),
+                Arrays.stream(lineArr[6].split(",")).map(pos -> Position.fromString(pos)).toList(),
+                lineArr[7],
+                Integer.parseInt(lineArr[8]),
+                Integer.parseInt(lineArr[9]),
+                Long.parseLong(lineArr[10]),
+                Long.parseLong(lineArr[11]),
+                Foot.fromString(lineArr[12])));
     }
 
     /**
