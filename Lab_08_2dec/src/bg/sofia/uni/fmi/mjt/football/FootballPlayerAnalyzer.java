@@ -2,8 +2,6 @@ package bg.sofia.uni.fmi.mjt.football;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -13,13 +11,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FootballPlayerAnalyzer {
 
-    final private static int MAX_POTENTIAL_DIFFERENCE_FOR_SIMILARITY = 3;
+    private static final int BUFFER_SIZE = 4096;
+    private static final int MAX_POTENTIAL_DIFFERENCE_FOR_SIMILARITY = 3;
 
-    Stream<Player> players;
+    List<Player> players;
 
     /**
      * Loads the dataset from the given {@code reader}. The reader argument will not be null and a correct dataset of
@@ -29,15 +27,20 @@ public class FootballPlayerAnalyzer {
      */
     public FootballPlayerAnalyzer(Reader reader) {
         String str = "";
-        char[] readBuf = new char[4096];
+        char[] readBuf = new char[BUFFER_SIZE];
+        int read;
         try {
-            while (reader.read(readBuf) != -1) {
-                str += readBuf;
+            read = reader.read(readBuf);
+            while (read > 0) {
+                readBuf[read] = '\0';
+                str += String.valueOf(readBuf).strip();
+                read = reader.read(readBuf);
             }
         } catch (IOException e) {
             throw new IllegalStateException("Problems on reading...", e);
         }
-        players = Arrays.stream(str.toString().split("\n")).skip(1).map(line -> Player.of(line));
+        players = Arrays.stream(str.split("\n")).skip(1).map(Player::of).toList();
+        //players.forEach(player -> System.out.println(player));
     }
 
     /**
@@ -47,7 +50,7 @@ public class FootballPlayerAnalyzer {
      * @return the list of all players.
      */
     public List<Player> getAllPlayers() {
-        return players.collect(Collectors.toUnmodifiableList());
+        return List.copyOf(players);
     }
 
     /**
@@ -56,7 +59,7 @@ public class FootballPlayerAnalyzer {
      * @return the set of all nationalities
      */
     public Set<String> getAllNationalities() {
-        return Set.copyOf(players.map((Player::nationality)).collect(Collectors.toSet()));
+        return Set.copyOf(players.stream().map((Player::nationality)).collect(Collectors.toSet()));
     }
 
     /**
@@ -73,9 +76,9 @@ public class FootballPlayerAnalyzer {
             throw new IllegalArgumentException("Nationality is null...");
         }
         Optional<Player> bestPlayer =
-            players.filter(player -> player.nationality().equals(nationality)).max((p1, p2) -> Math.toIntExact(
+            players.stream().filter(player -> player.nationality().equals(nationality)).max((p1, p2) -> Math.toIntExact(
                 p1.wageEuro() - p2.wageEuro()));
-        if (!bestPlayer.isPresent()) {
+        if (bestPlayer.isEmpty()) {
             throw new NoSuchElementException("No players from given nationality...");
         }
         return bestPlayer.get();
@@ -92,8 +95,11 @@ public class FootballPlayerAnalyzer {
     public Map<Position, Set<Player>> groupByPosition() {
         Map<Position, Set<Player>> res = new EnumMap<>(Position.class);
         for (Position position : Position.values()) {
-            res.put(position,
-                players.filter(player -> player.positions().contains(position)).collect(Collectors.toSet()));
+            if (players.stream().anyMatch(player -> player.positions().contains(position))) {
+                res.put(position,
+                    players.stream().filter(player -> player.positions().contains(position))
+                        .collect(Collectors.toSet()));
+            }
         }
         return res;
     }
@@ -115,8 +121,8 @@ public class FootballPlayerAnalyzer {
         if (position == null || budget < 0) {
             throw new IllegalArgumentException("Bad arguments given...");
         }
-        return players.filter(player -> player.positions().contains(position) && player.valueEuro() <= budget)
-            .max((p1, p2) -> p2.potential() - p1.potential());
+        return players.stream().filter(player -> player.positions().contains(position) && player.valueEuro() <= budget)
+            .max((p1, p2) -> -p2.potential() + p1.potential());
     }
 
     /**
@@ -130,10 +136,13 @@ public class FootballPlayerAnalyzer {
      * @throws IllegalArgumentException if the provided player is null
      */
     public Set<Player> getSimilarPlayers(Player player) {
-        return players.filter(p -> p.preferredFoot() == player.preferredFoot() &&
-                Collections.disjoint(player.positions(), p.positions()) &&
+        if (player == null) {
+            throw new IllegalArgumentException("Player was null...");
+        }
+        return players.stream().filter(p -> p.preferredFoot() == player.preferredFoot() &&
+                !Collections.disjoint(player.positions(), p.positions()) &&
                 Math.abs(p.overallRating() - player.overallRating()) <= MAX_POTENTIAL_DIFFERENCE_FOR_SIMILARITY)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     /**
@@ -144,7 +153,11 @@ public class FootballPlayerAnalyzer {
      * @throws IllegalArgumentException if the provided keyword is null
      */
     public Set<Player> getPlayersByFullNameKeyword(String keyword) {
-        return players.filter(player -> player.fullName().contains(keyword)).collect(Collectors.toSet());
+        if (keyword == null) {
+            throw new IllegalArgumentException("Keyword is null...");
+        }
+        return players.stream().filter(player -> player.fullName().contains(keyword))
+            .collect(Collectors.toUnmodifiableSet());
     }
 
 }
