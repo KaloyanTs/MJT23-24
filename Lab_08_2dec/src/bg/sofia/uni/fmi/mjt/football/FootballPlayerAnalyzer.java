@@ -26,20 +26,20 @@ public class FootballPlayerAnalyzer {
      * @param reader Reader from which the dataset can be read.
      */
     public FootballPlayerAnalyzer(Reader reader) {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         char[] readBuf = new char[BUFFER_SIZE];
         int read;
         try {
             read = reader.read(readBuf);
             while (read > 0) {
                 readBuf[read] = '\0';
-                str += String.valueOf(readBuf).strip();
+                str.append(String.valueOf(readBuf).strip());
                 read = reader.read(readBuf);
             }
         } catch (IOException e) {
             throw new IllegalStateException("Problems on reading...", e);
         }
-        players = Arrays.stream(str.split("\n")).skip(1).map(Player::of).toList();
+        players = Arrays.stream(str.toString().split("\n")).skip(1).map(Player::of).toList();
         //players.forEach(player -> System.out.println(player));
     }
 
