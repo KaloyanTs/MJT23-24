@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public abstract class GraphAlgorithm<V extends Comparable<V>, E extends WeightedEdge<V>> {
 
-    boolean isRun;
+    protected boolean isRun;
     protected final static BigDecimal INFINITY = new BigDecimal(-1);
 
     GraphAlgorithm() {

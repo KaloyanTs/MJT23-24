@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.itinerary.graph;
 
-import bg.sofia.uni.fmi.mjt.itinerary.exception.CityNotKnownException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.GraphAlgorithmException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.NoPathToVertexFoundException;
 import bg.sofia.uni.fmi.mjt.itinerary.exception.VertexNotFoundException;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.SequencedCollection;
 import java.util.Set;
 
@@ -80,8 +80,8 @@ public class Astar<V extends Comparable<V>, E extends WeightedEdge<V>> extends G
         parent.put(input.getFrom(), null);
 
         //priority queue (main logic)
-        PriorityQueue<VertexDistPair<V>> queue =
-            new PriorityQueue<VertexDistPair<V>>(new LeastWeightComparator());
+        Queue<VertexDistPair<V>> queue =
+            new PriorityQueue<>(new LeastWeightComparator());
 
         initializeDistances(graph, input.getFrom());
 

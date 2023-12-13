@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class AstarInput<V extends Comparable<V>> extends AlgorithmInput {
 
-    final V from;
-    final V to;
-    final Map<V, BigDecimal> heuristic;
+    private final V from;
+    private final V to;
+    private final Map<V, BigDecimal> heuristic;
 
     public AstarInput(V from, V to, Map<V, BigDecimal> heuristic) {
         this.from = from;
