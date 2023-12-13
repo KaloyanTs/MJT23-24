@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.photoalbum;
 
 import bg.sofia.uni.fmi.mjt.photoalbum.threads.ConsumerThread;
+import bg.sofia.uni.fmi.mjt.photoalbum.threads.ProducerThread;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -10,18 +11,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
 
     private final int imageProcessorsCount;
     List<ConsumerThread> consumerThreads;
+    List<ProducerThread> producerThreads;
+    private final Queue<Image> queue;
 
     public ParallelMonochromeAlbumCreator(int imageProcessorsCount) {
         this.imageProcessorsCount = imageProcessorsCount;
         consumerThreads = new ArrayList<>(imageProcessorsCount);
-        for (int i = 0; i < imageProcessorsCount; ++i) {
-
-        }
+        producerThreads = new ArrayList<>(imageProcessorsCount);
+        queue = new LinkedList<>();
     }
 
     @Override
@@ -29,11 +32,18 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
         Path source = Path.of(sourceDirectory);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(source, "*.jpg")) {
             Iterator<Path> i = stream.iterator();
-            ConsumerThread t;
-            for (int j = 0; j < imageProcessorsCount; ++j) {
-                t = new ConsumerThread(i, outputDirectory);
-                consumerThreads.add(t);
-                t.start();
+            AlbumBuffer albumBuffer = new AlbumBuffer();
+            ProducerThread pr;
+            for (int j = 0; j < 3; ++j) {
+                pr = new ProducerThread("pr-" + j, albumBuffer, i);
+                producerThreads.add(pr);
+                pr.start();
+            }
+            ConsumerThread ct;
+            for (int j = 0; j < 5; ++j) {
+                ct = new ConsumerThread("cs-" + j, albumBuffer, outputDirectory);
+                consumerThreads.add(ct);
+                ct.start();
             }
             for (ConsumerThread thread : consumerThreads) {
                 thread.join();

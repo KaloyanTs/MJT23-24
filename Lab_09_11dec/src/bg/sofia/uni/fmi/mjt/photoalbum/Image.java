@@ -2,16 +2,22 @@ package bg.sofia.uni.fmi.mjt.photoalbum;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 
 public class Image {
-    String name;
-    BufferedImage data;
+    private String name;
+    private BufferedImage data;
+
+    public String getName() {
+        return name;
+    }
+
+    public BufferedImage getData() {
+        return data;
+    }
 
     public Image(String name, BufferedImage data) {
         this.name = name;
@@ -35,11 +41,10 @@ public class Image {
         return new Image(image.name, processedData);
     }
 
-    public static void saveImage(Image image, String dir) {
+    public static void proceedImage(Image image, Path dir) {
         try {
-            File f = Path.of(dir).toFile();
-            f.createNewFile();
-            ImageIO.write(Image.convertToBlackAndWhite(image).data, "jpg", f);
+            dir.toFile().createNewFile();
+            ImageIO.write(Image.convertToBlackAndWhite(image).data, "jpg", dir.toFile());
         } catch (IOException e) {
             throw new UncheckedIOException(String.format("Failed to save image %s", dir), e);
         }
