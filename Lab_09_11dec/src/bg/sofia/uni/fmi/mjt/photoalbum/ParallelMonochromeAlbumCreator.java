@@ -9,49 +9,62 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
 
     private final int imageProcessorsCount;
     List<ConsumerThread> consumerThreads;
     List<ProducerThread> producerThreads;
-    private final Queue<Image> queue;
 
     public ParallelMonochromeAlbumCreator(int imageProcessorsCount) {
         this.imageProcessorsCount = imageProcessorsCount;
         consumerThreads = new ArrayList<>(imageProcessorsCount);
         producerThreads = new ArrayList<>(imageProcessorsCount);
-        queue = new LinkedList<>();
     }
 
     @Override
     public void processImages(String sourceDirectory, String outputDirectory) {
         Path source = Path.of(sourceDirectory);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(source, "*.jpg")) {
-            Iterator<Path> i = stream.iterator();
-            AlbumBuffer albumBuffer = new AlbumBuffer();
-            ProducerThread pr;
-            for (int j = 0; j < 1; ++j) {
-                //todo remove cycle
-                pr = new ProducerThread("pr-" + j, albumBuffer, i);
-                producerThreads.add(pr);
-                pr.start();
+        try (DirectoryStream<Path> streamCount = Files.newDirectoryStream(source,
+            "{*.jpg, *.jpeg, *.png}");
+             DirectoryStream<Path> streamWork = Files.newDirectoryStream(source, "{*.jpg, *.jpeg, *.png}")) {
+
+            Iterator<Path> i = streamCount.iterator();
+            int count = 0;
+
+            while (i.hasNext()) {
+                i.next();
+                ++count;
             }
+
+            AlbumBuffer albumBuffer = new AlbumBuffer(count);
+
             ConsumerThread ct;
             for (int j = 0; j < imageProcessorsCount; ++j) {
                 ct = new ConsumerThread("cs-" + j, albumBuffer, outputDirectory);
                 consumerThreads.add(ct);
                 ct.start();
             }
+
+            ProducerThread pr;
+            i = streamWork.iterator();
+            int j = 0;
+            while (i.hasNext()) {
+                pr = new ProducerThread("pr-" + j++, albumBuffer, i.next());
+                producerThreads.add(pr);
+                pr.start();
+            }
+
             for (ConsumerThread thread : consumerThreads) {
                 thread.join();
             }
-        } catch (IOException e) {
+
+        } catch (
+            IOException e) {
             throw new RuntimeException("Error while processing directory...", e);
-        } catch (InterruptedException e) {
+        } catch (
+            InterruptedException e) {
             throw new RuntimeException("Thread interrupted...", e);
         }
     }

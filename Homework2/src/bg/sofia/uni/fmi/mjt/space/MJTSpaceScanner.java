@@ -1,25 +1,22 @@
 package bg.sofia.uni.fmi.mjt.space;
 
 import bg.sofia.uni.fmi.mjt.space.mission.Mission;
-import bg.sofia.uni.fmi.mjt.space.mission.MissionLeastCostComparator;
+import bg.sofia.uni.fmi.mjt.space.mission.MissionCostComparator;
 import bg.sofia.uni.fmi.mjt.space.mission.MissionStatus;
 import bg.sofia.uni.fmi.mjt.space.rocket.Rocket;
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketBiggestHeightComparator;
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
-import javax.crypto.SecretKey;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.time.LocalDate;
+import javax.crypto.SecretKey;
 
 public class MJTSpaceScanner implements SpaceScannerAPI {
 
@@ -27,11 +24,13 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     List<Rocket> rockets;
 
+    private boolean isBetween(LocalDate from, LocalDate to, LocalDate date) {
+        return date.isEqual(from) || date.isEqual(to) || (date.isAfter(from) && date.isBefore(to));
+    }
+
     public MJTSpaceScanner(Reader missionsReader, Reader rocketsReader, SecretKey secretKey) {
         BufferedReader reader = new BufferedReader(missionsReader);
-        while () {
-
-        }
+        //todo read line by line
     }
 
     public Collection<Mission> getAllMissions() {
@@ -49,7 +48,9 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public String getCompanyWithMostSuccessfulMissions(LocalDate from, LocalDate to) {
-        Map<String, List<Mission>> grouped = missions.stream().collect(Collectors.groupingBy(Mission::company));
+        Map<String, List<Mission>> grouped =
+            missions.stream().filter(mission -> isBetween(from, to, mission.date()))
+                .collect(Collectors.groupingBy(Mission::company));
 
         return grouped.entrySet().stream().
             max((e1, e2) -> countStatus(e1.getValue(), MissionStatus.SUCCESS) -
@@ -69,7 +70,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     @Override
     public List<Mission> getTopNLeastExpensiveMissions(int n, MissionStatus missionStatus, RocketStatus rocketStatus) {
         return missions.stream().filter(m -> m.missionStatus() == missionStatus && m.rocketStatus() == rocketStatus)
-            .sorted(new MissionLeastCostComparator()).limit(n).toList();
+            .sorted(new MissionCostComparator(true)).limit(n).toList();
     }
 
     private String mostDesiredLocation(List<Mission> l) {
@@ -89,7 +90,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public Map<String, String> getLocationWithMostSuccessfulMissionsPerCompany(LocalDate from, LocalDate to) {
-        return null;
+        throw new UnsupportedOperationException("not implemented yet...");
     }
 
     @Override
@@ -104,17 +105,23 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public Map<String, Optional<String>> getWikiPageForRocket() {
-        return null;
+        return rockets.stream().collect(Collectors.toMap(Rocket::name, Rocket::wiki));
     }
 
     @Override
     public List<String> getWikiPagesForRocketsUsedInMostExpensiveMissions(int n, MissionStatus missionStatus,
                                                                           RocketStatus rocketStatus) {
-        return null;
+        if (n <= 0 || missionStatus == null || rocketStatus == null) {
+            throw new IllegalArgumentException("Bad arguments given...");
+        }
+
     }
 
     @Override
     public void saveMostReliableRocket(OutputStream outputStream, LocalDate from, LocalDate to) throws Exception {
-
+        if (outputStream == null || from == null || to == null) {
+            throw new IllegalAccessException("Null given as argument...");
+        }
+        rockets.stream().filter(rocket -> isBetween(from, to, rocket.))
     }
 }
