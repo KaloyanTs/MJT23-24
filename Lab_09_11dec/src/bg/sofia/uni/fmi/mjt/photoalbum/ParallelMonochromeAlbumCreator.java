@@ -34,7 +34,7 @@ public class ParallelMonochromeAlbumCreator implements MonochromeAlbumCreator {
             Iterator<Path> i = stream.iterator();
             AlbumBuffer albumBuffer = new AlbumBuffer();
             ProducerThread pr;
-            for (int j = 0; j < 5; ++j) {
+            for (int j = 0; j < 1; ++j) {
                 //todo remove cycle
                 pr = new ProducerThread("pr-" + j, albumBuffer, i);
                 producerThreads.add(pr);
