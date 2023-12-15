@@ -2,7 +2,7 @@ package bg.sofia.uni.fmi.mjt.photoalbum;
 
 public class Main {
     public static void main(String[] args) {
-        ParallelMonochromeAlbumCreator p = new ParallelMonochromeAlbumCreator(2);
+        ParallelMonochromeAlbumCreator p = new ParallelMonochromeAlbumCreator(10);
 
         long d = System.nanoTime();
         p.processImages("D:\\JavaProjects\\Lab_09_11dec\\same", "D:\\JavaProjects\\Lab_09_11dec\\outPics");
