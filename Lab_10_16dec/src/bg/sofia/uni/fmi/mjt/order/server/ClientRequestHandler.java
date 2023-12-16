@@ -20,7 +20,13 @@ public class ClientRequestHandler implements Runnable {
 
     private String handleClientRequest(String request) {
 
+        System.out.println("Request is: " + request);
+
         String[] parts = request.split(" ");
+        for (String part : parts) {
+            System.out.println(part);
+        }
+
         switch (parts[0]) {
             case "get":
                 if (parts.length < 2) {
@@ -42,8 +48,8 @@ public class ClientRequestHandler implements Runnable {
                     return "Unknown command";
                 }
                 return repository.request(parts[1].substring(5),
-                    parts[2].substring(5),
-                    parts[3].substring(5)).toString();
+                    parts[2].substring(6),
+                    parts[3].substring(7)).toString();
             default:
                 return "Unknown command";
         }

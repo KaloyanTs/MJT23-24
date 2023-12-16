@@ -13,39 +13,57 @@ import java.util.Map;
 
 public class MJTOrderRepository implements OrderRepository {
 
-    private List<Order> invalidOrders;
-    private Map<Integer, Order> orders;
-    private int ID_COUNTER;
+    private final List<Order> invalidOrders;
+    private final Map<Integer, Order> orders;
+    private int idCounter;
 
     public MJTOrderRepository() {
         invalidOrders = new ArrayList<>();
         orders = new HashMap<>();
-        ID_COUNTER = 0;
+        idCounter = 0;
     }
 
     @Override
 
     public Response request(String sizeStr, String colorStr, String destinationStr) {
         String badArguments = "";
-        Size size = Size.valueOf(sizeStr);
-        Color color = Color.valueOf(colorStr);
-        Destination destination = Destination.valueOf(destinationStr);
+        Size size;
+        Color color;
+        Destination destination;
+        try {
+            size = Size.valueOf(sizeStr);
+        } catch (IllegalArgumentException e) {
+            size = Size.UNKNOWN;
+        }
+        try {
+            color = Color.valueOf(colorStr);
+        } catch (IllegalArgumentException e) {
+            color = Color.UNKNOWN;
+        }
+        try {
+            destination = Destination.valueOf(destinationStr);
+        } catch (IllegalArgumentException e) {
+            destination = Destination.UNKNOWN;
+        }
         if (size == Size.UNKNOWN) {
-            badArguments += "size";
+            badArguments += "size,";
         }
         if (color == Color.UNKNOWN) {
-            badArguments += "color";
+            badArguments += "color,";
         }
         if (destination == Destination.UNKNOWN) {
-            badArguments += "destination";
+            badArguments += "destination,";
         }
-        if (badArguments.length() > 0) {
+        if (!badArguments.isEmpty()) {
+
+            invalidOrders.add(new Order(idCounter, new TShirt(size, color), destination));
+
             return new Response("DECLINED", "invalid:" + badArguments.substring(0, badArguments.length() - 1), null);
         }
 
-        orders.put(ID_COUNTER, new Order(ID_COUNTER, new TShirt(size, color), destination));
+        orders.put(idCounter, new Order(idCounter, new TShirt(size, color), destination));
 
-        return new Response("CREATED", "ORDER_ID=" + ID_COUNTER++, null);
+        return new Response("CREATED", "ORDER_ID=" + idCounter++, null);
     }
 
     @Override
