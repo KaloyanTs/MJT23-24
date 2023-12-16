@@ -9,5 +9,7 @@ public record Response(Status status, String additionalInfo, Collection<Order> o
         OK, CREATED, DECLINED, NOT_FOUND
     }
 
-    // TODO: Add implementation if needed
+    public Response(String status, String additionalInfo, Collection<Order> orders) {
+        this(Status.valueOf(status), additionalInfo, orders);
+    }
 }
