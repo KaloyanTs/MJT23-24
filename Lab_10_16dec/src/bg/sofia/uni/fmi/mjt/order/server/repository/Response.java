@@ -12,4 +12,16 @@ public record Response(Status status, String additionalInfo, Collection<Order> o
     public Response(String status, String additionalInfo, Collection<Order> orders) {
         this(Status.valueOf(status), additionalInfo, orders);
     }
+
+    @Override
+    public String toString() {
+        String res = "{\"" + "status\":" + status + "\"";
+        if (!additionalInfo.isEmpty()) {
+            res += ", \"additionalInfo\":\"" + additionalInfo + "\"";
+        }
+        if (orders != null) {
+            res += ", \"orders\":\"" + orders + "\"";
+        }
+        return res + "}";
+    }
 }

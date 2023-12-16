@@ -20,7 +20,7 @@ public class MJTOrderRepository implements OrderRepository {
     public MJTOrderRepository() {
         invalidOrders = new ArrayList<>();
         orders = new HashMap<>();
-        idCounter = 0;
+        idCounter = 1;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class MJTOrderRepository implements OrderRepository {
         }
         if (!badArguments.isEmpty()) {
 
-            invalidOrders.add(new Order(idCounter, new TShirt(size, color), destination));
+            invalidOrders.add(new Order(-1, new TShirt(size, color), destination));
 
             return new Response("DECLINED", "invalid:" + badArguments.substring(0, badArguments.length() - 1), null);
         }
@@ -80,7 +80,8 @@ public class MJTOrderRepository implements OrderRepository {
 
     @Override
     public Response getAllOrders() {
-        List<Order> res = List.copyOf(orders.values());
+        List<Order> res = new ArrayList<>();
+        res.addAll(orders.values());
         res.addAll(invalidOrders);
         return new Response("OK", "", res);
     }

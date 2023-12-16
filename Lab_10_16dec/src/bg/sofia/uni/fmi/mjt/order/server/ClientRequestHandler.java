@@ -10,6 +10,12 @@ import java.net.Socket;
 
 public class ClientRequestHandler implements Runnable {
 
+    private static final int GET_ID_PARTS = 3;
+    private static final int ID_SKIP = 3;
+    private static final int SIZE_SKIP = 5;
+    private static final int COLOR_SKIP = 6;
+    private static final int DESTINATION_SKIP = 7;
+    private static final int REQUEST_PARTS = 4;
     private final Socket socket;
     private final OrderRepository repository;
 
@@ -20,12 +26,7 @@ public class ClientRequestHandler implements Runnable {
 
     private String handleClientRequest(String request) {
 
-        System.out.println("Request is: " + request);
-
         String[] parts = request.split(" ");
-        for (String part : parts) {
-            System.out.println(part);
-        }
 
         switch (parts[0]) {
             case "get":
@@ -33,23 +34,23 @@ public class ClientRequestHandler implements Runnable {
                     return "Unknown command";
                 }
                 return switch (parts[1]) {
-                    case "all" -> repository.getAllOrders().toString();//todo maybe override toString
+                    case "all" -> repository.getAllOrders().toString();
                     case "all-successful" -> repository.getAllSuccessfulOrders().toString();
                     case "my-order" -> {
-                        if (parts.length < 3) {
+                        if (parts.length < GET_ID_PARTS) {
                             yield "Unknown command";
                         }
-                        yield repository.getOrderById(Integer.parseInt(parts[2].substring(3))).toString();
+                        yield repository.getOrderById(Integer.parseInt(parts[2].substring(ID_SKIP))).toString();
                     }
                     default -> "Unknown command";
                 };
             case "request":
-                if (parts.length < 4) {
+                if (parts.length < REQUEST_PARTS) {
                     return "Unknown command";
                 }
-                return repository.request(parts[1].substring(5),
-                    parts[2].substring(6),
-                    parts[3].substring(7)).toString();
+                return repository.request(parts[1].substring(SIZE_SKIP),
+                    parts[2].substring(COLOR_SKIP),
+                    parts[2 + 1].substring(DESTINATION_SKIP)).toString();
             default:
                 return "Unknown command";
         }
