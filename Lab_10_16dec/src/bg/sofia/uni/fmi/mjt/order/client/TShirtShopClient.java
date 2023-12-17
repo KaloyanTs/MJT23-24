@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.order.server;
+package bg.sofia.uni.fmi.mjt.order.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,27 +14,25 @@ public class TShirtShopClient {
     public static void main(String[] args) {
 
         try (Socket socket = new Socket("localhost", SERVER_PORT);
-             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true); // autoflush on
+             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              Scanner scanner = new Scanner(System.in)) {
 
-            Thread.currentThread().setName("Echo client thread " + socket.getLocalPort());
+            Thread.currentThread().setName("Shop client thread " + socket.getLocalPort());
 
             System.out.println("Connected to the shop server.");
             System.out.println();
 
             while (true) {
-                String message = scanner.nextLine(); // read a line from the console
+                String message = scanner.nextLine();
 
                 if ("disconnect".equals(message)) {
                     break;
                 }
 
-                //System.out.println("Sending request <" + message + "> to the shop...");
+                writer.println(message);
 
-                writer.println(message); // send the message to the server
-
-                String reply = reader.readLine(); // read the response from the server
+                String reply = reader.readLine();
                 System.out.println(reply);
                 System.out.println();
             }

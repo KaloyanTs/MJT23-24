@@ -7,7 +7,6 @@ public interface OrderRepository {
      * @param size        - size of the requested T-Shirt
      * @param color       - color of the requested T-Shirt
      * @param destination - destination of the requested T-Shirt
-     *
      * @return response which contains status and additional info (orderId or invalid parameters if there are such)
      */
     Response request(String size, String color, String destination);

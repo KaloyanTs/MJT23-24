@@ -68,10 +68,6 @@ public class MJTOrderRepository implements OrderRepository {
 
     @Override
     public Response getOrderById(int id) {
-        if (id == -1) {
-            //todo
-            return null;
-        }
         if (orders.get(id) == null) {
             return new Response("NOT_FOUND", "Order with id = " + id + " does not exist.", null);
         }

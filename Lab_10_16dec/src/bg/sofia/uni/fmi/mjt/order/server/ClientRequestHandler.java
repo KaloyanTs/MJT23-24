@@ -27,7 +27,9 @@ public class ClientRequestHandler implements Runnable {
     private String handleClientRequest(String request) {
 
         String[] parts = request.split(" ");
-
+        if (parts.length < 1) {
+            return "Unknown command";
+        }
         switch (parts[0]) {
             case "get":
                 if (parts.length < 2) {
