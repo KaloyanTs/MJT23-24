@@ -18,7 +18,7 @@ public class ProducerThread extends Thread {
 
     @Override
     public void run() {
-        System.out.println(STR."Producer \{name} started...");
+        System.out.println("Producer " + name + " started...");
         Image img = Image.loadImage(path);
         synchronized (albumBuffer) {
             albumBuffer.addJob(img);

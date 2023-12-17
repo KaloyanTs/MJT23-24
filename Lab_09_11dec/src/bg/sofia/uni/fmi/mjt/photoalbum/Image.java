@@ -6,17 +6,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
-
 public class Image {
-    private String name;
-    private BufferedImage data;
+    private final String name;
+    private final BufferedImage data;
 
     public String getName() {
         return name;
-    }
-
-    public BufferedImage getData() {
-        return data;
     }
 
     public Image(String name, BufferedImage data) {
@@ -29,7 +24,7 @@ public class Image {
             BufferedImage imageData = ImageIO.read(imagePath.toFile());
             return new Image(imagePath.getFileName().toString(), imageData);
         } catch (IOException e) {
-            throw new UncheckedIOException(String.format("Failed to load image %s", imagePath.toString()), e);
+            throw new UncheckedIOException(String.format("Failed to load image %s", imagePath), e);
         }
     }
 

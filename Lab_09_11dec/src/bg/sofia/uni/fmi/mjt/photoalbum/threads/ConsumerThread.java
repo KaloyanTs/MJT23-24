@@ -11,7 +11,6 @@ public class ConsumerThread extends Thread {
     String outputDirectory;
     String name;
 
-
     public ConsumerThread(String name, AlbumBuffer albumBuffer, String outputDirectory) {
         this.outputDirectory = outputDirectory;
         this.albumBuffer = albumBuffer;
@@ -20,7 +19,7 @@ public class ConsumerThread extends Thread {
 
     @Override
     public void run() {
-        System.out.println(STR."Consumer \{name} started...");
+        System.out.println("Consumer " + name + " started...");
         Image img;
         while (true) {
             synchronized (albumBuffer) {
@@ -38,9 +37,7 @@ public class ConsumerThread extends Thread {
                 img = albumBuffer.getJob();
                 albumBuffer.notify();
             }
-            long t = System.nanoTime();
-            Image.proceedImage(img, Path.of(STR."\{outputDirectory}\\\{img.getName()}"));
-            System.out.println("Took " + name + ":\t" + (double) (System.nanoTime() - t) / 1_000_000_000 + "s");
+            Image.proceedImage(img, Path.of(outputDirectory + "\\" + img.getName()));
         }
     }
 }
