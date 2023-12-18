@@ -28,6 +28,9 @@ public class Client {
                 System.out.println("Enter the graph as list of edges, followed by the starting vertex:");
 
                 String message = scanner.nextLine();
+                if (message.equals("exit")) {
+                    return;
+                }
                 while (message.contains(" ")) {
                     writer.println(message);
                     message = scanner.nextLine();

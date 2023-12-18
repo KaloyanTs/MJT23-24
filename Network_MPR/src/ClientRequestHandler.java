@@ -72,9 +72,6 @@ public class ClientRequestHandler implements Runnable {
             String inputLine;
             String[] input;
             while ((inputLine = in.readLine()) != null) {
-                if (inputLine.equals("exit")) {
-                    return;
-                }
                 if (inputLine.contains(" ")) {
                     input = inputLine.split(" ");
                     graph.computeIfAbsent(input[0], k -> new HashSet<>());

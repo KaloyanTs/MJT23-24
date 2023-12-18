@@ -51,13 +51,9 @@ public class BFSWorker extends Thread {
                 return;
             }
 
-            System.out.println("processed: " + p);
-            System.out.println("visited: " + visited.size() + " out of: " + graph.keySet().size());
-
             for (String neighbour : graph.get(p.first())) {
                 if (!visited.contains(neighbour)) {
                     try {
-                        System.out.println("to be added: " + neighbour + " at layer " + (p.second() + 1));
                         queue.put(new Pair<>(neighbour, p.second() + 1));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
