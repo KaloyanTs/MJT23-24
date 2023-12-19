@@ -23,11 +23,14 @@ public class BFSWorker extends Thread {
 
     @Override
     public void run() {
+        System.out.println(Thread.currentThread().getName() + " working on the BFS...");
         Pair<String, Integer> p = null;
         while (visited.size() < graph.keySet().size()) {
             try {
+                System.out.println(Thread.currentThread().getName() + " waiting for vertex...");
                 p = queue.take();
                 if (p.second() == -1) {
+                    queue.put(p);
                     return;
                 }
             } catch (InterruptedException e) {
@@ -41,8 +44,10 @@ public class BFSWorker extends Thread {
 
             if (visited.size() == graph.keySet().size()) {
                 //all vertices visited, telling other threads to stop with a poison object
+                System.out.println("Threads: " + myGroupCount);
                 for (int i = 0; i < myGroupCount - 1; i++) {
                     try {
+                        System.out.println(Thread.currentThread().getName() + " putting poison...");
                         queue.put(new Pair<>(null, -1));
                     } catch (InterruptedException e) {
                         e.printStackTrace();

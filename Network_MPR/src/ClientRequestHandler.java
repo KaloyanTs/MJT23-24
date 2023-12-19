@@ -37,7 +37,7 @@ public class ClientRequestHandler implements Runnable {
             return (System.nanoTime() - timeBegin) / 1_000_000_000;
         }
 
-        BlockingQueue<Pair<String, Integer>> queue = new ArrayBlockingQueue<>(10);
+        BlockingQueue<Pair<String, Integer>> queue = new ArrayBlockingQueue<>(threadCount);
 
         queue.put(new Pair<>(from, 0));
 
@@ -68,6 +68,7 @@ public class ClientRequestHandler implements Runnable {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
             int count = Integer.parseInt(in.readLine());
+            System.out.println("Threads: " + count);
 
             String inputLine;
             String[] input;
