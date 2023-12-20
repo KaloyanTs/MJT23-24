@@ -25,27 +25,14 @@ public class MJTOrderRepository implements OrderRepository {
     }
 
     @Override
-
     public Response request(String sizeStr, String colorStr, String destinationStr) {
+        if (sizeStr == null || colorStr == null || destinationStr == null) {
+            throw new IllegalArgumentException("Null given as argument...");
+        }
         String badArguments = "";
-        Size size;
-        Color color;
-        Destination destination;
-        try {
-            size = Size.valueOf(sizeStr);
-        } catch (IllegalArgumentException e) {
-            size = Size.UNKNOWN;
-        }
-        try {
-            color = Color.valueOf(colorStr);
-        } catch (IllegalArgumentException e) {
-            color = Color.UNKNOWN;
-        }
-        try {
-            destination = Destination.valueOf(destinationStr);
-        } catch (IllegalArgumentException e) {
-            destination = Destination.UNKNOWN;
-        }
+        Size size = Size.fromString(sizeStr);
+        Color color = Color.fromString(colorStr);
+        Destination destination = Destination.fromString(destinationStr);
         if (size == Size.UNKNOWN) {
             badArguments += "size,";
         }
@@ -57,7 +44,7 @@ public class MJTOrderRepository implements OrderRepository {
         }
         if (!badArguments.isEmpty()) {
             invalidOrders.add(new Order(-1, new TShirt(size, color), destination));
-            return Response.decline("invalid:" + badArguments.substring(0, badArguments.length() - 1));
+            return Response.decline("invalid=" + badArguments.substring(0, badArguments.length() - 1));
         }
         orders.put(idCounter, new Order(idCounter, new TShirt(size, color), destination));
         return Response.create(idCounter++);

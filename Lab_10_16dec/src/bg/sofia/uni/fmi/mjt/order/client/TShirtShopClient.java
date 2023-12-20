@@ -32,8 +32,7 @@ public class TShirtShopClient {
 
                 writer.println(message);
 
-                String reply = reader.readLine();
-                System.out.println(reply);
+                System.out.println(reader.readLine());
                 System.out.println();
             }
 

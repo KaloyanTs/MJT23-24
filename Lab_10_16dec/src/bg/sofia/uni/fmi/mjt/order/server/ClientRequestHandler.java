@@ -24,28 +24,28 @@ public class ClientRequestHandler implements Runnable {
         this.repository = repository;
     }
 
-    private String handleClientRequest(String request) {
+    public String allSwitch(String[] parts) {
+        return switch (parts[1]) {
+            case "all" -> repository.getAllOrders().toString();
+            case "all-successful" -> repository.getAllSuccessfulOrders().toString();
+            case "my-order" -> {
+                if (parts.length < GET_ID_PARTS) {
+                    yield "Unknown command";
+                }
+                yield repository.getOrderById(Integer.parseInt(parts[2].substring(ID_SKIP))).toString();
+            }
+            default -> "Unknown command";
+        };
+    }
 
+    public String handleClientRequest(String request) {
         String[] parts = request.split(" ");
-        if (parts.length < 1) {
-            return "Unknown command";
-        }
         switch (parts[0]) {
             case "get":
                 if (parts.length < 2) {
                     return "Unknown command";
                 }
-                return switch (parts[1]) {
-                    case "all" -> repository.getAllOrders().toString();
-                    case "all-successful" -> repository.getAllSuccessfulOrders().toString();
-                    case "my-order" -> {
-                        if (parts.length < GET_ID_PARTS) {
-                            yield "Unknown command";
-                        }
-                        yield repository.getOrderById(Integer.parseInt(parts[2].substring(ID_SKIP))).toString();
-                    }
-                    default -> "Unknown command";
-                };
+                return allSwitch(parts);
             case "request":
                 if (parts.length < REQUEST_PARTS) {
                     return "Unknown command";

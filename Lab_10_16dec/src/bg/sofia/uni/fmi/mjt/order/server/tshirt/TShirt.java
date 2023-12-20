@@ -4,6 +4,6 @@ public record TShirt(Size size, Color color) {
 
     @Override
     public String toString() {
-        return "{\"size:\":\"" + size + "\", \"color\":\"" + color + "\"}";
+        return "{\"size\":\"" + size + "\", \"color\":\"" + color + "\"}";
     }
 }

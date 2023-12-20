@@ -15,4 +15,14 @@ public enum Color {
     public String getName() {
         return name;
     }
+
+    public static Color fromString(String str) {
+        Color color;
+        try {
+            color = Color.valueOf(str);
+        } catch (IllegalArgumentException e) {
+            color = Color.UNKNOWN;
+        }
+        return color;
+    }
 }

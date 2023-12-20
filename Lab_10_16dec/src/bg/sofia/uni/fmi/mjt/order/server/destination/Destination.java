@@ -15,4 +15,14 @@ public enum Destination {
     public String getName() {
         return name;
     }
+
+    public static Destination fromString(String str) {
+        Destination destination;
+        try {
+            destination = Destination.valueOf(str);
+        } catch (IllegalArgumentException e) {
+            destination = Destination.UNKNOWN;
+        }
+        return destination;
+    }
 }

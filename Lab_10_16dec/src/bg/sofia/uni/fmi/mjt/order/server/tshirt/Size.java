@@ -16,4 +16,14 @@ public enum Size {
     public String getName() {
         return name;
     }
+
+    public static Size fromString(String str) {
+        Size size;
+        try {
+            size = Size.valueOf(str);
+        } catch (IllegalArgumentException e) {
+            size = Size.UNKNOWN;
+        }
+        return size;
+    }
 }
