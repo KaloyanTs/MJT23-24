@@ -1,5 +1,7 @@
 package bg.sofia.uni.fmi.mjt.order.server.repository;
 
+import bg.sofia.uni.fmi.mjt.order.server.Response;
+
 public interface OrderRepository {
     /**
      * Creates a new T-Shirt order

@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.order.server.repository;
 
+import bg.sofia.uni.fmi.mjt.order.server.Response;
 import bg.sofia.uni.fmi.mjt.order.server.destination.Destination;
 import bg.sofia.uni.fmi.mjt.order.server.order.Order;
 import bg.sofia.uni.fmi.mjt.order.server.tshirt.Color;
@@ -55,23 +56,19 @@ public class MJTOrderRepository implements OrderRepository {
             badArguments += "destination,";
         }
         if (!badArguments.isEmpty()) {
-
             invalidOrders.add(new Order(-1, new TShirt(size, color), destination));
-
-            return new Response("DECLINED", "invalid:" + badArguments.substring(0, badArguments.length() - 1), null);
+            return Response.decline("invalid:" + badArguments.substring(0, badArguments.length() - 1));
         }
-
         orders.put(idCounter, new Order(idCounter, new TShirt(size, color), destination));
-
-        return new Response("CREATED", "ORDER_ID=" + idCounter++, null);
+        return Response.create(idCounter++);
     }
 
     @Override
     public Response getOrderById(int id) {
         if (orders.get(id) == null) {
-            return new Response("NOT_FOUND", "Order with id = " + id + " does not exist.", null);
+            return Response.notFound(id);
         }
-        return new Response("OK", "", List.of(orders.get(id)));
+        return Response.ok(List.of(orders.get(id)));
     }
 
     @Override
@@ -79,11 +76,11 @@ public class MJTOrderRepository implements OrderRepository {
         List<Order> res = new ArrayList<>();
         res.addAll(orders.values());
         res.addAll(invalidOrders);
-        return new Response("OK", "", res);
+        return Response.ok(res);
     }
 
     @Override
     public Response getAllSuccessfulOrders() {
-        return new Response("OK", "", orders.values());
+        return Response.ok(orders.values());
     }
 }
