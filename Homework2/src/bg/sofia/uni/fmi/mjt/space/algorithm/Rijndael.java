@@ -4,15 +4,9 @@ import bg.sofia.uni.fmi.mjt.space.exception.CipherException;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 public class Rijndael implements SymmetricBlockCipher {
 
@@ -21,14 +15,13 @@ public class Rijndael implements SymmetricBlockCipher {
     private static final String ENCRYPTION_ALGORITHM = "AES"; // //  Advanced Encryption Standard
     private static final int KEY_SIZE_IN_BITS = 128; // Key sizes like 192 or 256 might not be available on all systems
 
-
     public Rijndael(SecretKey secretKey) {
         this.secretKey = secretKey;
     }
 
     @Override
     public void encrypt(InputStream inputStream, OutputStream outputStream) throws CipherException {
-        Cipher cipher = null;
+        Cipher cipher;
         try {
             cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -45,7 +38,7 @@ public class Rijndael implements SymmetricBlockCipher {
 
     @Override
     public void decrypt(InputStream inputStream, OutputStream outputStream) throws CipherException {
-        Cipher cipher = null;
+        Cipher cipher;
         try {
             cipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
@@ -56,7 +49,7 @@ public class Rijndael implements SymmetricBlockCipher {
                 System.out.println("Decryption complete.");
             }
         } catch (Exception e) {
-            throw new CipherException("Error with encryption...", e);
+            throw new CipherException("Error with decryption...", e);
         }
     }
 }

@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
-import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 
 public class MJTSpaceScanner implements SpaceScannerAPI {
@@ -50,7 +49,8 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     @Override
     public String getCompanyWithMostSuccessfulMissions(LocalDate from, LocalDate to) {
         Map<String, List<Mission>> grouped =
-            missions.stream().filter(mission -> isBetween(from, to, mission.date()))
+            missions.stream()
+                .filter(mission -> isBetween(from, to, mission.date()))
                 .collect(Collectors.groupingBy(Mission::company));
 
         return grouped.entrySet().stream().
@@ -103,12 +103,16 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public List<Rocket> getTopNTallestRockets(int n) {
-        return rockets.stream().sorted(new RocketBiggestHeightComparator()).limit(n).toList();
+        return rockets.stream()
+            .sorted(new RocketBiggestHeightComparator())
+            .limit(n)
+            .toList();
     }
 
     @Override
     public Map<String, Optional<String>> getWikiPageForRocket() {
-        return rockets.stream().collect(Collectors.toMap(Rocket::name, Rocket::wiki));
+        return rockets.stream()
+            .collect(Collectors.toMap(Rocket::name, Rocket::wiki));
     }
 
     private Optional<String> getPage(String rocketName) {
