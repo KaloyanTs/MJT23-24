@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 
 public class MJTSpaceScanner implements SpaceScannerAPI {
@@ -24,7 +25,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     List<Rocket> rockets;
 
-    private boolean isBetween(LocalDate from, LocalDate to, LocalDate date) {
+    private static boolean isBetween(LocalDate from, LocalDate to, LocalDate date) {
         return date.isEqual(from) || date.isEqual(to) || (date.isAfter(from) && date.isBefore(to));
     }
 
@@ -74,9 +75,11 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     }
 
     private String mostDesiredLocation(List<Mission> l) {
-        return l.stream().collect(Collectors.groupingBy(Mission::location)).entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size())).entrySet().stream()
-            .max((e1, e2) -> e2.getValue() - e1.getValue()).get().getKey();
+        return l.stream().
+            collect(Collectors.groupingBy(Mission::location))
+            .entrySet().stream()
+            .max((e1, e2) -> e2.getValue().size() - e1.getValue().size())
+            .get().getKey();
     }
 
     @Override
@@ -108,13 +111,44 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         return rockets.stream().collect(Collectors.toMap(Rocket::name, Rocket::wiki));
     }
 
+    private Optional<String> getPage(String rocketName) {
+        for (Rocket rocket : rockets) {
+            if (rocket.name().equals(rocketName)) {
+                return rocket.wiki();
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     public List<String> getWikiPagesForRocketsUsedInMostExpensiveMissions(int n, MissionStatus missionStatus,
                                                                           RocketStatus rocketStatus) {
         if (n <= 0 || missionStatus == null || rocketStatus == null) {
             throw new IllegalArgumentException("Bad arguments given...");
         }
+        return missions.stream()
+            .sorted(new MissionCostComparator(false))
+            .limit(n)
+            .map(mission -> getPage(mission.detail().rocketName()))
+            .filter(Optional::isPresent).map(Optional::get)
+            .toList();
+    }
 
+    private double getReliabilty(Rocket rocket, LocalDate from, LocalDate to) {
+        long allWithRocket =
+            missions.stream().filter(
+                    mission -> isBetween(mission.date(), from, to) &&
+                        mission.detail().rocketName().equals(rocket.name()))
+                .count();
+        //todo
+        if (allWithRocket == 0)
+            throw new UnsupportedOperationException("Don't know what to do when not used");
+
+        return (double) missions.stream()
+            .filter(mission -> mission.detail().rocketName().equals(rocket.name()))
+            .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
+            .count() /
+            allWithRocket;
     }
 
     @Override
@@ -122,6 +156,12 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         if (outputStream == null || from == null || to == null) {
             throw new IllegalAccessException("Null given as argument...");
         }
-        rockets.stream().filter(rocket -> isBetween(from, to, rocket.))
+
+        Optional<Rocket> mostReliable = rockets.stream().max((r1, r2) -> {
+            double dif = getReliabilty(r2, from, to) - getReliabilty(r1, from, to);
+            return dif > 0 ? 1 : (dif < 0 ? -1 : 0);
+        });
+        //todo
+        if (mostReliable.isEmpty()) throw new UnsupportedOperationException("no rockets...what to save???");
     }
 }
