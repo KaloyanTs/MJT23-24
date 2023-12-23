@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.space;
 
+import bg.sofia.uni.fmi.mjt.space.exception.TimeFrameMismatchException;
 import bg.sofia.uni.fmi.mjt.space.mission.Mission;
 import bg.sofia.uni.fmi.mjt.space.mission.MissionCostComparator;
 import bg.sofia.uni.fmi.mjt.space.mission.MissionStatus;
@@ -8,6 +9,7 @@ import bg.sofia.uni.fmi.mjt.space.rocket.RocketBiggestHeightComparator;
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Collection;
@@ -30,7 +32,14 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     public MJTSpaceScanner(Reader missionsReader, Reader rocketsReader, SecretKey secretKey) {
         BufferedReader reader = new BufferedReader(missionsReader);
-        //todo read line by line
+        String line;
+        String[] parts;
+        try {
+            while ((line = reader.readLine()) != null) {
+                //todo rethink whole concept
+            }
+        } catch (IOException e) {
+        }
     }
 
     public Collection<Mission> getAllMissions() {
@@ -146,17 +155,21 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
                 .count();
         //todo
         if (allWithRocket == 0)
-            throw new UnsupportedOperationException("Don't know what to do when not used");
+            return 0;
 
-        return (double) missions.stream()
+        return 1 - (double) missions.stream()
             .filter(mission -> mission.detail().rocketName().equals(rocket.name()))
             .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
             .count() /
+            2 /
             allWithRocket;
     }
 
     @Override
     public void saveMostReliableRocket(OutputStream outputStream, LocalDate from, LocalDate to) throws Exception {
+        if (from.isAfter(to)) {
+            throw new TimeFrameMismatchException("From date is after To date...");
+        }
         if (outputStream == null || from == null || to == null) {
             throw new IllegalAccessException("Null given as argument...");
         }
