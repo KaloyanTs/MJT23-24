@@ -69,6 +69,9 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public String getCompanyWithMostSuccessfulMissions(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new TimeFrameMismatchException("Start date is after end date...");
+        }
         Map<String, List<Mission>> grouped =
             missions.stream()
                 .filter(mission -> isBetween(from, to, mission.date()))
@@ -112,9 +115,28 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             ));
     }
 
+    private String mostSuccessfullMissionsLocation(List<Mission> l) {
+        Optional<Map.Entry<String, List<Mission>>> res = l.stream()
+            .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
+            .collect(Collectors.groupingBy(Mission::location))
+            .entrySet().stream()
+            .max((e1, e2) -> e2.getValue().size() - e1.getValue().size());
+        if (res.isEmpty()) {
+            return ""; //todo is this correct
+        }
+        return res.get().getKey();
+    }
+
     @Override
     public Map<String, String> getLocationWithMostSuccessfulMissionsPerCompany(LocalDate from, LocalDate to) {
-        throw new UnsupportedOperationException("not implemented yet...");
+        if (from.isAfter(to)) {
+            throw new TimeFrameMismatchException("Start date is after end date...");
+        }
+        return missions.stream().collect(Collectors.groupingBy(Mission::company)).entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> mostSuccessfullMissionsLocation(entry.getValue())
+            ));
     }
 
     @Override
@@ -179,11 +201,11 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public void saveMostReliableRocket(OutputStream outputStream, LocalDate from, LocalDate to) throws CipherException {
-        if (from.isAfter(to)) {
-            throw new TimeFrameMismatchException("From date is after To date...");
-        }
         if (outputStream == null || from == null || to == null) {
             throw new IllegalArgumentException("Null given as argument...");
+        }
+        if (from.isAfter(to)) {
+            throw new TimeFrameMismatchException("From date is after To date...");
         }
 
         Optional<Rocket> mostReliable = rockets.stream().max((r1, r2) -> {
