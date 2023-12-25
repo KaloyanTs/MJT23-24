@@ -15,4 +15,14 @@ public enum MissionStatus {
     public String toString() {
         return value;
     }
+
+    public static MissionStatus of(String str) {
+        return switch (str) {
+            case "Success" -> SUCCESS;
+            case "Failure" -> FAILURE;
+            case "Partial Failure" -> PARTIAL_FAILURE;
+            case "Prelaunch Failure" -> PRELAUNCH_FAILURE;
+            default -> throw new IllegalArgumentException("MissionStatus not recognized...");
+        };
+    }
 }

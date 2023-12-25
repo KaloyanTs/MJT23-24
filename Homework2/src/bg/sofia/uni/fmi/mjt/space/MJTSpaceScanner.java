@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.space;
 
+import bg.sofia.uni.fmi.mjt.space.exception.CipherException;
 import bg.sofia.uni.fmi.mjt.space.exception.TimeFrameMismatchException;
 import bg.sofia.uni.fmi.mjt.space.mission.Mission;
 import bg.sofia.uni.fmi.mjt.space.mission.MissionCostComparator;
@@ -12,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +33,24 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     }
 
     public MJTSpaceScanner(Reader missionsReader, Reader rocketsReader, SecretKey secretKey) {
-        BufferedReader reader = new BufferedReader(missionsReader);
         String line;
         String[] parts;
-        try {
-            while ((line = reader.readLine()) != null) {
-                //todo rethink whole concept
+        missions = new ArrayList<>();
+        rockets = new ArrayList<>();
+        try (BufferedReader bufferedMissionsReader = new BufferedReader(missionsReader);
+             BufferedReader bufferedRocketsReader = new BufferedReader(rocketsReader)) {
+            line = bufferedMissionsReader.readLine(); //todo improve; currently reading header...
+            while ((line = bufferedMissionsReader.readLine()) != null) {
+                parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                missions.add(Mission.of(parts));
+            }
+            line = bufferedRocketsReader.readLine(); //todo improve; currently reading header...
+            while ((line = bufferedRocketsReader.readLine()) != null) {
+                parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                rockets.add(Rocket.of(parts));
             }
         } catch (IOException e) {
+            throw new RuntimeException("Unexpected problem while reading data...", e);
         }
     }
 
@@ -62,8 +74,8 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
                 .filter(mission -> isBetween(from, to, mission.date()))
                 .collect(Collectors.groupingBy(Mission::company));
 
-        return grouped.entrySet().stream().
-            max((e1, e2) -> countStatus(e1.getValue(), MissionStatus.SUCCESS) -
+        return grouped.entrySet().stream()
+            .max((e1, e2) -> countStatus(e1.getValue(), MissionStatus.SUCCESS) -
                 countStatus(e2.getValue(), MissionStatus.SUCCESS))
             .get().getKey();
     }
@@ -84,8 +96,8 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     }
 
     private String mostDesiredLocation(List<Mission> l) {
-        return l.stream().
-            collect(Collectors.groupingBy(Mission::location))
+        return l.stream()
+            .collect(Collectors.groupingBy(Mission::location))
             .entrySet().stream()
             .max((e1, e2) -> e2.getValue().size() - e1.getValue().size())
             .get().getKey();
@@ -166,12 +178,12 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     }
 
     @Override
-    public void saveMostReliableRocket(OutputStream outputStream, LocalDate from, LocalDate to) throws Exception {
+    public void saveMostReliableRocket(OutputStream outputStream, LocalDate from, LocalDate to) throws CipherException {
         if (from.isAfter(to)) {
             throw new TimeFrameMismatchException("From date is after To date...");
         }
         if (outputStream == null || from == null || to == null) {
-            throw new IllegalAccessException("Null given as argument...");
+            throw new IllegalArgumentException("Null given as argument...");
         }
 
         Optional<Rocket> mostReliable = rockets.stream().max((r1, r2) -> {
@@ -180,5 +192,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         });
         //todo
         if (mostReliable.isEmpty()) throw new UnsupportedOperationException("no rockets...what to save???");
+
+        throw new CipherException("Ciphering not implemented yet...");
     }
 }

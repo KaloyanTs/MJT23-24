@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.space.exception;
 
-public class TimeFrameMismatchException extends Exception {
+public class TimeFrameMismatchException extends RuntimeException {
 
     public TimeFrameMismatchException(String str) {
         super(str);
