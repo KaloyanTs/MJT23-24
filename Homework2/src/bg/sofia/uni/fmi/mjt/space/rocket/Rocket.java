@@ -9,6 +9,12 @@ public record Rocket(String id, String name, Optional<String> wiki, Optional<Dou
     private static final int WIKI_INDEX = 2;
     private static final int HEIGHT_INDEX = 3;
 
+    public Rocket {
+        if (id == null || name == null || wiki == null || height == null) {
+            throw new IllegalArgumentException("Cannot create Rocket from null...");
+        }
+    }
+
     public static Rocket of(String[] parts) {
         return new Rocket(parts[ID_INDEX],
             parts[NAME_INDEX],

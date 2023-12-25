@@ -11,6 +11,13 @@ public record Mission(String id, String company, String location, LocalDate date
                       RocketStatus rocketStatus,
                       Optional<Double> cost, MissionStatus missionStatus) {
 
+    public Mission {
+        if (id == null || company == null || location == null || date == null || detail == null ||
+            rocketStatus == null || cost == null || missionStatus == null) {
+            throw new IllegalArgumentException("Cannot create mission from null...");
+        }
+    }
+
     private static final int ID_INDEX = 0;
     private static final int COMPANY_INDEX = 1;
     private static final int LOCATION_INDEX = 2;

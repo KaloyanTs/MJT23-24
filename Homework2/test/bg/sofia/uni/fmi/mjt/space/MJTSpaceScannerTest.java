@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.space;
 
+import bg.sofia.uni.fmi.mjt.space.algorithm.Rijndael;
 import bg.sofia.uni.fmi.mjt.space.exception.CipherException;
 import bg.sofia.uni.fmi.mjt.space.exception.TimeFrameMismatchException;
 import bg.sofia.uni.fmi.mjt.space.mission.Mission;
@@ -10,10 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StringReader;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
@@ -78,7 +83,7 @@ public class MJTSpaceScannerTest {
     }
 
     @Test
-    void testGetCompanyWithMostSuccessfulMissions() throws FileNotFoundException, NoSuchAlgorithmException {
+    void testGetCompanyWithMostSuccessfulMissions() {
         assertEquals("SpaceX",
             scanner.getCompanyWithMostSuccessfulMissions(
                 LocalDate.now().minusYears(200),
@@ -151,6 +156,8 @@ public class MJTSpaceScannerTest {
         Collection<String> rockets = scanner.getWikiPagesForRocketsUsedInMostExpensiveMissions(2,
             MissionStatus.SUCCESS, RocketStatus.STATUS_ACTIVE);
         assertTrue(rockets.contains("https://en.wikipedia.org/wiki/Tsyklon-3"));
+        assertThrows(IllegalArgumentException.class, () -> scanner.getWikiPagesForRocketsUsedInMostExpensiveMissions(2,
+            MissionStatus.SUCCESS, null));
     }
 
     @Test
@@ -173,9 +180,16 @@ public class MJTSpaceScannerTest {
     }
 
     @Test
-    void testSaveMostReliableRocket() throws CipherException {
-        OutputStream outputStream = new ByteArrayOutputStream();
-        scanner.saveMostReliableRocket(outputStream, LocalDate.now().minusYears(200), LocalDate.now());
+    void testSaveMostReliableRocket()
+        throws CipherException, NoSuchAlgorithmException, IOException, ClassNotFoundException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        KeyGenerator kgen = KeyGenerator.getInstance("AES");
+        kgen.init(256);
+        SecretKey secretKey = kgen.generateKey();
+        scanner = new MJTSpaceScanner(new FileReader(Path.of("D:\\JavaProjects\\Homework2\\all-missions" +
+            "-from-1957.csv").toFile()), new FileReader(Path.of("D:\\JavaProjects\\Homework2\\all-rockets" +
+            "-from-1957.csv").toFile()), secretKey);
+
         assertThrows(TimeFrameMismatchException.class,
             () -> scanner.saveMostReliableRocket(outputStream,
                 LocalDate.now(), LocalDate.now().minusYears(1)));
@@ -185,5 +199,22 @@ public class MJTSpaceScannerTest {
             () -> scanner.saveMostReliableRocket(outputStream, null, LocalDate.now()));
         assertThrows(IllegalArgumentException.class,
             () -> scanner.saveMostReliableRocket(outputStream, LocalDate.now(), null));
+        scanner.saveMostReliableRocket(outputStream, LocalDate.now().minusYears(200), LocalDate.now());
+
+        byte[] cryptedRocket = outputStream.toByteArray();
+
+        ObjectInputStream criptedInput = new ObjectInputStream(new ByteArrayInputStream(cryptedRocket));
+
+        ByteArrayOutputStream decriptedBytes = new ByteArrayOutputStream();
+        ObjectOutputStream decriptedOutput = new ObjectOutputStream(decriptedBytes);
+        new Rijndael(secretKey).decrypt(criptedInput, decriptedOutput);
+
+        ObjectInputStream toReadString = new ObjectInputStream(
+            new ByteArrayInputStream(decriptedBytes.toByteArray()));
+
+        String name = (String) toReadString.readObject();
+
+        assertEquals("Tsyklon-4M", name);
+
     }
 }

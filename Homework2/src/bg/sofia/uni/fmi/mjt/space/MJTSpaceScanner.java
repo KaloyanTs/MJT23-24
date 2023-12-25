@@ -1,5 +1,7 @@
 package bg.sofia.uni.fmi.mjt.space;
 
+import bg.sofia.uni.fmi.mjt.space.algorithm.Rijndael;
+import bg.sofia.uni.fmi.mjt.space.algorithm.SymmetricBlockCipher;
 import bg.sofia.uni.fmi.mjt.space.exception.CipherException;
 import bg.sofia.uni.fmi.mjt.space.exception.TimeFrameMismatchException;
 import bg.sofia.uni.fmi.mjt.space.mission.Mission;
@@ -10,7 +12,11 @@ import bg.sofia.uni.fmi.mjt.space.rocket.RocketBiggestHeightComparator;
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -24,19 +30,20 @@ import javax.crypto.SecretKey;
 
 public class MJTSpaceScanner implements SpaceScannerAPI {
 
-    List<Mission> missions;
-
-    List<Rocket> rockets;
+    final List<Mission> missions;
+    final List<Rocket> rockets;
+    SymmetricBlockCipher cipher;
 
     private static boolean isBetween(LocalDate from, LocalDate to, LocalDate date) {
         return date.isEqual(from) || date.isEqual(to) || (date.isAfter(from) && date.isBefore(to));
     }
 
     public MJTSpaceScanner(Reader missionsReader, Reader rocketsReader, SecretKey secretKey) {
-        String line;
-        String[] parts;
         missions = new ArrayList<>();
         rockets = new ArrayList<>();
+        cipher = new Rijndael(secretKey);
+        String line;
+        String[] parts;
         try (BufferedReader bufferedMissionsReader = new BufferedReader(missionsReader);
              BufferedReader bufferedRocketsReader = new BufferedReader(rocketsReader)) {
             line = bufferedMissionsReader.readLine(); //todo improve; currently reading header...
@@ -184,19 +191,27 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     private double getReliabilty(Rocket rocket, LocalDate from, LocalDate to) {
         long allWithRocket =
             missions.stream().filter(
-                    mission -> isBetween(mission.date(), from, to) &&
+                    mission -> isBetween(from, to, mission.date()) &&
                         mission.detail().rocketName().equals(rocket.name()))
                 .count();
         //todo
         if (allWithRocket == 0)
             return 0;
 
-        return 1 - (double) missions.stream()
-            .filter(mission -> mission.detail().rocketName().equals(rocket.name()))
-            .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
-            .count() /
-            2 /
-            allWithRocket;
+        long unsuccessful = missions.stream()
+            .filter(mission -> isBetween(from, to, mission.date()) &&
+                mission.detail().rocketName().equals(rocket.name()) &&
+                mission.missionStatus() != MissionStatus.SUCCESS)
+            .count();
+
+        return 1 - (double) unsuccessful / 2 / allWithRocket;
+    }
+
+    private Optional<Rocket> mostReliable(LocalDate from, LocalDate to) {
+        return rockets.stream().max((r1, r2) -> {
+            double dif = getReliabilty(r2, from, to) - getReliabilty(r1, from, to);
+            return dif > 0 ? 1 : (dif < 0 ? -1 : 0);
+        });
     }
 
     @Override
@@ -207,14 +222,20 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         if (from.isAfter(to)) {
             throw new TimeFrameMismatchException("From date is after To date...");
         }
-
-        Optional<Rocket> mostReliable = rockets.stream().max((r1, r2) -> {
-            double dif = getReliabilty(r2, from, to) - getReliabilty(r1, from, to);
-            return dif > 0 ? 1 : (dif < 0 ? -1 : 0);
-        });
+        Optional<Rocket> bestOptional = mostReliable(from, to);
         //todo
-        if (mostReliable.isEmpty()) throw new UnsupportedOperationException("no rockets...what to save???");
+        if (bestOptional.isEmpty()) throw new UnsupportedOperationException("no rockets...what to save???");
 
-        throw new CipherException("Ciphering not implemented yet...");
+        Rocket bestRocket = bestOptional.get();
+        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteStream)) {
+
+            objectOutputStream.writeObject(bestRocket.name());
+            byte[] converted = byteStream.toByteArray();
+            cipher.encrypt(new ObjectInputStream(new ByteArrayInputStream(converted)), outputStream);
+
+        } catch (IOException e) {
+            throw new CipherException("Error while encrypting...", e);
+        }
     }
 }
