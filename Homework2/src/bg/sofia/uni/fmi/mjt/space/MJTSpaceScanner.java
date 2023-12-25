@@ -13,10 +13,7 @@ import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -30,8 +27,8 @@ import javax.crypto.SecretKey;
 
 public class MJTSpaceScanner implements SpaceScannerAPI {
 
-    final List<Mission> missions;
-    final List<Rocket> rockets;
+    private final List<Mission> missions;
+    private final List<Rocket> rockets;
     SymmetricBlockCipher cipher;
 
     private static boolean isBetween(LocalDate from, LocalDate to, LocalDate date) {
@@ -46,12 +43,12 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         String[] parts;
         try (BufferedReader bufferedMissionsReader = new BufferedReader(missionsReader);
              BufferedReader bufferedRocketsReader = new BufferedReader(rocketsReader)) {
-            line = bufferedMissionsReader.readLine(); //todo improve; currently reading header...
+            bufferedMissionsReader.readLine(); //todo improve; currently reading header...
             while ((line = bufferedMissionsReader.readLine()) != null) {
                 parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 missions.add(Mission.of(parts));
             }
-            line = bufferedRocketsReader.readLine(); //todo improve; currently reading header...
+            bufferedRocketsReader.readLine(); //todo improve; currently reading header...
             while ((line = bufferedRocketsReader.readLine()) != null) {
                 parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 rockets.add(Rocket.of(parts));
@@ -83,6 +80,10 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             missions.stream()
                 .filter(mission -> isBetween(from, to, mission.date()))
                 .collect(Collectors.groupingBy(Mission::company));
+
+        if (grouped.isEmpty()) {
+            throw new IllegalStateException("No data for missions...");
+        }
 
         return grouped.entrySet().stream()
             .max((e1, e2) -> countStatus(e1.getValue(), MissionStatus.SUCCESS) -
@@ -227,15 +228,6 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         if (bestOptional.isEmpty()) throw new UnsupportedOperationException("no rockets...what to save???");
 
         Rocket bestRocket = bestOptional.get();
-        try (ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-             ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteStream)) {
-
-            objectOutputStream.writeObject(bestRocket.name());
-            byte[] converted = byteStream.toByteArray();
-            cipher.encrypt(new ObjectInputStream(new ByteArrayInputStream(converted)), outputStream);
-
-        } catch (IOException e) {
-            throw new CipherException("Error while encrypting...", e);
-        }
+        cipher.encrypt(new ByteArrayInputStream(bestRocket.name().getBytes()), outputStream);
     }
 }
