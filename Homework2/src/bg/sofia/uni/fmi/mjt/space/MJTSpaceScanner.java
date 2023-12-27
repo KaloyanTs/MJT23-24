@@ -220,9 +220,9 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
                     mission -> isBetween(from, to, mission.date()) &&
                         mission.detail().rocketName().equals(rocket.name()))
                 .count();
-        //todo
-        if (allWithRocket == 0)
+        if (allWithRocket == 0) {
             return 0;
+        }
 
         long unsuccessful = missions.stream()
             .filter(mission -> isBetween(from, to, mission.date()) &&
@@ -235,7 +235,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     private Optional<Rocket> mostReliable(LocalDate from, LocalDate to) {
         return rockets.stream().max((r1, r2) -> {
-            double dif = getReliability(r2, from, to) - getReliability(r1, from, to);
+            double dif = getReliability(r1, from, to) - getReliability(r2, from, to);
             return dif > 0 ? 1 : (dif < 0 ? -1 : 0);
         });
     }
