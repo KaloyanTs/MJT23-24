@@ -423,16 +423,21 @@ public class MJTSpaceScannerTest {
     @Test
     void testMJTSpaceScannerCreation() {
         initSmall();
-        assertEquals(5, scanner.getAllMissions().size());
-        assertEquals(5, scanner.getAllRockets().size());
+        assertEquals(5, scanner.getAllMissions().size(), "5 missions must have been read and stored");
+        assertEquals(5, scanner.getAllRockets().size(), "5 rockets must have been read and stored");
     }
 
     @Test
     void testGetAllMissionsByStatus() throws NoSuchAlgorithmException {
         initBig();
         Collection<Mission> res = scanner.getAllMissions(MissionStatus.SUCCESS);
+
+        assertThrows(IllegalArgumentException.class, () -> scanner.getAllMissions(null), "Invocation with null must " +
+            "result in throwing an IllargExc");
+
         for (Mission m : res) {
-            assertEquals(MissionStatus.SUCCESS, m.missionStatus());
+            assertEquals(MissionStatus.SUCCESS, m.missionStatus(), "Method must be returning only successfull " +
+                "missions");
         }
     }
 
@@ -443,13 +448,22 @@ public class MJTSpaceScannerTest {
             scanner.getCompanyWithMostSuccessfulMissions(
                 LocalDate.now().minusYears(200),
                 LocalDate.now()
-            )
+            ),
+            "SpaceX has 2 successes, most among all companies"
         );
         assertThrows(TimeFrameMismatchException.class,
             () -> scanner.getCompanyWithMostSuccessfulMissions(
                 LocalDate.now(),
                 LocalDate.now().minusYears(200)
-            )
+            ),
+            "Giving reversed time boundaries must have resulted in throwing a TimeFrameMismatchException"
+        );
+        assertThrows(IllegalArgumentException.class,
+            () -> scanner.getCompanyWithMostSuccessfulMissions(
+                LocalDate.now(),
+                null
+            ),
+            "Invocation with null must result in throwing an IllArgExc"
         );
     }
 
@@ -460,7 +474,9 @@ public class MJTSpaceScannerTest {
 
         for (Map.Entry<String, Collection<Mission>> e : grouped.entrySet()) {
             for (Mission m : e.getValue())
-                assertEquals(e.getKey(), m.location());
+                assertEquals(e.getKey(), m.getCountry(),
+                    "The mission with country " + m.getCountry() + " must be stored " +
+                        "in collection with key " + e.getKey());
         }
     }
 
@@ -470,37 +486,54 @@ public class MJTSpaceScannerTest {
         List<Mission> cheap = scanner.getTopNLeastExpensiveMissions(1, MissionStatus.SUCCESS,
             RocketStatus.STATUS_ACTIVE);
 
-        assertEquals(1, cheap.size());
-        assertEquals("SpaceX", cheap.getFirst().company());
+        assertEquals(1, cheap.size(), "Getting the most expensive mission must result in singleton list");
+        assertEquals("SpaceX", cheap.getFirst().company(), "SpaceX have the most expensive mission");
 
         cheap = scanner.getTopNLeastExpensiveMissions(10, MissionStatus.SUCCESS,
             RocketStatus.STATUS_ACTIVE);
-        assertEquals(4, cheap.size());
+        assertEquals(3, cheap.size(), "Despite desire for 10, only 3 missions have cost, are successful and their " +
+            "rockets are active");
+
+        assertThrows(IllegalArgumentException.class,() -> scanner.getTopNLeastExpensiveMissions(-5,
+            MissionStatus.SUCCESS,RocketStatus.STATUS_ACTIVE),"Negative count must result in throwing an IllArgExc");
+        assertThrows(IllegalArgumentException.class,() -> scanner.getTopNLeastExpensiveMissions(5,
+            null,RocketStatus.STATUS_ACTIVE),"Null must result in throwing an IllArgExc");
+        assertThrows(IllegalArgumentException.class,() -> scanner.getTopNLeastExpensiveMissions(65435,
+            MissionStatus.SUCCESS,null),"Null must result in throwing an IllArgExc");
     }
 
     @Test
     void getMostDesiredLocationForMissionsPerCompany() {
         initSmall();
         Map<String, String> companyLocation = scanner.getMostDesiredLocationForMissionsPerCompany();
-        assertTrue(companyLocation.get("SpaceX").contains("USA"));
-        assertTrue(companyLocation.get("CASC").contains("China"));
-        assertTrue(companyLocation.get("ULA").contains("USA"));
-        assertTrue(companyLocation.get("Roscosmos").contains("Kazakhstan"));
-        assertNull(companyLocation.get("IAI"));
+        assertEquals("LC-39A, Kennedy Space Center, Florida, USA", companyLocation.get("SpaceX"),
+            "SpaceX mostly conduct their missions somewhere in " +
+                "the USA");
+        assertTrue(companyLocation.get("CASC").contains("China"), "CASC mostly conduct their missions somewhere in " +
+            "China");
+        assertTrue(companyLocation.get("ULA").contains("USA"), "ULA mostly conduct their missions somewhere in " +
+            "the USA");
+        assertTrue(companyLocation.get("Roscosmos").contains("Kazakhstan"), "Roscosmos mostly conduct their missions " +
+            "somewhere in " +
+            "Kazakhstan");
+        assertNull(companyLocation.get("IAI"), "No data for IAI in the dataset results in no info");
     }
 
     @Test
     void testGetAllRockets() {
         initSmall();
         Collection<Rocket> rockets = scanner.getAllRockets();
-        assertEquals(5, rockets.size());
+        assertEquals(5, rockets.size(), "5 rockets must have been stored");
     }
 
     @Test
     void getWikiPageForRocket() {
         initSmall();
         Map<String, Optional<String>> wikis = scanner.getWikiPageForRocket();
-        assertEquals(Optional.empty(), wikis.get("Unha-3"));
+        assertEquals(Optional.empty(), wikis.get("Unha-3"), "No wiki for Unha-3 in the dataset");
+        assertEquals(Optional.of("https://en.wikipedia.org/wiki/Unha"), wikis.get("Unha-2"),
+            "Wiki of Unha-2 does not " +
+                "match the one in the dataset");
     }
 
     @Test
@@ -508,7 +541,7 @@ public class MJTSpaceScannerTest {
         initSmall();
         Collection<Rocket> rockets = scanner.getTopNTallestRockets(2);
         for (Rocket r : rockets) {
-            assertTrue(r.name().contains("Tsyklon"));
+            assertTrue(r.name().contains("Tsyklon"), "The two tallest rockets in the dataset are named Tsyklon___");
         }
     }
 
@@ -517,9 +550,11 @@ public class MJTSpaceScannerTest {
         initSmall();
         Collection<String> rockets = scanner.getWikiPagesForRocketsUsedInMostExpensiveMissions(2,
             MissionStatus.SUCCESS, RocketStatus.STATUS_ACTIVE);
-        assertTrue(rockets.contains("https://en.wikipedia.org/wiki/Tsyklon-3"));
+        assertTrue(rockets.contains("https://en.wikipedia.org/wiki/Tsyklon-3"),
+            "Tsyklon-3 has been used in one of the" +
+                " two most expensive mission so its wiki page must be present in the collection");
         assertThrows(IllegalArgumentException.class, () -> scanner.getWikiPagesForRocketsUsedInMostExpensiveMissions(2,
-            MissionStatus.SUCCESS, null));
+            MissionStatus.SUCCESS, null), "Null argument must result in throwing an IllArgExc");
     }
 
     @Test
@@ -530,16 +565,28 @@ public class MJTSpaceScannerTest {
                 LocalDate.now().minusYears(200),
                 LocalDate.now()
             );
-        assertTrue(data.get("SpaceX").contains("USA"));
-        assertEquals("", data.get("CASC"));
-        assertTrue(data.get("ULA").contains("USA"));
-        assertTrue(data.get("Roscosmos").contains("Kazakhstan"));
-        assertNull(data.get("IAI"));
+        assertThrows(IllegalArgumentException.class, () -> scanner.getLocationWithMostSuccessfulMissionsPerCompany(
+            null,
+            LocalDate.now().minusYears(200)
+        ), "Null given as argument must result in throwing an IllArgExc");
+
+        assertEquals("LC-39A, Kennedy Space Center, Florida, USA", data.get("SpaceX"), "SpaceX have most " +
+            "successful missions in \"LC-39A, Kennedy Space Center, Florida, USA\" in this dataset");
+
+        assertNull(data.get("CASC"), "CASC have no successful mission in this dataset");
+
+        assertEquals("SLC-41, Cape Canaveral AFS, Florida, USA", data.get("ULA"), "ULA have most " +
+            "successful missions in \"SLC-41, Cape Canaveral AFS, Florida, USA\" in this dataset");
+        assertEquals("Site 200/39, Baikonur Cosmodrome, Kazakhstan", data.get("Roscosmos"), "Roscosmos have most " +
+            "successful missions in \"Site 200/39, Baikonur Cosmodrome, Kazakhstan\" in this dataset");
+
+        assertNull(data.get("IAI"), "IAI have no successful mission in this dataset");
 
         assertThrows(TimeFrameMismatchException.class, () -> scanner.getLocationWithMostSuccessfulMissionsPerCompany(
-            LocalDate.now(),
-            LocalDate.now().minusYears(200)
-        ));
+                LocalDate.now(),
+                LocalDate.now().minusYears(200)
+            ),
+            "Reverse time boundaries must result in TimeFrameMismatchException");
     }
 
     @Test
@@ -549,13 +596,17 @@ public class MJTSpaceScannerTest {
         initBig();
         assertThrows(TimeFrameMismatchException.class,
             () -> scanner.saveMostReliableRocket(outputStream,
-                LocalDate.now(), LocalDate.now().minusYears(1)));
+                LocalDate.now(), LocalDate.now().minusYears(1)),
+            "Reverse time boundaries must result in TimeFrameMismatchException");
         assertThrows(IllegalArgumentException.class,
-            () -> scanner.saveMostReliableRocket(null, LocalDate.now(), LocalDate.now()));
+            () -> scanner.saveMostReliableRocket(null, LocalDate.now(), LocalDate.now()),
+            "Null given as argument must result in IllArgExc");
         assertThrows(IllegalArgumentException.class,
-            () -> scanner.saveMostReliableRocket(outputStream, null, LocalDate.now()));
+            () -> scanner.saveMostReliableRocket(outputStream, null, LocalDate.now()),
+            "Null given as argument must result in IllArgExc");
         assertThrows(IllegalArgumentException.class,
-            () -> scanner.saveMostReliableRocket(outputStream, LocalDate.now(), null));
+            () -> scanner.saveMostReliableRocket(outputStream, LocalDate.now(), null),
+            "Null given as argument must result in IllArgExc");
         scanner.saveMostReliableRocket(outputStream, LocalDate.now().minusYears(200), LocalDate.now());
 
         byte[] cryptedRocket = outputStream.toByteArray();
@@ -567,7 +618,8 @@ public class MJTSpaceScannerTest {
 
         String name = decriptedBytes.toString();
 
-        assertEquals("Tsyklon-4M", name);
+        assertEquals("Tsyklon-4M", name, "After encrypting and decrypting the most reliable rocket's name must be " +
+            "Tsyklon-4M");
     }
 
     @Test
@@ -576,24 +628,54 @@ public class MJTSpaceScannerTest {
         assertThrows(IllegalArgumentException.class, () -> new Detail(null, ""));
         assertThrows(IllegalArgumentException.class, () -> new Mission("", "", "", LocalDate.now(),
             new Detail("Rocket", "payload"), null, Optional.empty(), null));
-        assertEquals(MissionStatus.PARTIAL_FAILURE, MissionStatus.of("Partial Failure"));
-        assertEquals(MissionStatus.PRELAUNCH_FAILURE, MissionStatus.of("Prelaunch Failure"));
-        assertThrows(IllegalArgumentException.class, () -> MissionStatus.of("any other prompt"));
-        assertThrows(IllegalArgumentException.class, () -> RocketStatus.of("any other prompt"));
-        assertEquals("Prelaunch Failure", MissionStatus.PRELAUNCH_FAILURE.toString());
-        assertEquals("StatusRetired", RocketStatus.STATUS_RETIRED.toString());
-        assertDoesNotThrow(() -> new CipherException("message..."));
-        assertDoesNotThrow(() -> new CipherException("message...", new Exception()));
-        assertDoesNotThrow(() -> new TimeFrameMismatchException("message...", new Exception()));
+        assertEquals(MissionStatus.PARTIAL_FAILURE, MissionStatus.of("Partial Failure"), "Enum name and String value " +
+            "must be the same");
+        assertEquals(MissionStatus.PRELAUNCH_FAILURE, MissionStatus.of("Prelaunch Failure"),
+            "Enum name and String value must be the same");
+        assertThrows(IllegalArgumentException.class, () -> MissionStatus.of("any other prompt"),
+            "Invalid MissionStatus " +
+                "representation must result in throwing IllArgExc");
+        assertThrows(IllegalArgumentException.class, () -> RocketStatus.of("any other prompt"),
+            "Invalid RocketStatus " +
+                "representation must result in throwing IllArgExc");
+        assertEquals("Prelaunch Failure", MissionStatus.PRELAUNCH_FAILURE.toString(), "Enum name and String value " +
+            "must be the same");
+        assertEquals("StatusRetired", RocketStatus.STATUS_RETIRED.toString(), "Enum name and String value " +
+            "must be the same");
+        assertDoesNotThrow(() -> new CipherException("message..."), "Creating custom exception must be without any " +
+            "problems");
+        assertDoesNotThrow(() -> new CipherException("message...", new Exception()),
+            "Creating custom exception must be without any problems");
+        assertDoesNotThrow(() -> new TimeFrameMismatchException("message...", new Exception()),
+            "Creating custom exception must be without any problems");
     }
 
     @Test
-    void testEmptyState() {
-        scanner = new MJTSpaceScanner(new StringReader(""), new StringReader(""), null);
+    void testEmptyState() throws CipherException {
+        KeyGenerator kgen;
+        try {
+            kgen = KeyGenerator.getInstance("AES");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Shouldn't happen...", e);
+        }
+        kgen.init(256);
+        secretKey = kgen.generateKey();
+        scanner = new MJTSpaceScanner(new StringReader(""), new StringReader(""), secretKey);
 
-        assertThrows(IllegalStateException.class,
-            () -> scanner.getCompanyWithMostSuccessfulMissions(
-                LocalDate.now().minusYears(200),
-                LocalDate.now()));
+        assertEquals("", scanner.getCompanyWithMostSuccessfulMissions(
+            LocalDate.now().minusYears(200),
+            LocalDate.now()));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        scanner.saveMostReliableRocket(outputStream, LocalDate.now().minusYears(200), LocalDate.now());
+
+        byte[] cryptedRocket = outputStream.toByteArray();
+        ByteArrayInputStream criptedInput = new ByteArrayInputStream(cryptedRocket);
+        ByteArrayOutputStream decriptedBytes = new ByteArrayOutputStream();
+        new Rijndael(secretKey).decrypt(criptedInput, decriptedBytes);
+
+        String name = decriptedBytes.toString();
+
+        assertEquals("", name, "No rockets in the dataset implies most reliable one's name is \"\"");
     }
 }

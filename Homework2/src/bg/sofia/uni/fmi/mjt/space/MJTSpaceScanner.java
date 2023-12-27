@@ -5,10 +5,8 @@ import bg.sofia.uni.fmi.mjt.space.algorithm.SymmetricBlockCipher;
 import bg.sofia.uni.fmi.mjt.space.exception.CipherException;
 import bg.sofia.uni.fmi.mjt.space.exception.TimeFrameMismatchException;
 import bg.sofia.uni.fmi.mjt.space.mission.Mission;
-import bg.sofia.uni.fmi.mjt.space.mission.MissionCostComparator;
 import bg.sofia.uni.fmi.mjt.space.mission.MissionStatus;
 import bg.sofia.uni.fmi.mjt.space.rocket.Rocket;
-import bg.sofia.uni.fmi.mjt.space.rocket.RocketBiggestHeightComparator;
 import bg.sofia.uni.fmi.mjt.space.rocket.RocketStatus;
 
 import java.io.BufferedReader;
@@ -18,6 +16,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,12 +42,12 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
         String[] parts;
         try (BufferedReader bufferedMissionsReader = new BufferedReader(missionsReader);
              BufferedReader bufferedRocketsReader = new BufferedReader(rocketsReader)) {
-            bufferedMissionsReader.readLine(); //todo improve; currently reading header...
+            bufferedMissionsReader.readLine();
             while ((line = bufferedMissionsReader.readLine()) != null) {
                 parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 missions.add(Mission.of(parts));
             }
-            bufferedRocketsReader.readLine(); //todo improve; currently reading header...
+            bufferedRocketsReader.readLine();
             while ((line = bufferedRocketsReader.readLine()) != null) {
                 parts = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
                 rockets.add(Rocket.of(parts));
@@ -64,36 +63,39 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public Collection<Mission> getAllMissions(MissionStatus missionStatus) {
+        if (missionStatus == null) {
+            throw new IllegalArgumentException("Null given as argument...");
+        }
         return missions.stream().filter((mission -> mission.missionStatus() == missionStatus)).toList();
-    }
-
-    private int countStatus(List<Mission> l, MissionStatus status) {
-        return Math.toIntExact(l.stream().filter(m -> m.missionStatus() == status).count());
     }
 
     @Override
     public String getCompanyWithMostSuccessfulMissions(LocalDate from, LocalDate to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Null given as argument...");
+        }
         if (from.isAfter(to)) {
-            throw new TimeFrameMismatchException("Start date is after end date...");
+            throw new TimeFrameMismatchException("Start date is after еnd date...");
         }
         Map<String, List<Mission>> grouped =
             missions.stream()
-                .filter(mission -> isBetween(from, to, mission.date()))
+                .filter(
+                    mission -> isBetween(from, to, mission.date())
+                        && mission.missionStatus() == MissionStatus.SUCCESS)
                 .collect(Collectors.groupingBy(Mission::company));
 
         if (grouped.isEmpty()) {
-            throw new IllegalStateException("No data for missions...");
+            return "";
         }
 
         return grouped.entrySet().stream()
-            .max((e1, e2) -> countStatus(e1.getValue(), MissionStatus.SUCCESS) -
-                countStatus(e2.getValue(), MissionStatus.SUCCESS))
+            .max(Comparator.comparingInt(e -> e.getValue().size()))
             .get().getKey();
     }
 
     @Override
     public Map<String, Collection<Mission>> getMissionsPerCountry() {
-        return missions.stream().collect(Collectors.groupingBy(Mission::location)).entrySet().stream()
+        return missions.stream().collect(Collectors.groupingBy(Mission::getCountry)).entrySet().stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
                 Map.Entry::getValue
@@ -102,21 +104,28 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     @Override
     public List<Mission> getTopNLeastExpensiveMissions(int n, MissionStatus missionStatus, RocketStatus rocketStatus) {
-        return missions.stream().filter(m -> m.missionStatus() == missionStatus && m.rocketStatus() == rocketStatus)
-            .sorted(new MissionCostComparator(true)).limit(n).toList();
+        if (n <= 0 || missionStatus == null || rocketStatus == null) {
+            throw new IllegalArgumentException("Bad arguments given...");
+        }
+        return missions.stream()
+            .filter(m -> m.missionStatus() == missionStatus
+                && m.rocketStatus() == rocketStatus
+                && m.cost().isPresent())
+            .sorted(Comparator.comparingDouble(m -> m.cost().get())).limit(n).toList();
     }
 
     private String mostDesiredLocation(List<Mission> l) {
         return l.stream()
             .collect(Collectors.groupingBy(Mission::location))
             .entrySet().stream()
-            .max((e1, e2) -> e2.getValue().size() - e1.getValue().size())
+            .max(Comparator.comparingInt(e -> e.getValue().size()))
             .get().getKey();
     }
 
     @Override
     public Map<String, String> getMostDesiredLocationForMissionsPerCompany() {
-        return missions.stream().collect(Collectors.groupingBy(Mission::company)).entrySet().stream()
+        return missions.stream().collect(Collectors.groupingBy(Mission::company))
+            .entrySet().stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
                 entry -> mostDesiredLocation(entry.getValue())
@@ -128,19 +137,25 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
             .collect(Collectors.groupingBy(Mission::location))
             .entrySet().stream()
-            .max((e1, e2) -> e2.getValue().size() - e1.getValue().size());
-        if (res.isEmpty()) {
-            return ""; //todo is this correct
-        }
+            .max(Comparator.comparingInt(e -> e.getValue().size()));
         return res.get().getKey();
     }
 
     @Override
     public Map<String, String> getLocationWithMostSuccessfulMissionsPerCompany(LocalDate from, LocalDate to) {
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Dates cannot be null...");
+        }
         if (from.isAfter(to)) {
             throw new TimeFrameMismatchException("Start date is after end date...");
         }
         return missions.stream().collect(Collectors.groupingBy(Mission::company)).entrySet().stream()
+            .filter(
+                stringListEntry -> !stringListEntry
+                    .getValue().stream()
+                    .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
+                    .toList().isEmpty()
+            )
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
                 entry -> mostSuccessfullMissionsLocation(entry.getValue())
@@ -155,7 +170,11 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
     @Override
     public List<Rocket> getTopNTallestRockets(int n) {
         return rockets.stream()
-            .sorted(new RocketBiggestHeightComparator())
+            .filter(rocket -> rocket.height().isPresent())
+            .sorted((r1, r2) -> {
+                double cmp = r2.height().get() - r1.height().get();
+                return (cmp < 0 ? -1 : (cmp > 0 ? 1 : 0));
+            })
             .limit(n)
             .toList();
     }
@@ -182,11 +201,17 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             throw new IllegalArgumentException("Bad arguments given...");
         }
         return missions.stream()
-            .sorted(new MissionCostComparator(false))
+            .filter(mission -> mission.cost().isPresent()
+                && mission.missionStatus() == missionStatus
+                && mission.rocketStatus() == rocketStatus)
+            .sorted((m1, m2) -> {
+                double cmp = m2.cost().get() - m1.cost().get();
+                return (cmp < 0 ? -1 : (cmp > 0 ? 1 : 0));
+            })
             .limit(n)
             .map(mission -> getPage(mission.detail().rocketName()))
             .filter(Optional::isPresent).map(Optional::get)
-            .toList();
+            .distinct().toList();
     }
 
     private double getReliabilty(Rocket rocket, LocalDate from, LocalDate to) {
@@ -224,10 +249,8 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             throw new TimeFrameMismatchException("From date is after To date...");
         }
         Optional<Rocket> bestOptional = mostReliable(from, to);
-        //todo
-        if (bestOptional.isEmpty()) throw new UnsupportedOperationException("no rockets...what to save???");
 
-        Rocket bestRocket = bestOptional.get();
-        cipher.encrypt(new ByteArrayInputStream(bestRocket.name().getBytes()), outputStream);
+        String bestRocketName = (bestOptional.isPresent() ? bestOptional.get().name() : "");
+        cipher.encrypt(new ByteArrayInputStream(bestRocketName.getBytes()), outputStream);
     }
 }

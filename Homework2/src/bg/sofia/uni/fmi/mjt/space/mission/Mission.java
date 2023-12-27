@@ -27,6 +27,11 @@ public record Mission(String id, String company, String location, LocalDate date
     private static final int COST_INDEX = 6;
     private static final int MISSION_STATUS_INDEX = 7;
 
+    public String getCountry() {
+        String[] parts = location.split(", ");
+        return parts[parts.length - 1];
+    }
+
     public static Mission of(String[] parts) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("\"EEE MMM dd, yyyy\"");
         formatter = formatter.withLocale(Locale.ENGLISH);
@@ -34,7 +39,7 @@ public record Mission(String id, String company, String location, LocalDate date
         return new Mission(
             parts[ID_INDEX],
             parts[COMPANY_INDEX],
-            parts[LOCATION_INDEX],
+            parts[LOCATION_INDEX].replaceAll("\"", ""),
             LocalDate.parse(parts[DATE_INDEX], formatter),
             Detail.of(parts[DETAIL_INDEX]),
             RocketStatus.of(parts[ROCKET_STATUS_INDEX]),
