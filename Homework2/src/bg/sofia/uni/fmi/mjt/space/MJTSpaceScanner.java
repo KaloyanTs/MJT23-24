@@ -132,7 +132,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             ));
     }
 
-    private String mostSuccessfullMissionsLocation(List<Mission> l) {
+    private String mostSuccessfulMissionsLocation(List<Mission> l) {
         Optional<Map.Entry<String, List<Mission>>> res = l.stream()
             .filter(mission -> mission.missionStatus() == MissionStatus.SUCCESS)
             .collect(Collectors.groupingBy(Mission::location))
@@ -158,7 +158,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             )
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
-                entry -> mostSuccessfullMissionsLocation(entry.getValue())
+                entry -> mostSuccessfulMissionsLocation(entry.getValue())
             ));
     }
 
@@ -214,7 +214,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
             .distinct().toList();
     }
 
-    private double getReliabilty(Rocket rocket, LocalDate from, LocalDate to) {
+    private double getReliability(Rocket rocket, LocalDate from, LocalDate to) {
         long allWithRocket =
             missions.stream().filter(
                     mission -> isBetween(from, to, mission.date()) &&
@@ -235,7 +235,7 @@ public class MJTSpaceScanner implements SpaceScannerAPI {
 
     private Optional<Rocket> mostReliable(LocalDate from, LocalDate to) {
         return rockets.stream().max((r1, r2) -> {
-            double dif = getReliabilty(r2, from, to) - getReliabilty(r1, from, to);
+            double dif = getReliability(r2, from, to) - getReliability(r1, from, to);
             return dif > 0 ? 1 : (dif < 0 ? -1 : 0);
         });
     }
