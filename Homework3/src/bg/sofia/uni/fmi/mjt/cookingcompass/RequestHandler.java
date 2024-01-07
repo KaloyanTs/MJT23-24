@@ -21,8 +21,8 @@ import java.util.Set;
 public class RequestHandler {
 
     private static final Gson gson;
-    private static Set<String> dishTypes;
-    private static Set<String> healthTypes;
+    private static final Set<String> dishTypes;
+    private static final Set<String> healthTypes;
 
     static {
         gson = new GsonBuilder().setPrettyPrinting().create();
@@ -31,25 +31,25 @@ public class RequestHandler {
         dishTypes.add("biscuits%20and%20cookies");
         dishTypes.add("bread");
         dishTypes.add("cereals");
-        dishTypes.add("condiments and sauces");
+        dishTypes.add("condiments%20and%20sauces");
         dishTypes.add("desserts");
         dishTypes.add("drinks");
         dishTypes.add("egg");
-        dishTypes.add("ice cream and custard");
-        dishTypes.add("main course");
+        dishTypes.add("ice%20cream%20and%20custard");
+        dishTypes.add("main%20course");
         dishTypes.add("pancake");
         dishTypes.add("pasta");
         dishTypes.add("pastry");
-        dishTypes.add("pies and tarts");
+        dishTypes.add("pies%20and%20tarts");
         dishTypes.add("pizza");
         dishTypes.add("preps");
         dishTypes.add("preserve");
         dishTypes.add("salad");
         dishTypes.add("sandwiches");
         dishTypes.add("seafood");
-        dishTypes.add("side dish");
+        dishTypes.add("side%20dish");
         dishTypes.add("soup");
-        dishTypes.add("special occasions");
+        dishTypes.add("special%20occasions");
         dishTypes.add("starter");
         dishTypes.add("sweets");
         healthTypes = new HashSet<>();
@@ -94,7 +94,7 @@ public class RequestHandler {
         try (HttpClient client = HttpClient.newBuilder().build()) {
             String type = "type=public&";
 
-            StringBuilder q = new StringBuilder("");
+            StringBuilder q = new StringBuilder();
 
             for (String word :
                 keywords.stream().filter(keyword -> !healthTypes.contains(keyword) && !dishTypes.contains(keyword))
@@ -103,15 +103,15 @@ public class RequestHandler {
             }
             String app_id_key = "app_id=4abc3395&app_key=b5cd0fc2f0bd828ebc6f6796cd5fe5e1&";
 
-            StringBuilder health = new StringBuilder("");
+            StringBuilder health = new StringBuilder();
 
-            for (String word : keywords.stream().filter(keyword -> healthTypes.contains(keyword)).toList()) {
+            for (String word : keywords.stream().filter(healthTypes::contains).toList()) {
                 health.append("healthLabels=").append(word).append("&");
             }
 
-            StringBuilder dishType = new StringBuilder("");
+            StringBuilder dishType = new StringBuilder();
 
-            for (String word : keywords.stream().filter(keyword -> dishTypes.contains(keyword)).toList()) {
+            for (String word : keywords.stream().filter(dishTypes::contains).toList()) {
                 dishType.append("dishType=").append(word).append("&");
             }
 

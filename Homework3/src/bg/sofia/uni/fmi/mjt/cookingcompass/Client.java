@@ -6,10 +6,8 @@ public class Client {
 
     public static void main(String[] args) {
 
-        for (int i = 0; i < 1000; ++i) {
-            System.out.println(
-                RequestHandler.byKeywords(List.of("tomato", "biscuits%20and%20cookies", "dairy-free")).size());
-        }
+        System.out.println(
+            RequestHandler.byKeywords(List.of("tomato", "biscuits%20and%20cookies", "dairy-free")).size());
 
     }
 }
