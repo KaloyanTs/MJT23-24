@@ -164,7 +164,7 @@ public class RequestHandler {
 
                 System.out.println(nextPage);
 
-                uri = new URL(nextPage);
+                uri = new URI(nextPage).toURL();
             }
             while (true);
 
