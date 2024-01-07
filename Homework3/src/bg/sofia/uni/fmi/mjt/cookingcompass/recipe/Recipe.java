@@ -1,14 +1,13 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.recipe;
 
-public class Recipe {
+import java.util.List;
 
-    private String label;
-    private final List<String> dietLabels;
-    private final List<String> healthLabels;
-    private final int totalWeight;
-    private final List<String> cuisineType;
-    private final String mealType;
-    private final String dishType;
-    private final List<String> ingredientLines;
-
+public record Recipe(String label,
+                     List<String> dietLabels,
+                     List<String> healthLabels,
+                     int totalWeight,
+                     List<String> cuisineType,
+                     List<String> mealType,
+                     List<String> dishType,
+                     List<String> ingredientLines) {
 }
