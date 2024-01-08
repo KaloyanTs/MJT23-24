@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class HTTPRecipeRequestResponder implements RecipeRequestResponder {
 
@@ -28,6 +29,7 @@ public class HTTPRecipeRequestResponder implements RecipeRequestResponder {
         HttpResponse<String> httpResponse;
         String jsonRecipes;
         String nextPage;
+        //HttpRequestCreator.createRequest(keywords);//todo make a method, not whole class
         try (HttpClient client = HttpClient.newBuilder().build()) {
             URL uri = new URI(request).toURL();
 
