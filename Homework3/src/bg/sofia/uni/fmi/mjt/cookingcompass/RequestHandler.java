@@ -1,6 +1,8 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
 import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
+import bg.sofia.uni.fmi.mjt.cookingcompass.responder.RecipeRequestResponder;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -91,6 +93,9 @@ public class RequestHandler {
     }
 
     public List<Recipe> byKeywords(List<String> keywords) {
+
+        //todo move whole request generation to http requester
+        // get list of recipes directly from the responder
         String type = "type=public&";
 
         StringBuilder q = new StringBuilder();
@@ -130,7 +135,7 @@ public class RequestHandler {
 
         List<Recipe> result = new ArrayList<>();
 
-        RecipeRequestResponse requestResponse;
+        RequestResponse requestResponse;
 
         do {
             try {
@@ -140,12 +145,12 @@ public class RequestHandler {
             }
 
             if (requestResponse.statusCode() != 200) {
-                throw new IllegalStateException(requestResponse.body());
+                throw new IllegalStateException(requestResponse.bodyJson());
             }
 
             Type typeRecipe = new TypeToken<List<Recipe>>() {
             }.getType();
-            List<Recipe> list = gson.fromJson(requestResponse.body(), typeRecipe);
+            List<Recipe> list = gson.fromJson(requestResponse.bodyJson(), typeRecipe);
             result.addAll(list);
 
             if (requestResponse.nextPage().isEmpty()) {

@@ -1,5 +1,7 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.responder.HTTPRecipeRequestResponder;
+
 import java.util.List;
 
 public class Client {

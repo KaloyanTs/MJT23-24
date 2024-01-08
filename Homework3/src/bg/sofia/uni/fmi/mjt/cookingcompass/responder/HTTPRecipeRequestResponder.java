@@ -1,5 +1,6 @@
-package bg.sofia.uni.fmi.mjt.cookingcompass;
+package bg.sofia.uni.fmi.mjt.cookingcompass.responder;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +24,7 @@ public class HTTPRecipeRequestResponder implements RecipeRequestResponder {
     }
 
     @Override
-    public RecipeRequestResponse proceedRequest(String request) {
+    public RequestResponse proceedRequest(String request) {
         HttpResponse<String> httpResponse;
         String jsonRecipes;
         String nextPage;
@@ -57,7 +58,7 @@ public class HTTPRecipeRequestResponder implements RecipeRequestResponder {
             throw new RuntimeException(e);
         }
 
-        return new RecipeRequestResponse(httpResponse.statusCode(),
+        return new RequestResponse(httpResponse.statusCode(),
             jsonRecipes,
             nextPage);
     }
