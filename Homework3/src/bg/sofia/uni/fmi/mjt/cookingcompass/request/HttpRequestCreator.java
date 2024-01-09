@@ -5,13 +5,12 @@ import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class HttpRequestCreator {
 
-    //todo gets keywords and returns httpRequest to given Web API
+    //todo returns httpRequest to given Web API from keywords
 
     WebAPIAgent agent;
 
