@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.apiagent;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.RequestHandler;
 import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.HttpRequestCreator;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.JsonElement;
 
 import java.io.IOException;
@@ -14,21 +14,15 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WebRequestHandler<T> {
+public class WebRequestHandler extends RequestHandler {
     //todo gets keywords and returns recipes from the web
-
-    private static final Gson gson;
     private final HttpRequestCreator requestCreator;
-
-    static {
-        gson = new GsonBuilder().setPrettyPrinting().create();
-    }
 
     public WebRequestHandler(WebAPIAgent agent) {
         this.requestCreator = new HttpRequestCreator(agent);
     }
 
-    public List<Recipe> getByKeywords(String... keywords) {
+    public RequestResponse getByKeywords(String... keywords) {
         List<Recipe> recipeList = new ArrayList<>();
         HttpResponse<String> httpResponse;
         String nextPage = "";
@@ -36,24 +30,27 @@ public class WebRequestHandler<T> {
         try (HttpClient client = HttpClient.newBuilder().build()) {
 
             do {
-                if (!nextPage.equals("")) {
+                if (!nextPage.isEmpty()) {
                     request = requestCreator.makeRequest(nextPage);
                 } else {
                     request = requestCreator.makeRequest(keywords);
                 }
 
                 httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonElement element = gson.fromJson(httpResponse.body(), JsonElement.class);
+                if (httpResponse.statusCode() != 200) {
+                    return new RequestResponse(httpResponse.statusCode(), httpResponse.body());
+                }
+
+                JsonElement element = GSON.fromJson(httpResponse.body(), JsonElement.class);
                 recipeList.addAll(convert(element));
                 nextPage = getNextPage(element);
 
-            } while (!nextPage.equals(""));
+            } while (!nextPage.isEmpty());
 
         } catch (IOException | InterruptedException | URISyntaxException e) {
             throw new IllegalStateException("Something unexpected occurred...", e);
         }
-
-        return recipeList;
+        return new RequestResponse(httpResponse.statusCode(), GSON.toJson(recipeList));
     }
 
     private static String getNextPage(JsonElement element) {
@@ -63,18 +60,17 @@ public class WebRequestHandler<T> {
             nextPage = "";
         } else {
             nextPage =
-                gson.fromJson(
+                GSON.fromJson(
                     links.getAsJsonObject().get("next").getAsJsonObject().get(
                         "href"), String.class);
         }
         return nextPage;
     }
 
-    private static List<Recipe> convert(JsonElement element) {
-
+    private List<Recipe> convert(JsonElement element) {
         return element.getAsJsonObject().get("hits")
             .getAsJsonArray().asList().stream()
-            .map(x -> gson.fromJson(x.getAsJsonObject().get("recipe")
+            .map(x -> GSON.fromJson(x.getAsJsonObject().get("recipe")
                 .getAsJsonObject(), Recipe.class))
             .toList();
     }

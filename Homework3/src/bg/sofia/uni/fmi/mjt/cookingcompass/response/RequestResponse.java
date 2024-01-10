@@ -1,4 +1,4 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.response;
 
-public record RequestResponse(int statusCode, String bodyJson, String nextPage) {
+public record RequestResponse(int statusCode, String bodyJson) {
 }

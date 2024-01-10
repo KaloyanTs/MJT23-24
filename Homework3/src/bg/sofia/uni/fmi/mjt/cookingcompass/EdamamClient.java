@@ -2,16 +2,19 @@ package bg.sofia.uni.fmi.mjt.cookingcompass;
 
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebRequestHandler;
-import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
-import bg.sofia.uni.fmi.mjt.cookingcompass.request.HttpRequestCreator;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class EdamamClient {
+
+    String appId;
+    String appKey;
+    RequestHandler handler;
 
     private static Set<String> getHealthLabel() {
         Set<String> healthLabels = new HashSet<>();
@@ -83,25 +86,46 @@ public class EdamamClient {
         return dishType;
     }
 
-    public static void main(String[] args) {
+    public RequestResponse makeRequest(String... keywords) {
+        Arrays.sort(keywords);
+        return handler.getByKeywords(keywords);
+    }
 
+    public EdamamClient(RequestHandler handler) {
+        this.appId = null;
+        this.appKey = null;
+        this.handler = handler;
+    }
+
+    public EdamamClient(String appId, String appKey) {
+        this.appId = appId;
+        this.appKey = appKey;
         Set<String> healthLabels = getHealthLabel();
         Set<String> dishType = getDishType();
         Map<String, Set<String>> keywordsGrouped = new HashMap<>();
         keywordsGrouped.put("healthLabels", healthLabels);
         keywordsGrouped.put("dishType", dishType);
 
-        WebAPIAgent agent = new WebAPIAgent("https://api.edamam.com/api/recipes/v2", "4abc3395",
-            "b5cd0fc2f0bd828ebc6f6796cd5fe5e1", keywordsGrouped);
+        WebAPIAgent agent = new WebAPIAgent("https://api.edamam.com/api/recipes/v2", appId,
+            appKey, keywordsGrouped);
 
-        HttpRequestCreator requestCreator = new HttpRequestCreator(agent);
-
-        WebRequestHandler<List<Recipe>> requestHandler = new WebRequestHandler<>(agent);
-
-        List<Recipe> vegieChickenSoups = requestHandler.getByKeywords("chicken", "vegetarian", "soup", "tomato");
-
-        System.out.println(vegieChickenSoups.getFirst().getRecipe());
-        System.out.println(vegieChickenSoups.size());
-
+        handler = new WebRequestHandler(agent);
     }
+
+//    public static void mainBefore(String[] args) {
+//        RequestResponse veggieChickenSoupsJson =
+//            handler.getByKeywords("chicken", "vegetarian", "soup", "tomato");
+//
+//        System.out.println(veggieChickenSoupsJson.statusCode());
+//
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//
+//        JsonElement element = gson.fromJson(veggieChickenSoupsJson.bodyJson(), JsonElement.class);
+//
+//        List<Recipe> veggieChickenSoutp = element.getAsJsonArray().asList().stream().map(x -> gson.fromJson(x,
+//            Recipe.class)).toList();
+//
+//        System.out.println(veggieChickenSoupsJson.bodyJson());
+//
+//    }
 }
