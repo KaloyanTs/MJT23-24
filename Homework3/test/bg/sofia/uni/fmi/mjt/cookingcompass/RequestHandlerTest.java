@@ -204,6 +204,32 @@ public class RequestHandlerTest {
     }
 
     @Test
+    void testGetNextPageEmpty() {
+        PageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
+
+        String json = """
+            {
+              "from": 1,
+              "to": 20,
+              "count": 25
+            }""";
+
+        assertEquals("", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
+
+        String json2 = """
+            {
+              "from": 1,
+              "to": 20,
+              "count": 25,
+              "_links": {
+                "field": "test"
+              }
+            }""";
+
+        assertEquals("", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
+    }
+
+    @Test
     void testEdamamClientCreation() {
         EdamamClient client = new EdamamClient("id", "key");
     }

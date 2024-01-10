@@ -15,7 +15,7 @@ public class EdamamPageMover implements PageMover {
     public String getNextPage(JsonElement element) {
         String nextPage;
         JsonElement links = element.getAsJsonObject().get("_links");
-        if (links.getAsJsonObject().isEmpty()) {
+        if (links == null || links.getAsJsonObject().isEmpty()) {
             nextPage = "";
         } else {
             nextPage =
