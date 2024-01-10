@@ -6,7 +6,6 @@ import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,72 +16,22 @@ public class EdamamClient {
     RequestHandler handler;
 
     private static Set<String> getHealthLabel() {
-        Set<String> healthLabels = new HashSet<>();
-        healthLabels.add("alcohol-cocktail");
-        healthLabels.add("alcohol-free");
-        healthLabels.add("celery-free");
-        healthLabels.add("cean-free");
-        healthLabels.add("dairy-free");
-        healthLabels.add("DASH");
-        healthLabels.add("egg-free");
-        healthLabels.add("fish-free");
-        healthLabels.add("fodmap-free");
-        healthLabels.add("gluten-free");
-        healthLabels.add("immuno-supportive");
-        healthLabels.add("keto-friendly");
-        healthLabels.add("kidney-friendly");
-        healthLabels.add("kosher");
-        healthLabels.add("low-potassium");
-        healthLabels.add("low-sugar");
-        healthLabels.add("lupine-free");
-        healthLabels.add("Mediterranean");
-        healthLabels.add("mollusk-free");
-        healthLabels.add("mustard-free");
-        healthLabels.add("No-oil-added");
-        healthLabels.add("paleo");
-        healthLabels.add("peanut-free");
-        healthLabels.add("pecatarian");
-        healthLabels.add("pork-free");
-        healthLabels.add("red-meat-free");
-        healthLabels.add("sesame-free");
-        healthLabels.add("shellfish-free");
-        healthLabels.add("soy-free");
-        healthLabels.add("sugar-conscious");
-        healthLabels.add("sulfite-free");
-        healthLabels.add("tree-nut-free");
-        healthLabels.add("vegan");
-        healthLabels.add("vegetarian");
-        healthLabels.add("wheat-free");
+        Set<String> healthLabels =
+            Set.of("alcohol-cocktail", "alcohol-free", "celery-free", "cean-free", "dairy-free", "DASH", "egg-free",
+                "fish-free", "fodmap-free", "gluten-free", "immuno-supportive", "keto-friendly", "kidney-friendly",
+                "kosher", "low-potassium", "low-sugar", "lupine-free", "Mediterranean", "mollusk-free", "mustard-free",
+                "No-oil-added", "paleo", "peanut-free", "pecatarian", "pork-free", "red-meat-free", "sesame-free",
+                "shellfish-free", "soy-free", "sugar-conscious", "sulfite-free", "tree-nut-free", "vegan", "vegetarian",
+                "wheat-free");
         return healthLabels;
     }
 
     private static Set<String> getDishType() {
-        Set<String> dishType = new HashSet<>();
-        dishType.add("alcohol%20cocktail");
-        dishType.add("biscuits%20and%20cookies");
-        dishType.add("bread");
-        dishType.add("cereals");
-        dishType.add("condiments%20and%20sauces");
-        dishType.add("desserts");
-        dishType.add("drinks");
-        dishType.add("egg");
-        dishType.add("ice%20cream%20and%20custard");
-        dishType.add("main%20course");
-        dishType.add("pancake");
-        dishType.add("pasta");
-        dishType.add("pastry");
-        dishType.add("pies%20and%20tarts");
-        dishType.add("pizza");
-        dishType.add("preps");
-        dishType.add("preserve");
-        dishType.add("salad");
-        dishType.add("sandwiches");
-        dishType.add("seafood");
-        dishType.add("side%20dish");
-        dishType.add("soup");
-        dishType.add("special%20occasions");
-        dishType.add("starter");
-        dishType.add("sweets");
+        Set<String> dishType =
+            Set.of("alcohol%20cocktail", "biscuits%20and%20cookies", "bread", "cereals", "condiments%20and%20sauces",
+                "desserts", "drinks", "egg", "ice%20cream%20and%20custard", "main%20course", "pancake", "pasta",
+                "pastry", "pies%20and%20tarts", "pizza", "preps", "preserve", "salad", "sandwiches", "seafood",
+                "side%20dish", "soup", "special%20occasions", "starter", "sweets");
         return dishType;
     }
 

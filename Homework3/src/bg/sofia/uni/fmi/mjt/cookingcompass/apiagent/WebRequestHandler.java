@@ -16,6 +16,8 @@ import java.util.List;
 
 public class WebRequestHandler extends RequestHandler {
     //todo gets keywords and returns recipes from the web
+
+    private static final int WEB_OK_CODE = 200;
     private final HttpRequestCreator requestCreator;
 
     public WebRequestHandler(WebAPIAgent agent) {
@@ -37,7 +39,7 @@ public class WebRequestHandler extends RequestHandler {
                 }
 
                 httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-                if (httpResponse.statusCode() != 200) {
+                if (httpResponse.statusCode() != WEB_OK_CODE) {
                     return new RequestResponse(httpResponse.statusCode(), httpResponse.body());
                 }
 

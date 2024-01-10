@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
 import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.Gson;
@@ -10,10 +11,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +64,123 @@ public class RequestHandlerTest {
 
         assertEquals(expectedJson, client.makeRequest("vegetarian", "chicken").bodyJson());
 
+    }
+
+    private static Set<String> getHealthLabel() {
+        Set<String> healthLabels = new HashSet<>();
+        healthLabels.add("alcohol-cocktail");
+        healthLabels.add("alcohol-free");
+        healthLabels.add("celery-free");
+        healthLabels.add("cean-free");
+        healthLabels.add("dairy-free");
+        healthLabels.add("DASH");
+        healthLabels.add("egg-free");
+        healthLabels.add("fish-free");
+        healthLabels.add("fodmap-free");
+        healthLabels.add("gluten-free");
+        healthLabels.add("immuno-supportive");
+        healthLabels.add("keto-friendly");
+        healthLabels.add("kidney-friendly");
+        healthLabels.add("kosher");
+        healthLabels.add("low-potassium");
+        healthLabels.add("low-sugar");
+        healthLabels.add("lupine-free");
+        healthLabels.add("Mediterranean");
+        healthLabels.add("mollusk-free");
+        healthLabels.add("mustard-free");
+        healthLabels.add("No-oil-added");
+        healthLabels.add("paleo");
+        healthLabels.add("peanut-free");
+        healthLabels.add("pecatarian");
+        healthLabels.add("pork-free");
+        healthLabels.add("red-meat-free");
+        healthLabels.add("sesame-free");
+        healthLabels.add("shellfish-free");
+        healthLabels.add("soy-free");
+        healthLabels.add("sugar-conscious");
+        healthLabels.add("sulfite-free");
+        healthLabels.add("tree-nut-free");
+        healthLabels.add("vegan");
+        healthLabels.add("vegetarian");
+        healthLabels.add("wheat-free");
+        return healthLabels;
+    }
+
+    private static Set<String> getDishType() {
+        Set<String> dishType = new HashSet<>();
+        dishType.add("alcohol%20cocktail");
+        dishType.add("biscuits%20and%20cookies");
+        dishType.add("bread");
+        dishType.add("cereals");
+        dishType.add("condiments%20and%20sauces");
+        dishType.add("desserts");
+        dishType.add("drinks");
+        dishType.add("egg");
+        dishType.add("ice%20cream%20and%20custard");
+        dishType.add("main%20course");
+        dishType.add("pancake");
+        dishType.add("pasta");
+        dishType.add("pastry");
+        dishType.add("pies%20and%20tarts");
+        dishType.add("pizza");
+        dishType.add("preps");
+        dishType.add("preserve");
+        dishType.add("salad");
+        dishType.add("sandwiches");
+        dishType.add("seafood");
+        dishType.add("side%20dish");
+        dishType.add("soup");
+        dishType.add("special%20occasions");
+        dishType.add("starter");
+        dishType.add("sweets");
+        return dishType;
+    }
+
+    @Test
+    void testWebAPIAgent() {
+        String appId = "id";
+        String appKey = "key";
+        String url = "url";
+        Set<String> groupBig = Set.of("A", "B", "C");
+        Set<String> groupSmall = Set.of("a", "b", "c");
+        Map<String, Set<String>> keywordsGrouped = new HashMap<>();
+        keywordsGrouped.put("big", groupBig);
+        keywordsGrouped.put("small", groupSmall);
+
+        WebAPIAgent agent = new WebAPIAgent(url, appId, appKey, keywordsGrouped);
+
+        assertIterableEquals(groupBig, agent.getKeywordsOfGroup("big"));
+        assertIterableEquals(groupSmall, agent.getKeywordsOfGroup("small"));
+
+        String[] keywords = {"a", "B", "d", "D", "c"};
+
+        Map<String, List<String>> map = agent.groupByKeywordGroup(keywords);
+
+        for (Map.Entry<String, List<String>> group : map.entrySet()) {
+            switch (group.getKey()) {
+                case "big" -> {
+                    for (String v : group.getValue()) {
+                        assertTrue(groupBig.contains(v));
+                    }
+                }
+                case "small" -> {
+                    for (String v : group.getValue()) {
+                        assertTrue(groupSmall.contains(v));
+                    }
+                }
+                case "q" -> assertIterableEquals(
+                    Arrays.stream(keywords)
+                        .filter(x -> !(groupBig.contains(x) || groupSmall.contains(x))).toList(),
+                    group.getValue()
+                );
+                default -> fail();
+            }
+        }
+    }
+
+    @Test
+    void testEdamamClient() {
+        EdamamClient client = new EdamamClient("id", "key");
     }
 
 }
