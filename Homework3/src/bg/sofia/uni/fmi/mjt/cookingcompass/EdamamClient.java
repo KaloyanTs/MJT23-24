@@ -1,8 +1,11 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.EdamamPageMover;
+import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.EdamamRequestHandler;
+import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
-import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebRequestHandler;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
+import com.google.gson.GsonBuilder;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,7 +61,9 @@ public class EdamamClient {
         WebAPIAgent agent = new WebAPIAgent("https://api.edamam.com/api/recipes/v2", appId,
             appKey, keywordsGrouped);
 
-        handler = new WebRequestHandler(agent);
+        PageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
+
+        handler = new EdamamRequestHandler(agent, pageMover);
     }
 
 //    public static void mainBefore(String[] args) {

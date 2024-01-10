@@ -1,16 +1,21 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.EdamamPageMover;
+import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
 import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
+import bg.sofia.uni.fmi.mjt.cookingcompass.request.EdamamRequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.net.http.HttpRequest;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -179,8 +184,59 @@ public class RequestHandlerTest {
     }
 
     @Test
-    void testEdamamClient() {
+    void testEdamamPageMover() {
+        PageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
+
+        String json = """
+            {
+              "from": 1,
+              "to": 20,
+              "count": 25,
+              "_links": {
+                "next": {
+                  "href": "next page",
+                  "title": "Next page"
+                }
+              }
+            }""";
+
+        assertEquals("next page", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
+    }
+
+    @Test
+    void testEdamamClientCreation() {
         EdamamClient client = new EdamamClient("id", "key");
+    }
+
+    @Test
+    void testGetRecipeFromRecipe() {
+        Recipe r1 = new Recipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
+            List.of("desert"), List.of("breakfast"), List.of("soup"), List.of("*Throw into the fridge", "*don't move"));
+
+        assertEquals("*Throw into the fridge\n*don't move", r1.getRecipe());
+    }
+
+    @Test
+    void testEdamamRequestCreation() {
+        String appId = "id";
+        String appKey = "key";
+        String url = "https://test/test/";
+        Set<String> groupBig = Set.of("A", "B", "C");
+        Set<String> groupSmall = Set.of("a", "b", "c");
+        Map<String, Set<String>> keywordsGrouped = new HashMap<>();
+        keywordsGrouped.put("healthLabels", groupBig);
+        keywordsGrouped.put("dishType", groupSmall);
+
+        WebAPIAgent agent = new WebAPIAgent(url, appId, appKey, keywordsGrouped);
+        EdamamRequestCreator requestCreator = new EdamamRequestCreator(agent);
+
+        String[] keywords = {"a", "B", "d", "D", "c"};
+
+        HttpRequest request = requestCreator.makeRequest(keywords);
+
+        assertEquals(
+            "https://test/test/?type=public&q=d%2C%20D&app_id=id&app_key=key&health=B&dishType=a&dishType=c&field=label&field=totalWeight&field=dietLabels&field=healthLabels&field=cuisineType&field=mealType&field=dishType&field=ingredientLines",
+            request.uri().toString());
     }
 
 }
