@@ -3,9 +3,14 @@ package bg.sofia.uni.fmi.mjt.cookingcompass;
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.EdamamPageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
-import bg.sofia.uni.fmi.mjt.cookingcompass.recipe.Recipe;
+import bg.sofia.uni.fmi.mjt.cookingcompass.client.APIClient;
+import bg.sofia.uni.fmi.mjt.cookingcompass.client.EdamamClient;
+import bg.sofia.uni.fmi.mjt.cookingcompass.handler.RequestHandler;
+import bg.sofia.uni.fmi.mjt.cookingcompass.unit.EdamamRecipe;
+import bg.sofia.uni.fmi.mjt.cookingcompass.unit.Recipe;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.EdamamRequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
+import bg.sofia.uni.fmi.mjt.cookingcompass.unit.Unit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -34,7 +39,7 @@ import static org.mockito.Mockito.mock;
 public class RequestHandlerTest {
 
     private final RequestHandler handler = mock();
-    private final EdamamClient client = new EdamamClient(handler);
+    private final APIClient client = new APIClient(handler);
 
     private static Gson gson;
 
@@ -45,7 +50,7 @@ public class RequestHandlerTest {
 
     @Test
     void testMockingRequestHandler() {
-        Recipe r1 = new Recipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
+        EdamamRecipe r1 = new EdamamRecipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
             List.of("desert"), List.of("breakfast"), List.of("soup"), List.of("*Throw into the fridge\n*don't move"));
 
         String expectedJson = gson.toJson(List.of(r1));
@@ -236,7 +241,7 @@ public class RequestHandlerTest {
 
     @Test
     void testGetRecipeFromRecipe() {
-        Recipe r1 = new Recipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
+        EdamamRecipe r1 = new EdamamRecipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
             List.of("desert"), List.of("breakfast"), List.of("soup"), List.of("*Throw into the fridge", "*don't move"));
 
         assertEquals("*Throw into the fridge\n*don't move", r1.getRecipe());

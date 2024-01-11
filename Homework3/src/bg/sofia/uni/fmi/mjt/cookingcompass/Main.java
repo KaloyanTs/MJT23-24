@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.client.EdamamClient;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 
 public class Main {
