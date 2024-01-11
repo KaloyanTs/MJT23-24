@@ -7,10 +7,8 @@ import bg.sofia.uni.fmi.mjt.cookingcompass.client.APIClient;
 import bg.sofia.uni.fmi.mjt.cookingcompass.client.EdamamClient;
 import bg.sofia.uni.fmi.mjt.cookingcompass.handler.RequestHandler;
 import bg.sofia.uni.fmi.mjt.cookingcompass.unit.EdamamRecipe;
-import bg.sofia.uni.fmi.mjt.cookingcompass.unit.Recipe;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.EdamamRequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
-import bg.sofia.uni.fmi.mjt.cookingcompass.unit.Unit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -40,7 +38,6 @@ public class RequestHandlerTest {
 
     private final RequestHandler handler = mock();
     private final APIClient client = new APIClient(handler);
-
     private static Gson gson;
 
     @BeforeAll
