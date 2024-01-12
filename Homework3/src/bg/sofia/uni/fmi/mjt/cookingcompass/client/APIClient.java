@@ -13,11 +13,7 @@ public abstract class APIClient {
 
     PageMover mover;
     RequestHandler handler;
-
-
-
     WebAPIAgent agent;
-
     boolean hasCredentials;
 
     public RequestResponse makeRequest(String... keywords) {
@@ -26,12 +22,6 @@ public abstract class APIClient {
         }
         Arrays.sort(keywords);
         return handler.getByKeywords(keywords);
-
-
-
-
-
-
     }
 
     public APIClient(RequestHandler handler) {

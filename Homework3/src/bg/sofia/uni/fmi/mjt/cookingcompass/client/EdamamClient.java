@@ -51,6 +51,7 @@ public class EdamamClient extends APIClient {
     public EdamamClient(String appId, String appKey) {
         this.appId = appId;
         this.appKey = appKey;
+        this.hasCredentials = true;
         Map<String, Set<String>> keywordsGrouped = new HashMap<>();
         keywordsGrouped.put("healthLabels", healthLabels);
         keywordsGrouped.put("dishType", dishType);
