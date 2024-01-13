@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.cookingcompass.apiagent;
+package bg.sofia.uni.fmi.mjt.cookingcompass.api;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,16 +6,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class WebAPIAgent {
-
-    //todo contains url, authorization data and keywords
+public class WebAPIRepresentative {
 
     private final String url;
     private final String appId;
     private final String appKey;
     private final Map<String, Set<String>> keywordsGrouped;
 
-    public WebAPIAgent(String url, String appId, String appKey, Map<String, Set<String>> keywordsGrouped) {
+    public WebAPIRepresentative(String url, String appId, String appKey, Map<String, Set<String>> keywordsGrouped) {
         this.url = url;
         this.appId = appId;
         this.appKey = appKey;

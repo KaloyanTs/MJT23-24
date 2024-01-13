@@ -1,25 +1,18 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.request;
 
-import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
+import bg.sofia.uni.fmi.mjt.cookingcompass.api.WebAPIRepresentative;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Map;
 
-public class EdamamRequestCreator {
+public class EdamamRequestCreator extends RequestCreator {
 
-    //todo returns httpRequest to given Web API from keywords
-
-    WebAPIAgent agent;
-
-    public EdamamRequestCreator(WebAPIAgent agent) {
-        this.agent = agent;
+    public EdamamRequestCreator(WebAPIRepresentative edamam) {
+        super(edamam);
     }
 
-    public HttpRequest makeRequest(String... keywords) {
-        Map<String, List<String>> grouped = agent.groupByKeywordGroup(keywords);
+    public Request makeRequest(String... keywords) {
+        Map<String, List<String>> grouped = apiRepresentative.groupByKeywordGroup(keywords);
 
         StringBuilder q = new StringBuilder();
 
@@ -42,30 +35,23 @@ public class EdamamRequestCreator {
             dishType.append("dishType=").append(word).append("&");
         }
 
-        try {
-            return HttpRequest.newBuilder().uri(
-                new URI(agent.getUrl() + "?" + "type=public&"
-                    + q
-                    + "app_id=" + agent.getAppId() + "&"
-                    + "app_key=" + agent.getAppKey() + "&"
-                    + health
-                    + dishType
-                    + "field=label" + "&"
-                    + "field=totalWeight" + "&"
-                    + "field=dietLabels" + "&"
-                    + "field=healthLabels" + "&"
-                    + "field=cuisineType" + "&"
-                    + "field=mealType" + "&"
-                    + "field=dishType" + "&"
-                    + "field=ingredientLines"
-                )
-            ).build();
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException("Something unexpected occurred...", e);
-        }
+        return new Request(apiRepresentative.getUrl() + "?" + "type=public&"
+            + q
+            + "app_id=" + apiRepresentative.getAppId() + "&"
+            + "app_key=" + apiRepresentative.getAppKey() + "&"
+            + health
+            + dishType
+            + "field=label" + "&"
+            + "field=totalWeight" + "&"
+            + "field=dietLabels" + "&"
+            + "field=healthLabels" + "&"
+            + "field=cuisineType" + "&"
+            + "field=mealType" + "&"
+            + "field=dishType" + "&"
+            + "field=ingredientLines");
     }
 
-    public HttpRequest makeRequest(String url) throws URISyntaxException {
-        return HttpRequest.newBuilder().uri(new URI(url)).build();
+    public Request makeRequest(String url) {
+        return new Request(url);
     }
 }

@@ -1,4 +1,8 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.response;
 
-public record RequestResponse(int statusCode, String bodyJson) {
+import com.google.gson.JsonElement;
+
+import java.util.List;
+
+public record RequestResponse(int statusCode, List<JsonElement> resultJson) {
 }

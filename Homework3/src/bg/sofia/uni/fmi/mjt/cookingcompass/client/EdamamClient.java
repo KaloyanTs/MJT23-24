@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.client;
 
-import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.EdamamPageMover;
-import bg.sofia.uni.fmi.mjt.cookingcompass.handler.EdamamRequestHandler;
-import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.PageMover;
-import bg.sofia.uni.fmi.mjt.cookingcompass.apiagent.WebAPIAgent;
+import bg.sofia.uni.fmi.mjt.cookingcompass.api.WebAPIRepresentative;
+import bg.sofia.uni.fmi.mjt.cookingcompass.page.EdamamPageMover;
+import bg.sofia.uni.fmi.mjt.cookingcompass.exception.BadCredentialsException;
+import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
 import com.google.gson.GsonBuilder;
 
 import java.util.HashMap;
@@ -34,33 +34,26 @@ public class EdamamClient extends APIClient {
     }
 
     @Override
-    public APIClient user(String... credentials) {
+    public void setCredentials(String... credentials) throws BadCredentialsException {
         if (credentials.length != 2) {
-            throw new IllegalArgumentException("Edamam Authorization needs Id and Key");
+            throw new BadCredentialsException("Edamam Authorization needs Id and Key");
         }
         appId = credentials[0];
         appKey = credentials[1];
-        hasCredentials = true;
-        return this;
     }
 
-    public EdamamClient(EdamamRequestHandler handler) {
-        super(handler);
-    }
-
-    public EdamamClient(String appId, String appKey) {
-        this.appId = appId;
-        this.appKey = appKey;
-        this.hasCredentials = true;
+    public EdamamClient(String appId, String appKey) throws BadCredentialsException {
+        setCredentials(new String[] {appId, appKey});
         Map<String, Set<String>> keywordsGrouped = new HashMap<>();
         keywordsGrouped.put("healthLabels", healthLabels);
         keywordsGrouped.put("dishType", dishType);
 
-        WebAPIAgent agent = new WebAPIAgent("https://api.edamam.com/api/recipes/v2", appId,
-            appKey, keywordsGrouped);
+        WebAPIRepresentative agent = new WebAPIRepresentative(
+            "https://api.edamam.com/api/recipes/v2",
+            appId,
+            appKey,
+            keywordsGrouped);
 
         PageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
-
-        handler = new EdamamRequestHandler(agent, pageMover);
     }
 }

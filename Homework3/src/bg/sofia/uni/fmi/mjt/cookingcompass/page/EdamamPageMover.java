@@ -1,5 +1,6 @@
-package bg.sofia.uni.fmi.mjt.cookingcompass.apiagent;
+package bg.sofia.uni.fmi.mjt.cookingcompass.page;
 
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -12,9 +13,11 @@ public class EdamamPageMover implements PageMover {
     }
 
     @Override
-    public String getNextPage(JsonElement element) {
+    public String getNextPage(RawRequestResponse element) {
         String nextPage;
-        JsonElement links = element.getAsJsonObject().get("_links");
+        JsonElement links = gson.fromJson(element.bodyJson(), JsonElement.class)
+            .getAsJsonObject()
+            .get("_links");
         if (links == null || links.getAsJsonObject().isEmpty()) {
             nextPage = "";
         } else {
