@@ -53,6 +53,8 @@ public class PagedDataRetrieverTest {
         Mockito.when(dataRetriever.retrieveData(new Request("page 4")))
             .thenReturn(request4Response);
 
+        //todo now data retriever depends on a request creator!!!!!!!!!!!
+        //todo why allData is null DEBUG!!
         RequestResponse allData = dataRetriever.retrieveAllData("get");
     }
 }

@@ -26,13 +26,17 @@ public class EdamamRequestCreator extends RequestCreator {
         q.append("&");
 
         StringBuilder health = new StringBuilder();
-        for (String word : grouped.get("healthLabels")) {
-            health.append("health=").append(word).append("&");
+        if (grouped.get("healthLabels") != null) {
+            for (String word : grouped.get("healthLabels")) {
+                health.append("health=").append(word).append("&");
+            }
         }
 
         StringBuilder dishType = new StringBuilder();
-        for (String word : grouped.get("dishType")) {
-            dishType.append("dishType=").append(word).append("&");
+        if (grouped.get("dishType") != null) {
+            for (String word : grouped.get("dishType")) {
+                dishType.append("dishType=").append(word).append("&");
+            }
         }
 
         return new Request(apiRepresentative.getUrl() + "?" + "type=public&"

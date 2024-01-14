@@ -1,8 +1,6 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass;
 
 import bg.sofia.uni.fmi.mjt.cookingcompass.api.APIAgent;
-import bg.sofia.uni.fmi.mjt.cookingcompass.client.EdamamClient;
-import bg.sofia.uni.fmi.mjt.cookingcompass.exception.BadCredentialsException;
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.EdamamPageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
@@ -139,39 +137,6 @@ public class APIAgentTest {
             }""";
 
         //assertEquals("next page", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
-    }
-
-    @Disabled
-    @Test
-    void testGetNextPageEmpty() {
-        PageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
-
-        String json = """
-            {
-              "from": 1,
-              "to": 20,
-              "count": 25
-            }""";
-
-        //assertEquals("", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
-
-        String json2 = """
-            {
-              "from": 1,
-              "to": 20,
-              "count": 25,
-              "_links": {
-                "field": "test"
-              }
-            }""";
-
-        //assertEquals("", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
-    }
-
-    @Disabled
-    @Test
-    void testEdamamClientCreation() throws BadCredentialsException {
-        EdamamClient client = new EdamamClient("id", "key");
     }
 
     @Disabled

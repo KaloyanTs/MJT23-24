@@ -14,7 +14,15 @@ public class ConverterFromJson {
         GSON = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    public static <T> List<T> convertResponse(RequestResponse response, Class<T> tClass) {
+    private static class ConverterFromJsonHelper {
+        private static final ConverterFromJson INSTANCE = new ConverterFromJson();
+    }
+
+    public static ConverterFromJson getInstance() {
+        return ConverterFromJsonHelper.INSTANCE;
+    }
+
+    public <T> List<T> convertResponse(RequestResponse response, Class<T> tClass) {
         if (response.statusCode() != 0) {
             throw new IllegalArgumentException("Error in response prevents conversion to " + tClass.getTypeName());
         }

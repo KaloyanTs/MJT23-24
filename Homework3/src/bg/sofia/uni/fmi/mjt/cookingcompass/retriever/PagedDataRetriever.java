@@ -14,7 +14,6 @@ import java.util.Optional;
 public abstract class PagedDataRetriever extends DataRetriever {
 
     private PageMover pageMover;
-    private RequestCreator requestCreator;
 
     public PagedDataRetriever(PageMover pageMover, RequestCreator requestCreator) {
         super(requestCreator);

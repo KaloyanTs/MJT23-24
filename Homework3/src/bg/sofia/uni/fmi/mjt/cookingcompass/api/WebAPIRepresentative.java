@@ -36,7 +36,7 @@ public class WebAPIRepresentative {
     public Set<String> getKeywordsOfGroup(String group) {
         Set<String> result = keywordsGrouped.get(group);
         if (result == null) {
-            throw new IllegalStateException("Given group not maintained by the Web API...");
+            throw new IllegalArgumentException("Given group not maintained by the Web API...");
         }
         return result;
     }

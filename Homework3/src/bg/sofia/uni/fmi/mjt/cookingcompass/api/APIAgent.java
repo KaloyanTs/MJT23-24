@@ -16,6 +16,6 @@ public class APIAgent {
 
     public <T> List<T> byKeywords(Class<T> tClass, String... keywords) {
         RequestResponse response = dataRetriever.retrieveAllData(keywords);
-        return ConverterFromJson.convertResponse(response, tClass);
+        return ConverterFromJson.getInstance().convertResponse(response, tClass);
     }
 }
