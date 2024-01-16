@@ -1,6 +1,6 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.page;
 
-import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawResponse;
 import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ public class EdamamPageMoverTest {
     void testGetNextPageHas() {
         EdamamPageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
 
-        RawRequestResponse response = new RawRequestResponse(0, """
+        RawResponse response = new RawResponse(0, """
             {
                 "_links":{
                     "next":{
@@ -29,7 +29,7 @@ public class EdamamPageMoverTest {
     void testGetNextPageNoNext() {
         EdamamPageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
 
-        RawRequestResponse response = new RawRequestResponse(0, """
+        RawResponse response = new RawResponse(0, """
             {
                 "links":"link",
                 "field": {

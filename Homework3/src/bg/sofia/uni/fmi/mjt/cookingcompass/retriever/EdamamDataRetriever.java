@@ -3,7 +3,7 @@ package bg.sofia.uni.fmi.mjt.cookingcompass.retriever;
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.EdamamPageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.EdamamRequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
-import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,7 +18,7 @@ import java.net.http.HttpResponse;
 
 public class EdamamDataRetriever extends PagedDataRetriever {
 
-    private HttpClient client;
+    private final HttpClient client;
     private static final Gson GSON;
 
     static {
@@ -31,7 +31,7 @@ public class EdamamDataRetriever extends PagedDataRetriever {
     }
 
     @Override
-    protected RawRequestResponse retrieveData(Request request) {
+    protected RawResponse retrieveData(Request request) {
         HttpRequest httpRequest;
         HttpResponse<String> httpResponse;
         try {
@@ -43,11 +43,11 @@ public class EdamamDataRetriever extends PagedDataRetriever {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Given request could not be converted to URI...", e);
         }
-        return new RawRequestResponse(httpResponse.statusCode(), httpResponse.body());
+        return new RawResponse(httpResponse.statusCode(), httpResponse.body());
     }
 
     @Override
-    protected RequestResponse convertResponse(RawRequestResponse element) {
+    protected RequestResponse convertResponse(RawResponse element) {
         return new RequestResponse(element.statusCode(),
             GSON.fromJson(element.bodyJson(), JsonElement.class)
                 .getAsJsonObject().get("hits")

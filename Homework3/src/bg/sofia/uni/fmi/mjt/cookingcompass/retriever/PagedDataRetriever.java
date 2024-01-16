@@ -3,7 +3,7 @@ package bg.sofia.uni.fmi.mjt.cookingcompass.retriever;
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.RequestCreator;
-import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.JsonElement;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public abstract class PagedDataRetriever extends DataRetriever {
 
-    private PageMover pageMover;
+    private final PageMover pageMover;
 
     public PagedDataRetriever(PageMover pageMover, RequestCreator requestCreator) {
         super(requestCreator);
@@ -27,7 +27,7 @@ public abstract class PagedDataRetriever extends DataRetriever {
         Request request = requestCreator.makeRequest(keywords);
         Optional<Integer> statusCode = Optional.empty();
         do {
-            RawRequestResponse response = retrieveData(request);
+            RawResponse response = retrieveData(request);
             nextPage = pageMover.getNextPage(response);
             if (statusCode.isEmpty()) {
                 statusCode = Optional.of(response.statusCode());

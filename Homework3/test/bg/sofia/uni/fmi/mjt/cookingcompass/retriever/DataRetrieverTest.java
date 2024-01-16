@@ -3,7 +3,7 @@ package bg.sofia.uni.fmi.mjt.cookingcompass.retriever;
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.RequestCreator;
-import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
+import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,14 +23,14 @@ public class DataRetrieverTest {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        RawRequestResponse requestResponse = new RawRequestResponse(0, """
+        RawResponse requestResponse = new RawResponse(0, """
             {
                 "data": 1,
                 "next page": "page 2"
             }""");
         RequestResponse readyRequestResponse = new RequestResponse(0,
             List.of(gson.fromJson("{\"data\":1}", JsonElement.class)));
-        RawRequestResponse request2Response = new RawRequestResponse(0, """
+        RawResponse request2Response = new RawResponse(0, """
             {
                 "data": 2,
                 "next page": "no next page available"
