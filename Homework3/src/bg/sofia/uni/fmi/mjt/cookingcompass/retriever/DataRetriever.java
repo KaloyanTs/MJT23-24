@@ -7,11 +7,11 @@ import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 
 public abstract class DataRetriever {
 
-    protected final int OK_STATUS;
+    protected final int okStatus;
     protected RequestCreator requestCreator;
 
     DataRetriever(int okStatus, RequestCreator requestCreator) {
-        this.OK_STATUS = okStatus;
+        this.okStatus = okStatus;
         this.requestCreator = requestCreator;
     }
 

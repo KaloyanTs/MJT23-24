@@ -15,18 +15,18 @@ public class EdamamClient extends APIClient {
 
     private String appId;
     private String appKey;
-    private static final Map<String, Set<String>> keywordsGrouped;
+    private static final Map<String, Set<String>> KEYWORDS_GROUPED;
 
     static {
-        keywordsGrouped = new HashMap<>();
-        keywordsGrouped.put("healthLabels",
+        KEYWORDS_GROUPED = new HashMap<>();
+        KEYWORDS_GROUPED.put("healthLabels",
             Set.of("alcohol-cocktail", "alcohol-free", "celery-free", "cean-free", "dairy-free", "DASH", "egg-free",
                 "fish-free", "fodmap-free", "gluten-free", "immuno-supportive", "keto-friendly", "kidney-friendly",
                 "kosher", "low-potassium", "low-sugar", "lupine-free", "Mediterranean", "mollusk-free", "mustard-free",
                 "No-oil-added", "paleo", "peanut-free", "pecatarian", "pork-free", "red-meat-free", "sesame-free",
                 "shellfish-free", "soy-free", "sugar-conscious", "sulfite-free", "tree-nut-free", "vegan", "vegetarian",
                 "wheat-free"));
-        keywordsGrouped.put("dishType",
+        KEYWORDS_GROUPED.put("dishType",
             Set.of("alcohol%20cocktail", "biscuits%20and%20cookies", "bread", "cereals", "condiments%20and%20sauces",
                 "desserts", "drinks", "egg", "ice%20cream%20and%20custard", "main%20course", "pancake", "pasta",
                 "pastry", "pies%20and%20tarts", "pizza", "preps", "preserve", "salad", "sandwiches", "seafood",
@@ -50,7 +50,7 @@ public class EdamamClient extends APIClient {
                     "https://api.edamam.com/api/recipes/v2",
                     appId,
                     appKey,
-                    keywordsGrouped)))
+                    KEYWORDS_GROUPED)))
         );
         try {
             user(appId, appKey);

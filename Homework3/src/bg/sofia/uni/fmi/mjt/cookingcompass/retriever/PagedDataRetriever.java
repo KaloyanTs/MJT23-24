@@ -38,6 +38,6 @@ public abstract class PagedDataRetriever extends DataRetriever {
                 request = requestCreator.makeRequest(nextPage);
             }
         } while (!nextPage.isEmpty());
-        return new RequestResponse(statusCode.get() == OK_STATUS, statusCode.get(), list);
+        return new RequestResponse(statusCode.get() == okStatus, statusCode.get(), list);
     }
 }
