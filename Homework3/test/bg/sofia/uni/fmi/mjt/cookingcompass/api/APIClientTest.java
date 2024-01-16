@@ -1,9 +1,9 @@
 package bg.sofia.uni.fmi.mjt.cookingcompass.api;
 
-import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
-import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
+import bg.sofia.uni.fmi.mjt.cookingcompass.client.APIClient;
+import bg.sofia.uni.fmi.mjt.cookingcompass.exception.BadCredentialsException;
+import bg.sofia.uni.fmi.mjt.cookingcompass.exception.NotAuthorizedException;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.RequestCreator;
-import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.retriever.DataRetriever;
 import com.google.gson.Gson;
@@ -14,54 +14,60 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 public class APIClientTest {
 
     @Test
-    void testRetrieveAllData() {
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        RawRequestResponse requestResponse = new RawRequestResponse(0, """
-            {
-                "data": 1,
-                "next page": "page 2"
-            }""");
-        RawRequestResponse request2Response = new RawRequestResponse(0, """
-            {
-                "data": 2,
-                "next page": "no next page available"
-            }""");
-
-        Request getRequest = new Request("get");
-        Request page2Request = new Request("page 2");
-
-        String[] keywords = {"get"};
-
-        PageMover mover = mock();
-        Mockito.when(mover.getNextPage(requestResponse))
-            .thenReturn("page 2");
-        Mockito.when(mover.getNextPage(request2Response))
-            .thenReturn("");
-
+    void testMakeRequestWithoutCredentials() {
         RequestCreator requestCreator = mock();
-        Mockito.when(requestCreator.makeRequest(keywords)).thenReturn(getRequest);
-        Mockito.when(requestCreator.makeRequest("page 2")).thenReturn(page2Request);
 
         DataRetriever dataRetriever = Mockito.mock(
             DataRetriever.class, Mockito.withSettings()
                 .useConstructor(requestCreator)
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
-        Mockito.when(dataRetriever.retrieveAllData("a", "b", "c"))
-            .thenReturn(new RequestResponse(0, List.of()));
-
-        RequestResponse allData = dataRetriever.retrieveAllData("c", "b", "a");
-        assertIterableEquals(
-            List.of(gson.fromJson("{\"data\":1}", JsonElement.class)),
-            allData.resultJson()
+        APIClient apiClient = Mockito.mock(APIClient.class,
+            Mockito.withSettings()
+                .useConstructor(dataRetriever)
+                .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
+
+        assertFalse(apiClient.doesHaveCredentials());
+        assertThrows(NotAuthorizedException.class, apiClient::makeRequest);
+    }
+
+    @Test
+    void testRetrieveAllData() throws BadCredentialsException {
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        RequestCreator requestCreator = mock();
+
+        DataRetriever dataRetriever = Mockito.mock(
+            DataRetriever.class, Mockito.withSettings()
+                .useConstructor(requestCreator)
+                .defaultAnswer(Mockito.CALLS_REAL_METHODS)
+        );
+        String[] keywordsArray = {"a", "b", "c"};
+        List<JsonElement> list = List.of(
+            gson.fromJson("{\"data\":1}", JsonElement.class),
+            gson.fromJson("{\"data\":2}", JsonElement.class)
+        );
+        Mockito.when(dataRetriever.retrieveAllData(keywordsArray))
+            .thenReturn(new RequestResponse(0, list));
+
+        APIClient apiClient = Mockito.mock(
+            APIClient.class, Mockito.withSettings()
+                .useConstructor(dataRetriever)
+                .defaultAnswer(Mockito.CALLS_REAL_METHODS)
+        );
+        String[] credentials = {};
+
+        apiClient.user(credentials);
+        assertIterableEquals(list, apiClient.makeRequest(keywordsArray).resultJson());
     }
 }

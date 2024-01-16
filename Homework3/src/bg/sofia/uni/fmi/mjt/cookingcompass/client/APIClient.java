@@ -20,7 +20,7 @@ public abstract class APIClient {
         return dataRetriever.retrieveAllData(keywords);
     }
 
-    protected APIClient(DataRetriever dataRetriever) {
+    public APIClient(DataRetriever dataRetriever) {
         this.dataRetriever = dataRetriever;
         this.hasCredentials = false;
     }
@@ -29,7 +29,7 @@ public abstract class APIClient {
      * @param credentials array of needed credentials for authorization in the API
      * @throws BadCredentialsException given credentials are not in desired format
      */
-    abstract void setCredentials(String... credentials) throws BadCredentialsException;
+    public abstract void setCredentials(String... credentials) throws BadCredentialsException;
 
     public APIClient user(String... credentials) throws BadCredentialsException {
         setCredentials(credentials);
