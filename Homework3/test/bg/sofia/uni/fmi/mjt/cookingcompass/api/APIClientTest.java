@@ -1,10 +1,11 @@
-package bg.sofia.uni.fmi.mjt.cookingcompass.retriever;
+package bg.sofia.uni.fmi.mjt.cookingcompass.api;
 
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.RequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RawRequestResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
+import bg.sofia.uni.fmi.mjt.cookingcompass.retriever.DataRetriever;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -16,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.Mockito.mock;
 
-public class PagedDataRetrieverTest {
+public class APIClientTest {
 
     @Test
     void testRetrieveAllData() {
@@ -28,15 +29,11 @@ public class PagedDataRetrieverTest {
                 "data": 1,
                 "next page": "page 2"
             }""");
-        RequestResponse readyRequestResponse = new RequestResponse(0,
-            List.of(gson.fromJson("{\"data\":1}", JsonElement.class)));
         RawRequestResponse request2Response = new RawRequestResponse(0, """
             {
                 "data": 2,
                 "next page": "no next page available"
             }""");
-        RequestResponse readyRequest2Response = new RequestResponse(0,
-            List.of(gson.fromJson("{\"data\":2}", JsonElement.class)));
 
         Request getRequest = new Request("get");
         Request page2Request = new Request("page 2");
@@ -53,24 +50,17 @@ public class PagedDataRetrieverTest {
         Mockito.when(requestCreator.makeRequest(keywords)).thenReturn(getRequest);
         Mockito.when(requestCreator.makeRequest("page 2")).thenReturn(page2Request);
 
-        PagedDataRetriever dataRetriever = Mockito.mock(
-            PagedDataRetriever.class, Mockito.withSettings()
-                .useConstructor(mover, requestCreator)
+        DataRetriever dataRetriever = Mockito.mock(
+            DataRetriever.class, Mockito.withSettings()
+                .useConstructor(requestCreator)
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
-        Mockito.when(dataRetriever.retrieveData(getRequest))
-            .thenReturn(requestResponse);
-        Mockito.when(dataRetriever.retrieveData(page2Request))
-            .thenReturn(request2Response);
-        Mockito.when(dataRetriever.convertResponse(requestResponse))
-            .thenReturn(readyRequestResponse);
-        Mockito.when(dataRetriever.convertResponse(request2Response))
-            .thenReturn(readyRequest2Response);
+        Mockito.when(dataRetriever.retrieveAllData("a", "b", "c"))
+            .thenReturn(new RequestResponse(0, List.of()));
 
-        RequestResponse allData = dataRetriever.retrieveAllData("get");
-        assertIterableEquals(List.of(
-                gson.fromJson("{\"data\":1}", JsonElement.class),
-                gson.fromJson("{\"data\":2}", JsonElement.class)),
+        RequestResponse allData = dataRetriever.retrieveAllData("c", "b", "a");
+        assertIterableEquals(
+            List.of(gson.fromJson("{\"data\":1}", JsonElement.class)),
             allData.resultJson()
         );
     }

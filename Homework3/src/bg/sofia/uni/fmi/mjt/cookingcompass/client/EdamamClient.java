@@ -3,8 +3,9 @@ package bg.sofia.uni.fmi.mjt.cookingcompass.client;
 import bg.sofia.uni.fmi.mjt.cookingcompass.api.WebAPIRepresentative;
 import bg.sofia.uni.fmi.mjt.cookingcompass.page.EdamamPageMover;
 import bg.sofia.uni.fmi.mjt.cookingcompass.exception.BadCredentialsException;
-import bg.sofia.uni.fmi.mjt.cookingcompass.page.PageMover;
-import com.google.gson.GsonBuilder;
+import bg.sofia.uni.fmi.mjt.cookingcompass.request.EdamamRequestCreator;
+import bg.sofia.uni.fmi.mjt.cookingcompass.retriever.EdamamDataRetriever;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,23 +15,23 @@ public class EdamamClient extends APIClient {
 
     private String appId;
     private String appKey;
-    private static Set<String> healthLabels;
-    private static Set<String> dishType;
+    private static final Map<String, Set<String>> keywordsGrouped;
 
     static {
-        healthLabels =
+        keywordsGrouped = new HashMap<>();
+        keywordsGrouped.put("healthLabels",
             Set.of("alcohol-cocktail", "alcohol-free", "celery-free", "cean-free", "dairy-free", "DASH", "egg-free",
                 "fish-free", "fodmap-free", "gluten-free", "immuno-supportive", "keto-friendly", "kidney-friendly",
                 "kosher", "low-potassium", "low-sugar", "lupine-free", "Mediterranean", "mollusk-free", "mustard-free",
                 "No-oil-added", "paleo", "peanut-free", "pecatarian", "pork-free", "red-meat-free", "sesame-free",
                 "shellfish-free", "soy-free", "sugar-conscious", "sulfite-free", "tree-nut-free", "vegan", "vegetarian",
-                "wheat-free");
-
-        dishType =
+                "wheat-free"));
+        keywordsGrouped.put("dishType",
             Set.of("alcohol%20cocktail", "biscuits%20and%20cookies", "bread", "cereals", "condiments%20and%20sauces",
                 "desserts", "drinks", "egg", "ice%20cream%20and%20custard", "main%20course", "pancake", "pasta",
                 "pastry", "pies%20and%20tarts", "pizza", "preps", "preserve", "salad", "sandwiches", "seafood",
-                "side%20dish", "soup", "special%20occasions", "starter", "sweets");
+                "side%20dish", "soup", "special%20occasions", "starter", "sweets"));
+
     }
 
     @Override
@@ -42,18 +43,27 @@ public class EdamamClient extends APIClient {
         appKey = credentials[1];
     }
 
-    public EdamamClient(String appId, String appKey) throws BadCredentialsException {
-        setCredentials(new String[] {appId, appKey});
-        Map<String, Set<String>> keywordsGrouped = new HashMap<>();
-        keywordsGrouped.put("healthLabels", healthLabels);
-        keywordsGrouped.put("dishType", dishType);
+    public EdamamClient(String appId, String appKey) {
+        super(
+            new EdamamDataRetriever(new EdamamPageMover(new Gson()),
+                new EdamamRequestCreator(new WebAPIRepresentative(
+                    "https://api.edamam.com/api/recipes/v2",
+                    appId,
+                    appKey,
+                    keywordsGrouped)))
+        );
+        try {
+            user(appId, appKey);
+        } catch (BadCredentialsException e) {
+            throw new IllegalStateException("Something unexpected occurred...", e);
+        }
+    }
 
-        WebAPIRepresentative agent = new WebAPIRepresentative(
-            "https://api.edamam.com/api/recipes/v2",
-            appId,
-            appKey,
-            keywordsGrouped);
+    public String getAppId() {
+        return appId;
+    }
 
-        PageMover pageMover = new EdamamPageMover(new GsonBuilder().setPrettyPrinting().create());
+    public String getAppKey() {
+        return appKey;
     }
 }

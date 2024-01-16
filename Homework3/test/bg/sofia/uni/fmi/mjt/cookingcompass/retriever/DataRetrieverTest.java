@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.Mockito.mock;
 
-public class PagedDataRetrieverTest {
+public class DataRetrieverTest {
 
     @Test
     void testRetrieveAllData() {
@@ -53,9 +53,9 @@ public class PagedDataRetrieverTest {
         Mockito.when(requestCreator.makeRequest(keywords)).thenReturn(getRequest);
         Mockito.when(requestCreator.makeRequest("page 2")).thenReturn(page2Request);
 
-        PagedDataRetriever dataRetriever = Mockito.mock(
-            PagedDataRetriever.class, Mockito.withSettings()
-                .useConstructor(mover, requestCreator)
+        DataRetriever dataRetriever = Mockito.mock(
+            DataRetriever.class, Mockito.withSettings()
+                .useConstructor(requestCreator)
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
         Mockito.when(dataRetriever.retrieveData(getRequest))
@@ -68,9 +68,8 @@ public class PagedDataRetrieverTest {
             .thenReturn(readyRequest2Response);
 
         RequestResponse allData = dataRetriever.retrieveAllData("get");
-        assertIterableEquals(List.of(
-                gson.fromJson("{\"data\":1}", JsonElement.class),
-                gson.fromJson("{\"data\":2}", JsonElement.class)),
+        assertIterableEquals(
+            List.of(gson.fromJson("{\"data\":1}", JsonElement.class)),
             allData.resultJson()
         );
     }

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EdamamRequestCreatorTest {
 
     @Test
-    void testEdamamRequestCreator() {
+    void testEdamamRequestCreatorbyKeywords() {
         Set<String> healthLabels =
             Set.of("alcohol-cocktail", "alcohol-free", "celery-free", "cean-free", "dairy-free", "DASH", "egg-free",
                 "fish-free", "fodmap-free", "gluten-free", "immuno-supportive", "keto-friendly", "kidney-friendly",
@@ -46,5 +46,12 @@ public class EdamamRequestCreatorTest {
         assertEquals(
             "https://api.edamam.com/api/recipes/v2?type=public&q=chicken&app_id=id&app_key=key&health=alcohol-free&health=vegetarian&dishType=bread&field=label&field=totalWeight&field=dietLabels&field=healthLabels&field=cuisineType&field=mealType&field=dishType&field=ingredientLines",
             request.getData());
+    }
+
+    @Test
+    void testEdamamRequestCreatorbyURL() {
+        EdamamRequestCreator requestCreator = new EdamamRequestCreator(null);
+        Request request = requestCreator.makeRequest("link");
+        assertEquals("link", request.getData());
     }
 }

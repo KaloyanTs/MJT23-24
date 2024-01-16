@@ -2,17 +2,14 @@ package bg.sofia.uni.fmi.mjt.cookingcompass.client;
 
 import bg.sofia.uni.fmi.mjt.cookingcompass.exception.BadCredentialsException;
 import bg.sofia.uni.fmi.mjt.cookingcompass.exception.NotAuthorizedException;
-import bg.sofia.uni.fmi.mjt.cookingcompass.request.RequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.retriever.DataRetriever;
 
 import java.util.Arrays;
 
 public abstract class APIClient {
-    //todo must receive other abstractions and use them together independent of the implementation
 
-    private DataRetriever dataRetriever;
-    private RequestCreator requestCreator;
+    private final DataRetriever dataRetriever;
     private boolean hasCredentials;
 
     public RequestResponse makeRequest(String... keywords) {
@@ -23,7 +20,8 @@ public abstract class APIClient {
         return dataRetriever.retrieveAllData(keywords);
     }
 
-    protected APIClient() {
+    protected APIClient(DataRetriever dataRetriever) {
+        this.dataRetriever = dataRetriever;
         this.hasCredentials = false;
     }
 

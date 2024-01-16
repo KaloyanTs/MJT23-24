@@ -7,7 +7,6 @@ import bg.sofia.uni.fmi.mjt.cookingcompass.request.Request;
 import bg.sofia.uni.fmi.mjt.cookingcompass.request.RequestCreator;
 import bg.sofia.uni.fmi.mjt.cookingcompass.response.RequestResponse;
 import bg.sofia.uni.fmi.mjt.cookingcompass.retriever.DataRetriever;
-import bg.sofia.uni.fmi.mjt.cookingcompass.unit.EdamamRecipe;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,7 +16,6 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.Mockito.mock;
 
@@ -45,34 +43,6 @@ public class APIAgentTest {
 
         List<Integer> actual = agent.byKeywords(Integer.class, "empty", "empty");
         assertIterableEquals(actual, List.of());
-    }
-
-    @Test
-    void testMockingRequestHandler() {
-//        EdamamRecipe r1 = new EdamamRecipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
-//            List.of("desert"), List.of("breakfast"), List.of("soup"), List.of("*Throw into the fridge\n*don't move"));
-//
-//        String expectedJson = gson.toJson(List.of(r1));
-//        Mockito.when(handler.getByKeywords("chicken", "vegetarian")).thenReturn(
-//            new RequestResponse(0,
-//                expectedJson)
-//        );
-//
-//        String emptyJson = gson.toJson(new Object());
-//
-//        Mockito.when(handler.getByKeywords("chickan", "vegetarian")).thenReturn(
-//            new RequestResponse(1,
-//                emptyJson)
-//        );
-//
-//        assertEquals(0, client.makeRequest("chicken", "vegetarian").statusCode());
-//        assertEquals(expectedJson, client.makeRequest("chicken", "vegetarian").bodyJson());
-//
-//        assertNotNull(client.makeRequest("chickan", "vegetarian"));
-//        assertEquals(emptyJson, client.makeRequest("chickan", "vegetarian").bodyJson());
-//
-//        assertEquals(expectedJson, client.makeRequest("vegetarian", "chicken").bodyJson());
-
     }
 
     @Disabled
@@ -137,40 +107,5 @@ public class APIAgentTest {
             }""";
 
         //assertEquals("next page", pageMover.getNextPage(gson.fromJson(json, JsonElement.class)));
-    }
-
-    @Disabled
-    @Test
-    void testGetRecipeFromRecipe() {
-        EdamamRecipe r1 = new EdamamRecipe("some dish", List.of("balanced"), List.of("vegetarian", "alcohol-free"), 100,
-            List.of("desert"), List.of("breakfast"), List.of("soup"), List.of("*Throw into the fridge", "*don't move"));
-
-        assertEquals("*Throw into the fridge\n*don't move", r1.getRecipe());
-    }
-
-    @Disabled
-    @Test
-    void testEdamamRequestCreation() {
-//        String appId = "id";
-//        String appKey = "key";
-//        String url = "https://test/test/";
-//        Set<String> groupBig = Set.of("A", "B", "C");
-//        Set<String> groupSmall = Set.of("a", "b", "c");
-//        Map<String, Set<String>> keywordsGrouped = new HashMap<>();
-//        keywordsGrouped.put("healthLabels", groupBig);
-//        keywordsGrouped.put("dishType", groupSmall);
-//
-//        WebAPIAgent agent = new WebAPIAgent(url, appId, appKey, keywordsGrouped);
-//        EdamamRequestCreator requestCreator = new EdamamRequestCreator(agent);
-//
-//        String[] keywords = {"a", "B", "d", "D", "c"};
-
-        //HttpRequest request = requestCreator.makeRequest(keywords);
-
-        //assertEquals(
-        //    "https://test/test/?type=public&q=d%2C%20D&app_id=id&app_key=key&health=B&dishType=a&dishType=c&field" +
-        //    "=label&field=totalWeight&field=dietLabels&field=healthLabels&field=cuisineType&field=mealType&field" +
-        //    "=dishType&field=ingredientLines",
-        //    request.uri().toString());
     }
 }
