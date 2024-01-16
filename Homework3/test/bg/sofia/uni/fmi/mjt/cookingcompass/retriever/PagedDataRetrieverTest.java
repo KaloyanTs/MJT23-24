@@ -28,14 +28,14 @@ public class PagedDataRetrieverTest {
                 "data": 1,
                 "next page": "page 2"
             }""");
-        RequestResponse readyRequestResponse = new RequestResponse(0,
+        RequestResponse readyRequestResponse = new RequestResponse(true, 0,
             List.of(gson.fromJson("{\"data\":1}", JsonElement.class)));
         RawResponse request2Response = new RawResponse(0, """
             {
                 "data": 2,
                 "next page": "no next page available"
             }""");
-        RequestResponse readyRequest2Response = new RequestResponse(0,
+        RequestResponse readyRequest2Response = new RequestResponse(true, 0,
             List.of(gson.fromJson("{\"data\":2}", JsonElement.class)));
 
         Request getRequest = new Request("get");
@@ -55,7 +55,7 @@ public class PagedDataRetrieverTest {
 
         PagedDataRetriever dataRetriever = Mockito.mock(
             PagedDataRetriever.class, Mockito.withSettings()
-                .useConstructor(mover, requestCreator)
+                .useConstructor(0, mover, requestCreator)
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
         Mockito.when(dataRetriever.retrieveData(getRequest))

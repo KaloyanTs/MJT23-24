@@ -15,8 +15,8 @@ public abstract class PagedDataRetriever extends DataRetriever {
 
     private final PageMover pageMover;
 
-    public PagedDataRetriever(PageMover pageMover, RequestCreator requestCreator) {
-        super(requestCreator);
+    public PagedDataRetriever(int okStatus, PageMover pageMover, RequestCreator requestCreator) {
+        super(okStatus, requestCreator);
         this.pageMover = pageMover;
     }
 
@@ -38,6 +38,6 @@ public abstract class PagedDataRetriever extends DataRetriever {
                 request = requestCreator.makeRequest(nextPage);
             }
         } while (!nextPage.isEmpty());
-        return new RequestResponse(statusCode.get(), list);
+        return new RequestResponse(statusCode.get() == OK_STATUS, statusCode.get(), list);
     }
 }

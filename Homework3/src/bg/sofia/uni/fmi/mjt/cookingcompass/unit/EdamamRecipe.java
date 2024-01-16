@@ -2,7 +2,7 @@ package bg.sofia.uni.fmi.mjt.cookingcompass.unit;
 
 import java.util.List;
 
-public class EdamamRecipe extends Unit {
+public class EdamamRecipe {
 
     String label;
     List<String> dietLabels;

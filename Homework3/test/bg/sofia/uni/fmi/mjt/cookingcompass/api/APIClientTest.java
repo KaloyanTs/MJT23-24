@@ -27,7 +27,7 @@ public class APIClientTest {
 
         DataRetriever dataRetriever = Mockito.mock(
             DataRetriever.class, Mockito.withSettings()
-                .useConstructor(requestCreator)
+                .useConstructor(0, requestCreator)
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
         APIClient apiClient = Mockito.mock(APIClient.class,
@@ -49,7 +49,7 @@ public class APIClientTest {
 
         DataRetriever dataRetriever = Mockito.mock(
             DataRetriever.class, Mockito.withSettings()
-                .useConstructor(requestCreator)
+                .useConstructor(0, requestCreator)
                 .defaultAnswer(Mockito.CALLS_REAL_METHODS)
         );
         String[] keywordsArray = {"a", "b", "c"};
@@ -58,7 +58,7 @@ public class APIClientTest {
             gson.fromJson("{\"data\":2}", JsonElement.class)
         );
         Mockito.when(dataRetriever.retrieveAllData(keywordsArray))
-            .thenReturn(new RequestResponse(0, list));
+            .thenReturn(new RequestResponse(true, 0, list));
 
         APIClient apiClient = Mockito.mock(
             APIClient.class, Mockito.withSettings()

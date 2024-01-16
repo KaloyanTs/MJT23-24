@@ -18,6 +18,7 @@ import java.net.http.HttpResponse;
 
 public class EdamamDataRetriever extends PagedDataRetriever {
 
+    private static final int OK_STATUS = 200;
     private final HttpClient client;
     private static final Gson GSON;
 
@@ -26,7 +27,7 @@ public class EdamamDataRetriever extends PagedDataRetriever {
     }
 
     public EdamamDataRetriever(EdamamPageMover edamamPageMover, EdamamRequestCreator requestCreator) {
-        super(edamamPageMover, requestCreator);
+        super(OK_STATUS, edamamPageMover, requestCreator);
         client = HttpClient.newBuilder().build();
     }
 
@@ -48,7 +49,8 @@ public class EdamamDataRetriever extends PagedDataRetriever {
 
     @Override
     protected RequestResponse convertResponse(RawResponse element) {
-        return new RequestResponse(element.statusCode(),
+        return new RequestResponse(element.statusCode() == OK_STATUS,
+            element.statusCode(),
             GSON.fromJson(element.bodyJson(), JsonElement.class)
                 .getAsJsonObject().get("hits")
                 .getAsJsonArray().asList().stream()

@@ -23,7 +23,7 @@ public class ConverterFromJson {
     }
 
     public <T> List<T> convertResponse(RequestResponse response, Class<T> tClass) {
-        if (response.statusCode() != 0) {
+        if (!response.successful()) {
             throw new IllegalArgumentException("Error in response prevents conversion to " + tClass.getTypeName());
         }
         return response.resultJson().stream().map(x -> GSON.fromJson(x.getAsJsonObject(), tClass)).toList();

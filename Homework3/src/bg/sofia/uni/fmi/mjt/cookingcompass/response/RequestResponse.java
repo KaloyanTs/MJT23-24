@@ -4,5 +4,5 @@ import com.google.gson.JsonElement;
 
 import java.util.List;
 
-public record RequestResponse(int statusCode, List<JsonElement> resultJson) {
+public record RequestResponse(boolean successful, int statusCode, List<JsonElement> resultJson) {
 }

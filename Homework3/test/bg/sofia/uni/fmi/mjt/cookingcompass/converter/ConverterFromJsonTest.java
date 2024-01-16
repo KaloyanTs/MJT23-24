@@ -34,7 +34,7 @@ public class ConverterFromJsonTest {
 
     @Test
     void testConversionGoodResponse() {
-        RequestResponse response = new RequestResponse(0, expected.stream().map(x -> gson.fromJson(gson.toJson(x),
+        RequestResponse response = new RequestResponse(true, 0, expected.stream().map(x -> gson.fromJson(gson.toJson(x),
             JsonElement.class)).toList());
         List<Wrap> actual = ConverterFromJson.getInstance().convertResponse(response, Wrap.class);
         assertIterableEquals(expected, actual, "Converter must convert list of JSONs to a list of objects properly");
@@ -42,8 +42,9 @@ public class ConverterFromJsonTest {
 
     @Test
     void testConversionBadResponse() {
-        RequestResponse response = new RequestResponse(404, expected.stream().map(x -> gson.fromJson(gson.toJson(x),
-            JsonElement.class)).toList());
+        RequestResponse response = new RequestResponse(false, 404,
+            expected.stream().map(x -> gson.fromJson(gson.toJson(x),
+                JsonElement.class)).toList());
         assertThrows(IllegalArgumentException.class, () -> ConverterFromJson.getInstance().convertResponse(response,
                 Wrap.class),
             "Converter must throw IllArgException when status of response is not the one of a successful one");
