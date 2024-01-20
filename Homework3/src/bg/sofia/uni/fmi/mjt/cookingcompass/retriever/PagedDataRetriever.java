@@ -33,11 +33,17 @@ public abstract class PagedDataRetriever extends DataRetriever {
                 statusCode = Optional.of(response.statusCode());
             }
             RequestResponse processedResponse = convertResponse(response);
-            list.addAll(processedResponse.resultJson());
+            list.addAll(
+                processedResponse.resultJson()
+            );
             if (!nextPage.isEmpty()) {
                 request = requestCreator.makeRequest(nextPage);
             }
         } while (!nextPage.isEmpty());
-        return new RequestResponse(statusCode.get() == okStatus, statusCode.get(), list);
+        return new RequestResponse(
+            statusCode.get() == okStatus,
+            statusCode.get(),
+            list
+        );
     }
 }

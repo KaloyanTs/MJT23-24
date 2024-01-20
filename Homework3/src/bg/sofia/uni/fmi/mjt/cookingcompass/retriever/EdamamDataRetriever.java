@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class EdamamDataRetriever extends PagedDataRetriever {
 
@@ -27,8 +28,12 @@ public class EdamamDataRetriever extends PagedDataRetriever {
     }
 
     public EdamamDataRetriever(EdamamPageMover edamamPageMover, EdamamRequestCreator requestCreator) {
-        super(OK_STATUS, edamamPageMover, requestCreator);
-        client = HttpClient.newBuilder().build();
+        super(OK_STATUS,
+            edamamPageMover,
+            requestCreator);
+        client = HttpClient
+            .newBuilder()
+            .build();
     }
 
     @Override
@@ -38,7 +43,6 @@ public class EdamamDataRetriever extends PagedDataRetriever {
         try {
             httpRequest = HttpRequest.newBuilder().uri(new URI(request.getData())).build();
             httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
         } catch (IOException | InterruptedException e) {
             throw new IllegalStateException("Something unexpected occurred...", e);
         } catch (URISyntaxException e) {
@@ -49,11 +53,9 @@ public class EdamamDataRetriever extends PagedDataRetriever {
 
     @Override
     protected RequestResponse convertResponse(RawResponse element) {
-        return new RequestResponse(element.statusCode() == OK_STATUS,
-            element.statusCode(),
-            GSON.fromJson(element.bodyJson(), JsonElement.class)
-                .getAsJsonObject().get("hits")
-                .getAsJsonArray().asList().stream()
-                .map(x -> x.getAsJsonObject().get("recipe")).toList());
+        return new RequestResponse(element.statusCode() == OK_STATUS, element.statusCode(),
+            (element.statusCode() == OK_STATUS ? GSON.fromJson(element.bodyJson(), JsonElement.class).getAsJsonObject()
+                .get("hits").getAsJsonArray().asList().stream().map(x -> x.getAsJsonObject().get("recipe")).toList() :
+                List.of()));
     }
 }

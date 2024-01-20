@@ -45,17 +45,21 @@ public class EdamamClient extends APIClient {
 
     public EdamamClient(String appId, String appKey) {
         super(
-            new EdamamDataRetriever(new EdamamPageMover(new Gson()),
-                new EdamamRequestCreator(new WebAPIRepresentative(
-                    "https://api.edamam.com/api/recipes/v2",
-                    appId,
-                    appKey,
-                    KEYWORDS_GROUPED)))
+            new EdamamDataRetriever(
+                new EdamamPageMover(
+                    new Gson()),
+                new EdamamRequestCreator(
+                    new WebAPIRepresentative(
+                        "https://api.edamam.com/api/recipes/v2",
+                        appId,
+                        appKey,
+                        KEYWORDS_GROUPED))
+            )
         );
         try {
             user(appId, appKey);
         } catch (BadCredentialsException e) {
-            throw new IllegalStateException("Something unexpected occurred...", e);
+            throw new IllegalStateException("Something uncexpected occured...", e);
         }
     }
 

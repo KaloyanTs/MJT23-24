@@ -22,7 +22,11 @@ public abstract class DataRetriever {
     protected abstract RawResponse retrieveData(Request request);
 
     public RequestResponse retrieveAllData(String... keywords) {
-        return convertResponse(retrieveData(requestCreator.makeRequest(keywords)));
+        return convertResponse(
+            retrieveData(
+                requestCreator.makeRequest(keywords)
+            )
+        );
     }
 
     protected abstract RequestResponse convertResponse(RawResponse response);

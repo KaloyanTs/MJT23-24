@@ -27,6 +27,8 @@ public class EdamamRecipe {
     }
 
     public String getRecipe() {
-        return String.join("\n", ingredientLines).replaceAll("\n(?!\\*)", "");
+        return String
+            .join("\n", ingredientLines)
+            .replaceAll("\n(?!\\*)", "");
     }
 }

@@ -23,8 +23,12 @@ public class EdamamPageMover implements PageMover {
         } else {
             nextPage =
                 gson.fromJson(
-                    links.getAsJsonObject().get("next").getAsJsonObject().get(
-                        "href"), String.class);
+                    links
+                        .getAsJsonObject()
+                        .get("next")
+                        .getAsJsonObject()
+                        .get("href"),
+                    String.class);
         }
         return nextPage;
     }
