@@ -29,4 +29,7 @@ public class PasswordGenerator {
 
         return Password.of(generatedString);
     }
+
+    public static void main(String[] args) {
+    }
 }
