@@ -17,6 +17,9 @@ public class CommandInterpreter {
     private static final int GENERATE_ARGUMENTS = 3;
     private static final int GENERATE_USER_ARGUMENT = 2;
     private static final int GENERATE_WEBSITE_ARGUMENT = 1;
+    private static final int REMOVE_ARGUMENTS = 3;
+    private static final int REMOVE_USER_ARGUMENT = 2;
+    private static final int REMOVE_WEBSITE_ARGUMENT = 1;
     private final Vault vault;
 
     //todo find usage
@@ -45,6 +48,14 @@ public class CommandInterpreter {
                     User.of(parts[GENERATE_USER_ARGUMENT]),
                     Website.of(parts[GENERATE_WEBSITE_ARGUMENT]),
                     Optional.empty());
+            }
+            case "remove-password" -> {
+                if (parts.length < REMOVE_ARGUMENTS)
+                    yield new Response("Usage: remove-password <website> <user>");
+                yield vault.removePassword(
+                    User.of(parts[REMOVE_WEBSITE_ARGUMENT]),
+                    Website.of(parts[REMOVE_USER_ARGUMENT])
+                );
                 //todo implement more
             }
             default -> new Response("Unknown command...");

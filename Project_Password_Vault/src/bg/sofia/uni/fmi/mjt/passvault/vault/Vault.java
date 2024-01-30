@@ -34,4 +34,12 @@ public class Vault {
         data.get(user).put(website, password.get());
         return Response.combine(genResponse, new Response("The password was added successfully"));
     }
+
+    public Response removePassword(User user, Website website) {
+        if (data.get(user) == null || data.get(user).get(website) == null) {
+            return new Response("Bad arguments: no such user or password assigned to it and give website!");
+        }
+        data.get(user).remove(website);
+        return new Response("Password successfully removed");
+    }
 }
