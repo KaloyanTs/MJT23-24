@@ -10,6 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -34,6 +35,8 @@ public class Server {
 
             ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
+            byte[] bytes = new byte[BUFFER_SIZE];
+
             while (true) {
                 int readyChannels = selector.select();
                 if (readyChannels == 0) {
@@ -54,9 +57,14 @@ public class Server {
                             sc.close();
                             continue;
                         }
-                        //todo use the one below
-                        //interpreter.intepretate(buffer.toString());
                         buffer.flip();
+                        buffer.get(bytes);
+                        buffer.put(
+                            INTERPRETER.intepretate(
+                                    new String(bytes, StandardCharsets.UTF_8))
+                                .content()
+                                .getBytes()
+                        );
                         sc.write(buffer);
 
                     } else if (key.isAcceptable()) {
