@@ -1,6 +1,9 @@
 package bg.sofia.uni.fmi.mjt.passvault.user;
 
-import bg.sofia.uni.fmi.mjt.passvault.password.Password;
+public record User(String name) {
+    //todo consider containing its password
 
-public record User(String name, Password password) {
+    public static User of(String str) {
+        return new User(str);
+    }
 }

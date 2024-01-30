@@ -1,8 +1,6 @@
 package bg.sofia.uni.fmi.mjt.passvault.password;
 
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -18,6 +16,8 @@ public class PasswordChecker {
     //todo uncomment before submit
     private static final String API_KEY = "de4f91a94a7d42a3807c616eccdfd42c";
     private static final String API_SECRET = "wvP=s14&YzF1_b#@YQ3MTXn^Vz3=bs*5";
+    private static final int PREFIX_LENGTH = 10;
+    private static final int COMPROMISED = 200;
 
     public PasswordChecker() {
         //todo implement
@@ -29,23 +29,23 @@ public class PasswordChecker {
         String encodedCredentials = Base64
             .getEncoder()
             .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-        String str = "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, 9) + "\"," +
-            "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, 9) + "\"," +
-            "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, 9) + "\"" +
+        String str = "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, PREFIX_LENGTH - 1) + "\"," +
+            "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, PREFIX_LENGTH - 1) + "\"," +
+            "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, PREFIX_LENGTH - 1) + "\"" +
             "}";
         return HttpRequest.newBuilder()
             .uri(URI.create("https://api.enzoic.com/passwords?"))
             .header("Authorization", "Basic " + encodedCredentials)
             .header("Content-Type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(
-                "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, 9) + "\"," +
-                    "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, 9) + "\"," +
-                    "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, 9) + "\"" +
+                "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, PREFIX_LENGTH - 1) + "\"," +
+                    "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, PREFIX_LENGTH - 1) + "\"," +
+                    "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, PREFIX_LENGTH - 1) + "\"" +
                     "}"))
             .build();
     }
 
-    public boolean checkPassword(Password password) {
+    public boolean checkPasswordIsCompromised(Password password) {
         HttpClient client = HttpClient
             .newBuilder()
             .build();
@@ -59,12 +59,11 @@ public class PasswordChecker {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Given request could not be converted to URI...", e);
         }
-        System.out.println(httpResponse.body());
-        return true;
+        return httpResponse.statusCode() == COMPROMISED;
     }
 
     public static void main(String[] args) {
         PasswordChecker passwordChecker = new PasswordChecker();
-        passwordChecker.checkPassword(Password.of("apple"));
+        System.out.println(passwordChecker.checkPasswordIsCompromised(Password.of("Ka25Mi31")));
     }
 }

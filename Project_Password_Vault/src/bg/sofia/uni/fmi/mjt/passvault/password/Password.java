@@ -16,6 +16,7 @@ public class Password {
     private static final Cipher ENCRYPT_CIPHER;
     private static final Cipher DECRYPT_CIPHER;
     private static final SecretKey SECRET_KEY;
+
     private final String passwordEncrypted;
 
     static {
@@ -38,7 +39,7 @@ public class Password {
         passwordEncrypted = encrypt(password);
     }
 
-    private String getDecrypted() {
+    public String getDecrypted() {
         return decrypt(passwordEncrypted);
     }
 
