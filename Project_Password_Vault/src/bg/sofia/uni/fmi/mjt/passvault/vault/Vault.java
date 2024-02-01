@@ -8,7 +8,6 @@ import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,11 +24,12 @@ import java.util.concurrent.TimeUnit;
 
 public class Vault {
 
-    private Map<User, Map<Website, Password>> data;
-    private PasswordChecker checker;
-    private Set<User> activeUsers;
-    private Map<User, ScheduledFuture<?>> activity;
-    private ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private static final int GEN_PASS_LENGTH = 10;
+    private final Map<User, Map<Website, Password>> data;
+    private final PasswordChecker checker;
+    private final Set<User> activeUsers;
+    private final Map<User, ScheduledFuture<?>> activity;
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 
     public Vault() {
@@ -45,7 +45,10 @@ public class Vault {
             throw new IllegalStateException("Given user is not logged in");
         }
         activity.get(user).cancel(false);
-        activity.put(user, executorService.schedule(() -> activeUsers.remove(user), 1, TimeUnit.MINUTES))
+        activity.put(user, executorService.schedule(() -> {
+            activeUsers.remove(user);
+            System.out.println(user.name() + " forced logout...");
+        }, 1, TimeUnit.MINUTES))
     }
 
     public Response addPassword(User user, Website website, Optional<Password> password) {
@@ -54,7 +57,7 @@ public class Vault {
             return new Response("The password is compromised! Cannot be added.");
         }
         if (password.isEmpty()) {
-            password = Optional.of(PasswordGenerator.getInstance().generatePassword(10));
+            password = Optional.of(PasswordGenerator.getInstance().generatePassword(GEN_PASS_LENGTH));
         }
         Response genResponse = new Response("Password generated: " + password.get().getDecrypted());
         data.computeIfAbsent(user, k -> new HashMap<>());
