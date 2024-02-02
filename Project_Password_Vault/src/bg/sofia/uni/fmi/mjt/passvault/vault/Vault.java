@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -40,19 +41,22 @@ public class Vault {
         activity = new HashMap<>();
     }
 
+
     private void updateActivity(User user) {
         if (!activeUsers.contains(user)) {
             throw new IllegalStateException("Given user is not logged in");
         }
+
         activity.get(user).cancel(false);
         activity.put(user, executorService.schedule(() -> {
             activeUsers.remove(user);
             System.out.println(user.name() + " forced logout...");
-        }, 1, TimeUnit.MINUTES))
+        }, 1, TimeUnit.MINUTES));
     }
 
     public Response addPassword(User user, Website website, Optional<Password> password) {
         //todo write in file
+        //todo separate methods with 2 or 3 args one calling the other after generation
         if (password.isPresent() && !checker.checkPasswordIsCompromised(password.get())) {
             return new Response("The password is compromised! Cannot be added.");
         }
@@ -103,5 +107,9 @@ public class Vault {
         updateActivity(user);
 
         return new Response("User logged in successfully!");
+    }
+
+    public Response retrieveCredentials(Website website, User user) {
+
     }
 }
