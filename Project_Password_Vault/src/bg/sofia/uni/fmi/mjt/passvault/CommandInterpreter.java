@@ -8,6 +8,7 @@ import bg.sofia.uni.fmi.mjt.passvault.server.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.utility.KeyValuePair;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
+import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,7 @@ public class CommandInterpreter {
         WORD_TO_COMMAND_TYPE.put("remove-password", VaultCommandBuilder.CommandType.REMOVE);
         WORD_TO_COMMAND_TYPE.put("login", VaultCommandBuilder.CommandType.LOGIN);
         WORD_TO_COMMAND_TYPE.put("logout", VaultCommandBuilder.CommandType.LOGOUT);
+        WORD_TO_COMMAND_TYPE.put("register", VaultCommandBuilder.CommandType.REGISTER);
         //todo add more
     }
 
@@ -52,7 +54,7 @@ public class CommandInterpreter {
         wordsToActions = new HashMap<>();
         wordsToActions.put("user", (args, index) -> commandBuilder.user(new User(args[index])));
         wordsToActions.put("password", (args, index) -> commandBuilder.password(Password.of(args[index])));
-        wordsToActions.put("website", (args, index) -> commandBuilder.user(new User(args[index])));
+        wordsToActions.put("website", (args, index) -> commandBuilder.website(new Website(args[index])));
         wordsToActions.put("password-duplicate",
             (args, index) -> commandBuilder.passwordDuplicate(Password.of(args[index])));
     }
