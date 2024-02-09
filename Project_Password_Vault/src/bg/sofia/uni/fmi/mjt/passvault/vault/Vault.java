@@ -54,19 +54,11 @@ public class Vault {
         }, 1, TimeUnit.MINUTES));
     }
 
-    public Response addPassword(User user, Website website, Optional<Password> password) {
+    public Response addPassword(User user, Website website, Password password) {
         //todo write in file
-        //todo separate methods with 2 or 3 args one calling the other after generation
-        if (password.isPresent() && !checker.checkPasswordIsCompromised(password.get())) {
-            return new Response("The password is compromised! Cannot be added.");
-        }
-        if (password.isEmpty()) {
-            password = Optional.of(PasswordGenerator.getInstance().generatePassword(GEN_PASS_LENGTH));
-        }
-        Response genResponse = new Response("Password generated: " + password.get().getDecrypted());
         data.computeIfAbsent(user, k -> new HashMap<>());
-        data.get(user).put(website, password.get());
-        return Response.combine(genResponse, new Response("The password was added successfully"));
+        data.get(user).put(website, password);
+        //todo what to return as a response (added pasword and operation info)
     }
 
     public Response removePassword(User user, Website website) {
@@ -102,7 +94,8 @@ public class Vault {
         }
     }
 
-    public Response login(User user) {
+    public Response login(User user, Password password) {
+        //todo replace with check if password matches !!!!!!!!!!!!!
         activeUsers.add(user);
         updateActivity(user);
 
