@@ -84,4 +84,9 @@ public class Password {
     public static Password of(String str) {
         return new Password(str);
     }
+
+    public static boolean areEqual(Password p1, Password p2) {
+        //todo implement
+        return false;
+    }
 }

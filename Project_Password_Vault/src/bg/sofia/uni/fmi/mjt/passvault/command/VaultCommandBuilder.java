@@ -13,18 +13,21 @@ public class VaultCommandBuilder {
         LOGIN,
         LOGOUT,
         ADD,
-        REMOVE
+        REMOVE,
+        RETRIEVE
     }
 
     private final Vault vault;
     private CommandType type;
     private User user;
     private Password password;
+    private Password passwordDuplicate;
     private Website website;
     private Integer passwordLength;
 
     public VaultCommandBuilder(Vault vault) {
         this.vault = vault;
+        this.passwordDuplicate = null;
         this.passwordLength = null;
         this.type = null;
         this.user = null;
@@ -44,6 +47,11 @@ public class VaultCommandBuilder {
 
     public VaultCommandBuilder password(Password password) {
         this.password = password;
+        return this;
+    }
+
+    public VaultCommandBuilder passwordDuplicate(Password passwordDuplicate) {
+        this.passwordDuplicate = passwordDuplicate;
         return this;
     }
 
@@ -68,7 +76,10 @@ public class VaultCommandBuilder {
     public VaultCommand build() throws BadCommandArgumentsException {
         switch (type) {
             case REGISTER -> {
-                assertProvided(user, password);
+                assertProvided(user, password, passwordDuplicate);
+                if (!Password.areEqual(password, passwordDuplicate)) {
+                    throw new BadCommandArgumentsException("Passwords does not match!");
+                }
                 return new RegisterVaultCommand(vault, user, password);
             }
             case LOGIN -> {

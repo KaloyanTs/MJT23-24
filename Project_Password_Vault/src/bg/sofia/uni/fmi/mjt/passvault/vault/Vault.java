@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.passvault.vault;
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
+import bg.sofia.uni.fmi.mjt.passvault.password.PasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.server.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
@@ -25,14 +26,15 @@ public class Vault {
     private final Map<User, Map<Website, Password>> data;
     private final Set<User> activeUsers;
     private final Map<User, ScheduledFuture<?>> activity;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService executorService;
+    private final PasswordChecker passwordChecker;
 
-
-    public Vault() {
-        //todo remove from here; badly looking
-        activeUsers = new HashSet<>();
-        data = new ConcurrentHashMap<>();
-        activity = new HashMap<>();
+    public Vault(PasswordChecker passwordChecker) {
+        this.passwordChecker = passwordChecker;
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.activeUsers = new HashSet<>();
+        this.data = new ConcurrentHashMap<>();
+        this.activity = new HashMap<>();
     }
 
 
@@ -111,5 +113,9 @@ public class Vault {
             throw new NoPasswordRegisteredException("Given user and website don't match any password...");
         }
         return new Response("Password retrieved successfully", Optional.of(password));
+    }
+
+    public PasswordChecker getPasswordChecker() {
+        return passwordChecker;
     }
 }

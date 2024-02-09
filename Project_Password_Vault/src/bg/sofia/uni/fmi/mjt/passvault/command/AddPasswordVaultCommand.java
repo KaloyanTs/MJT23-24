@@ -6,6 +6,8 @@ import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
+import java.util.Optional;
+
 public class AddPasswordVaultCommand implements VaultCommand {
     private final Vault vault;
     private final User user;
@@ -24,7 +26,9 @@ public class AddPasswordVaultCommand implements VaultCommand {
 
     @Override
     public Response execute() {
-        //todo call checker to check the password
+        if (vault.getPasswordChecker().checkPasswordIsCompromised(password)) {
+            return new Response("Given password has been compromised!", Optional.of(password));
+        }
         return vault.addPassword(user, website, password);
     }
 }
