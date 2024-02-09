@@ -1,14 +1,13 @@
 package bg.sofia.uni.fmi.mjt.passvault.vault;
 
+import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
+import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordChecker;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordGenerator;
 import bg.sofia.uni.fmi.mjt.passvault.server.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,16 +17,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Vault {
-
-    private static final int GEN_PASS_LENGTH = 10;
     private final Map<User, Map<Website, Password>> data;
-    private final PasswordChecker checker;
     private final Set<User> activeUsers;
     private final Map<User, ScheduledFuture<?>> activity;
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -35,7 +30,6 @@ public class Vault {
 
     public Vault() {
         //todo remove from here; badly looking
-        checker = new PasswordChecker();
         activeUsers = new HashSet<>();
         data = new ConcurrentHashMap<>();
         activity = new HashMap<>();
@@ -56,41 +50,42 @@ public class Vault {
 
     public Response addPassword(User user, Website website, Password password) {
         //todo write in file
-        data.computeIfAbsent(user, k -> new HashMap<>());
+        data.computeIfAbsent(user, x -> new HashMap<>());
         data.get(user).put(website, password);
-        //todo what to return as a response (added pasword and operation info)
+        return new Response("Successfully added", Optional.of(password));
+        //todo what to return as a response (added password and operation info)
     }
 
     public Response removePassword(User user, Website website) {
         //todo remove from file
         if (data.get(user) == null || data.get(user).get(website) == null) {
-            return new Response("Bad arguments: no such user or password assigned to it and give website!");
+            //todo throwing exception instead and catching it in the command????????????????????
+            return new Response("Bad arguments: no such user or password assigned to it and given website!",
+                Optional.empty());
         }
-        data.get(user).remove(website);
-        return new Response("Password successfully removed");
+        Password removedPassword = data.get(user).remove(website);
+        return new Response("Password successfully removed", Optional.of(removedPassword));
     }
 
     public Response registerUser(User user, Password password) {
         try (FileWriter fileWriter = new FileWriter("users.pass", true);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-             FileOutputStream fos = new FileOutputStream(user.name() + ".pass", false)) {
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
 
             bufferedWriter.write(user.name() + " " + password.getCiphered("SHA256"));
             bufferedWriter.newLine();
 
         } catch (IOException e) {
-            throw new UnsupportedOperationException("todo");
-            //todo consider whether something can be done (bad response maybe)
+            throw new UnsupportedOperationException("Unexpected problem while writing to a file", e);
         }
-        return new Response("User registered successfully!");
+        return new Response("User registered successfully!", Optional.empty());
     }
 
     public Response logout(User user) {
         //todo consider if anything other must be done
         if (activeUsers.remove(user)) {
-            return new Response("User logged out successfully!");
+            return new Response("User logged out successfully!", Optional.empty());
         } else {
-            return new Response("User has already been logged out!");
+            return new Response("User has already been logged out!", Optional.empty());
         }
     }
 
@@ -99,10 +94,22 @@ public class Vault {
         activeUsers.add(user);
         updateActivity(user);
 
-        return new Response("User logged in successfully!");
+        return new Response("User logged in successfully!", Optional.empty());
     }
 
-    public Response retrieveCredentials(Website website, User user) {
-
+    public Response retrieveCredentials(Website website, User user)
+        throws NoPasswordRegisteredException, UserNotRegisteredException {
+        if (website == null || user == null) {
+            throw new IllegalArgumentException("Null cannot be an argument...");
+        }
+        if (data.get(user) == null) {
+            throw new UserNotRegisteredException("Given user is not registered in the vault...");
+        }
+        Password password = data.get(user).get(website);
+        if (password == null) {
+            //todo catch and convert to response in command execute code
+            throw new NoPasswordRegisteredException("Given user and website don't match any password...");
+        }
+        return new Response("Password retrieved successfully", Optional.of(password));
     }
 }
