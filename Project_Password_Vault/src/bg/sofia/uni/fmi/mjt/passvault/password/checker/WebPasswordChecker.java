@@ -1,4 +1,6 @@
-package bg.sofia.uni.fmi.mjt.passvault.password;
+package bg.sofia.uni.fmi.mjt.passvault.password.checker;
+
+import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,7 +11,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class PasswordChecker {
+public class WebPasswordChecker implements PasswordChecker {
 
     //private static final String apiKey = "YOUR_KEY_HERE";
     //private static final String apiSecret = "YOUR_SECRET_HERE";
@@ -20,9 +22,8 @@ public class PasswordChecker {
     private static final int PREFIX_LENGTH = 10;
     private static final int COMPROMISED = 200;
 
-    public PasswordChecker() {
+    public WebPasswordChecker() {
         //todo implement
-        //todo make interface
     }
 
     protected HttpRequest makeRequest(Password password) throws URISyntaxException {
@@ -30,6 +31,7 @@ public class PasswordChecker {
         String encodedCredentials = Base64
             .getEncoder()
             .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
+        //todo debug here
         String str = "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, PREFIX_LENGTH - 1) + "\"," +
             "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, PREFIX_LENGTH - 1) + "\"," +
             "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, PREFIX_LENGTH - 1) + "\"" +
@@ -43,6 +45,7 @@ public class PasswordChecker {
                     "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, PREFIX_LENGTH - 1) + "\"," +
                     "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, PREFIX_LENGTH - 1) + "\"" +
                     "}"))
+            //todo replace with str from above
             .build();
     }
 
@@ -61,10 +64,5 @@ public class PasswordChecker {
             throw new IllegalArgumentException("Given request could not be converted to URI...", e);
         }
         return httpResponse.statusCode() == COMPROMISED;
-    }
-
-    public static void main(String[] args) {
-        PasswordChecker passwordChecker = new PasswordChecker();
-        System.out.println(passwordChecker.checkPasswordIsCompromised(Password.of("Ka25Mi31")));
     }
 }

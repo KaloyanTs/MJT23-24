@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.passvault.server;
 
 import bg.sofia.uni.fmi.mjt.passvault.CommandInterpreter;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordChecker;
+import bg.sofia.uni.fmi.mjt.passvault.password.checker.WebPasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 
@@ -24,8 +24,7 @@ public class Server {
     private static final CommandInterpreter INTERPRETER;
 
     static {
-        //todo consider what to do with injection of checker
-        INTERPRETER = new CommandInterpreter(new Vault(new PasswordChecker()));
+        INTERPRETER = new CommandInterpreter(new Vault(new WebPasswordChecker()));
     }
 
     public static void main(String[] args) {
