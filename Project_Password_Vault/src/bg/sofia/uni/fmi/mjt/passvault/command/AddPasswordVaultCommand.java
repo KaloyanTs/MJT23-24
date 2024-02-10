@@ -1,12 +1,10 @@
 package bg.sofia.uni.fmi.mjt.passvault.command;
 
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.server.Response;
+import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
-
-import java.util.Optional;
 
 public class AddPasswordVaultCommand implements VaultCommand {
     private final Vault vault;
@@ -27,7 +25,7 @@ public class AddPasswordVaultCommand implements VaultCommand {
     @Override
     public Response execute() {
         if (vault.getPasswordChecker().checkPasswordIsCompromised(password)) {
-            return new Response("Given password has been compromised!", Optional.of(password));
+            return new Response("Given password has been compromised!", password);
         }
         return vault.addPassword(user, website, password);
     }

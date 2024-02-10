@@ -1,7 +1,7 @@
 package bg.sofia.uni.fmi.mjt.passvault.command;
 
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.server.Response;
+import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 

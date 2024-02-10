@@ -86,7 +86,6 @@ public class Password {
     }
 
     public static boolean areEqual(Password p1, Password p2) {
-        //todo implement
-        return false;
+        return p1.passwordEncrypted.equals(p2.passwordEncrypted);
     }
 }

@@ -2,16 +2,18 @@ package bg.sofia.uni.fmi.mjt.passvault.server;
 
 import bg.sofia.uni.fmi.mjt.passvault.CommandInterpreter;
 import bg.sofia.uni.fmi.mjt.passvault.password.PasswordChecker;
+import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -37,8 +39,6 @@ public class Server {
 
             ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-            byte[] bytes = new byte[BUFFER_SIZE];
-
             while (true) {
                 int readyChannels = selector.select();
                 if (readyChannels == 0) {
@@ -55,18 +55,29 @@ public class Server {
                         buffer.clear();
                         int r = sc.read(buffer);
                         if (r < 0) {
-                            System.out.println("Client has closed the connection");
+                            System.out.println("Client has closed the connection...");
                             sc.close();
                             continue;
                         }
+
                         buffer.flip();
-                        buffer.get(bytes);
-                        buffer.put(
-                            INTERPRETER.intepretate(
-                                    new String(bytes, StandardCharsets.UTF_8))
-                                .content()
-                                .getBytes()
-                        );
+
+                        String receivedString = new String(buffer.array(), 0, buffer.limit());
+                        Response response = INTERPRETER.intepretate(receivedString);
+                        if (response == null) {
+                            System.out.println("Client desires to close the connection...");
+                            sc.close();
+                            continue;
+                        }
+
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
+                        outputStream.writeObject(response);
+                        outputStream.flush();
+                        byte[] responseData = byteArrayOutputStream.toByteArray();
+                        buffer.clear();
+                        buffer.put(responseData);
+                        buffer.flip();
                         sc.write(buffer);
 
                     } else if (key.isAcceptable()) {

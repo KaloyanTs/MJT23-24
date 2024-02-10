@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommandBuilder;
 import bg.sofia.uni.fmi.mjt.passvault.exception.BadCommandArgumentsException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.server.Response;
+import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.utility.KeyValuePair;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
@@ -13,7 +13,6 @@ import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public class CommandInterpreter {
@@ -62,14 +61,13 @@ public class CommandInterpreter {
     public Response intepretate(String commandLine) {
         String[] parts = commandLine.trim().split("\\s+");
         if (parts.length < 1) {
-            return new Response("", Optional.empty());
+            return new Response("", null);
         }
         if (parts[0].equals("disconnect")) {
             return null;
-            //todo in server getting null from this method would mean end connection
         }
 
-        WORD_TO_COMMAND_TYPE.get(parts[0]);
+        commandBuilder.type(WORD_TO_COMMAND_TYPE.get(parts[0]));
         for (KeyValuePair<String, Integer> pair : USAGES.get(parts[0])) {
             wordsToActions.get(pair.key()).accept(parts, pair.value());
         }
@@ -77,7 +75,7 @@ public class CommandInterpreter {
         try {
             command = commandBuilder.build();
         } catch (BadCommandArgumentsException e) {
-            return new Response("Bad usage... (see manual)", Optional.empty());
+            return new Response("Bad usage... (see manual)", null);
         }
 
         return command.execute();
