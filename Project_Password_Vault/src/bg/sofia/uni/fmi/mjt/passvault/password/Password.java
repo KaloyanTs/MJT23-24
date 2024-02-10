@@ -77,9 +77,6 @@ public class Password implements Serializable {
     private static String decrypt(String encryptedString) {
         try {
             byte[] decryptedBytes = DECRYPT_CIPHER.doFinal(Base64.getDecoder().decode(encryptedString));
-            //--------------------------------------------
-            //todo problem here; debug if in client and in server ciphered passwords are the same
-            //--------------------------------------------
             return new String(decryptedBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new IllegalStateException("Something unexpected occurred while decrypting...", e);
