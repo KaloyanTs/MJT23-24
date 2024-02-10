@@ -3,13 +3,15 @@ package bg.sofia.uni.fmi.mjt.passvault.password;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-public class Password {
+public class Password implements Serializable {
 
+    private static final long serialVersionUID = 666L;
     private static final int HEX_NUM = 0xff;
     private static final int BITS = 256;
     private static final String ALGORITHM = "AES";

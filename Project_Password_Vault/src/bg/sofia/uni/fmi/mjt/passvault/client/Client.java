@@ -65,6 +65,7 @@ public class Client {
                 System.out.println(responseFromServer.content());
                 if (responseFromServer.password() != null) {
                     System.out.println(responseFromServer.password().getDecrypted());
+                    //todo debug (problem with deciphering different passwords
                 }
             }
 

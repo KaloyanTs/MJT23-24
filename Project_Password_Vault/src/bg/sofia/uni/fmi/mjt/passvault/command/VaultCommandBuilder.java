@@ -103,6 +103,10 @@ public class VaultCommandBuilder {
                 assertProvided(user, website);
                 return new RemovePasswordVaultCommand(vault, user, website);
             }
+            case RETRIEVE -> {
+                assertProvided(website, user);
+                return new RetrieveVaultCommand(vault, user, website);
+            }
         }
         throw new UnsupportedOperationException("Unknown command type...");
     }
