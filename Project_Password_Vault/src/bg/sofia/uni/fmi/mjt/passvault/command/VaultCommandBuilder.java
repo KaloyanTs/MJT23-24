@@ -99,12 +99,12 @@ public class VaultCommandBuilder {
                 return new RegisterVaultCommand(vault, user, password);
             }
             case LOGIN -> {
-                assertProvided(user);
+                assertProvided(user, password);
                 return new LoginVaultCommand(vault, user, password);
             }
             case LOGOUT -> {
-                assertProvided(user);
-                return new LogoutVaultCommand(vault, user);
+                assertHasOwner();
+                return new LogoutVaultCommand(vault, owner);
             }
             case ADD -> {
                 assertHasOwner();

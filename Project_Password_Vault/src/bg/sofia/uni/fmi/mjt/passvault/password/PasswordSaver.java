@@ -11,4 +11,5 @@ public interface PasswordSaver {
 
     void removePassword(User owner, Website website);
 
+    void addUserToAll(User user, Password password);
 }

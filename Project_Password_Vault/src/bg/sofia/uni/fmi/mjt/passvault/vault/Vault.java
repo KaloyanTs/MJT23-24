@@ -11,7 +11,6 @@ import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -76,15 +75,7 @@ public class Vault {
     }
 
     public Response registerUser(User user, Password password) {
-        try (FileWriter fileWriter = new FileWriter("users.pass", true);
-             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-
-            bufferedWriter.write(user.name() + " " + password.getCiphered("SHA256"));
-            bufferedWriter.newLine();
-
-        } catch (IOException e) {
-            throw new UnsupportedOperationException("Unexpected problem while writing to a file", e);
-        }
+        passwordSaver.addUserToAll(user, password);
         userPassword.put(user, password);
         data.put(user, new UserContainer(user, passwordSaver));
         return new Response("User registered successfully!", null, null);

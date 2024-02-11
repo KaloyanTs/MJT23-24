@@ -40,4 +40,5 @@ public class CommandInterpreterTest {
         assertNull(response.user());
         assertNull(response.password());
     }
+    //todo add more
 }

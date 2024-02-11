@@ -1,4 +1,4 @@
-package bg.sofia.uni.mjt.passvault;
+package bg.sofia.uni.mjt.passvault.vault;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
@@ -45,5 +45,17 @@ public class UserContainerTest {
         Password myPass = Password.of("Pass");
         container.addPassword(website, user, myPass);
         assertThrows(NoPasswordRegisteredException.class, () -> container.retrieve(new Website("abv.bg")));
+    }
+
+    @Test
+    void testRemovePassword() throws NoPasswordRegisteredException {
+        Website website = new Website("facebook.com");
+        Password myPass = Password.of("Pass");
+        container.addPassword(website, user, myPass);
+        assertEquals(new KeyValuePair<>(user, myPass), container.retrieve(website));
+        container.removePassword(website);
+        assertThrows(NoPasswordRegisteredException.class,
+            () -> container.retrieve(website));
+
     }
 }
