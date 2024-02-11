@@ -29,7 +29,9 @@ public class CommandInterpreterTest {
     @Test
     void testDisconnectNull() {
         Request request = new Request(null, "disconnect");
-        assertNull(interpreter.intepretate(request));
+        assertNull(interpreter.intepretate(request).password());
+        assertNull(interpreter.intepretate(request).content());
+        assertNull(interpreter.intepretate(request).user());
     }
 
     @Test
