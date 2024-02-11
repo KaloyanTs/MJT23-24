@@ -1,6 +1,5 @@
 package bg.sofia.uni.mjt.passvault.command;
 
-import bg.sofia.uni.fmi.mjt.passvault.command.AddPasswordVaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.RetrieveVaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
@@ -44,17 +43,16 @@ public class RetrieveVaultCommandTest {
     }
 
     @Test
-    void testCompromised() {
+    void testNoPasswordForWebsite() {
         User user = new User("Me");
         vault.registerUser(user, compromised);
         vault.login(user, compromised);
-        VaultCommand command = new AddPasswordVaultCommand(vault,
+        VaultCommand command = new RetrieveVaultCommand(vault,
             new User("Me"),
-            new Website("google.com"),
-            new User("Me"),
-            compromised);
+            new Website("google.com")
+        );
         Response response = command.execute();
-        assertTrue(response.content().contains("compromised"));
+        assertTrue(response.content().contains("no password stored"));
     }
 
     @Test

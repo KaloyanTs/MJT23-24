@@ -2,7 +2,6 @@ package bg.sofia.uni.fmi.mjt.passvault.command;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
-import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;

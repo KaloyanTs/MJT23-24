@@ -2,7 +2,6 @@ package bg.sofia.uni.fmi.mjt.passvault.vault;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
-import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.PasswordChecker;
@@ -23,7 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Vault {
-    private static final int SECONDS_TO_LOGOUT = 20;
+    private static final int SECONDS_TO_LOGOUT = 13;
     private final Map<User, UserContainer> data;
     private final ConcurrentSkipListSet<User> activeUsers;
     private final Map<User, ScheduledFuture<?>> activity;

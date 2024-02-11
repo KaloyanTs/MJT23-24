@@ -6,6 +6,7 @@ import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.PasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
+import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public class LogoutVaultCommandTest {
@@ -44,6 +46,17 @@ public class LogoutVaultCommandTest {
         vault.registerUser(user, password);
         vault.login(user, password);
         VaultCommand command = new LogoutVaultCommand(vault, new User("Me"));
-        assertDoesNotThrow(() -> command.execute());
+        assertDoesNotThrow(command::execute);
+    }
+
+    @Test
+    void testNotLoggedIn() {
+        User user = new User("Me");
+        vault.registerUser(user, password);
+        VaultCommand command = new LogoutVaultCommand(vault,
+            new User("Me")
+        );
+        Response response = command.execute();
+        assertTrue(response.content().contains("Not logged in"));
     }
 }

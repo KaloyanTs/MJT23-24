@@ -68,7 +68,9 @@ public class CommandInterpreter {
             return null;
         }
 
-        commandBuilder.owner(request.cookie().user());
+        if (request.cookie() != null) {
+            commandBuilder.owner(request.cookie().user());
+        }
         if (WORD_TO_COMMAND_TYPE.get(parts[0]) == null) {
             return new Response("Unknown command!", null, null);
         }
