@@ -116,8 +116,4 @@ public class VaultCommandBuilderTest {
             .build();
         assertEquals(GeneratePaswordVaultCommand.class, command.getClass());
     }
-
-    //----------------------
-    //todo more tests here
-    //----------------------
 }

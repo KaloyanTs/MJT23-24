@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class PasswordGenerator {
 
-    Random random;
+    private final Random random;
     private static final int LOW_CHAR = 41;
     private static final int HIGH_CHAR = 126;
 

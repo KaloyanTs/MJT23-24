@@ -64,5 +64,4 @@ public class CommandInterpreterTest {
         assertFalse(response.content().contains("Unknown"));
         assertFalse(response.content().contains("number of arguments"));
     }
-    //todo add more
 }

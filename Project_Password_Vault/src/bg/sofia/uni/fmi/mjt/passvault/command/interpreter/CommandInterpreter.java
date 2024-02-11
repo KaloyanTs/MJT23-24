@@ -45,7 +45,6 @@ public class CommandInterpreter {
         WORD_TO_COMMAND_TYPE.put("login", VaultCommandBuilder.CommandType.LOGIN);
         WORD_TO_COMMAND_TYPE.put("logout", VaultCommandBuilder.CommandType.LOGOUT);
         WORD_TO_COMMAND_TYPE.put("register", VaultCommandBuilder.CommandType.REGISTER);
-        //todo add more
     }
 
     public CommandInterpreter(Vault vault) {

@@ -4,11 +4,12 @@ import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 public class FilePasswordSaver implements PasswordSaver {
     @Override
@@ -38,11 +39,10 @@ public class FilePasswordSaver implements PasswordSaver {
     public void removePassword(User owner, Website website) {
         String filePath = owner.name() + ".user";
         try (
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath + ".tmp"))
-        ) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            List<String> lines = Files.readAllLines(Path.of(filePath));
+            new FileWriter(filePath, false).close();
+            for (String line : lines) {
                 if (!line.contains(website.url())) {
                     writer.write(line);
                     writer.newLine();

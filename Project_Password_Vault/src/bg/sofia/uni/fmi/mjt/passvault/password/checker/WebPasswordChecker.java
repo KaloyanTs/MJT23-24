@@ -23,7 +23,6 @@ public class WebPasswordChecker implements PasswordChecker {
     private static final int COMPROMISED = 200;
 
     public WebPasswordChecker() {
-        //todo implement
     }
 
     protected HttpRequest makeRequest(Password password) throws URISyntaxException {
@@ -31,8 +30,8 @@ public class WebPasswordChecker implements PasswordChecker {
         String encodedCredentials = Base64
             .getEncoder()
             .encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-        //todo debug here
-        String str = "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, PREFIX_LENGTH - 1) + "\"," +
+        String requestString = "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0,
+            PREFIX_LENGTH - 1) + "\"," +
             "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, PREFIX_LENGTH - 1) + "\"," +
             "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, PREFIX_LENGTH - 1) + "\"" +
             "}";
@@ -40,19 +39,12 @@ public class WebPasswordChecker implements PasswordChecker {
             .uri(URI.create("https://api.enzoic.com/passwords?"))
             .header("Authorization", "Basic " + encodedCredentials)
             .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(
-                "{\"partialSHA256\": \"" + password.getCiphered("SHA256").substring(0, PREFIX_LENGTH - 1) + "\"," +
-                    "\"partialSHA1\": \"" + password.getCiphered("SHA1").substring(0, PREFIX_LENGTH - 1) + "\"," +
-                    "\"partialMD5\": \"" + password.getCiphered("MD5").substring(0, PREFIX_LENGTH - 1) + "\"" +
-                    "}"))
-            //todo replace with str from above
+            .POST(HttpRequest.BodyPublishers.ofString(requestString))
             .build();
     }
 
     public boolean checkPasswordIsCompromised(Password password) {
-        HttpClient client = HttpClient
-            .newBuilder()
-            .build();
+        HttpClient client = HttpClient.newBuilder().build();
         HttpRequest httpRequest;
         HttpResponse<String> httpResponse;
         try {
