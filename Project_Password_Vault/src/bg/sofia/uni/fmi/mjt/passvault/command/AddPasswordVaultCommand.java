@@ -27,10 +27,11 @@ public class AddPasswordVaultCommand implements VaultCommand {
 
     @Override
     public Response execute() {
-        if (vault.getPasswordChecker().checkPasswordIsCompromised(password)) {
-            return new Response("Given password has been compromised!", null, password);
-        }
         try {
+            vault.assertLoggedIn(owner);
+            if (vault.getPasswordChecker().checkPasswordIsCompromised(password)) {
+                return new Response("Given password has been compromised!", null, password);
+            }
             return vault.addPassword(owner, website, user, password);
         } catch (UserNotLoggedInException e) {
             return new Response(e.getMessage(), null, null);

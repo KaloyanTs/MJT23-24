@@ -50,7 +50,6 @@ public class VaultCommandBuilder {
         return this;
     }
 
-
     public VaultCommandBuilder user(User user) {
         this.user = user;
         return this;
@@ -74,6 +73,12 @@ public class VaultCommandBuilder {
     public VaultCommandBuilder passwordLength(int passwordLength) {
         this.passwordLength = passwordLength;
         return this;
+    }
+
+    private void assertHasOwner() throws BadCommandArgumentsException {
+        if (owner == null) {
+            throw new BadCommandArgumentsException("You must be logged in firstly!");
+        }
     }
 
     private void assertProvided(Object... args) throws BadCommandArgumentsException {
@@ -102,7 +107,8 @@ public class VaultCommandBuilder {
                 return new LogoutVaultCommand(vault, user);
             }
             case ADD -> {
-                assertProvided(owner, user, website);
+                assertHasOwner();
+                assertProvided(user, website);
                 if (password == null) {
                     assertProvided(passwordLength);
                     return new GeneratePaswordVaultCommand(vault, owner, website, user, passwordLength);
@@ -111,11 +117,12 @@ public class VaultCommandBuilder {
                 }
             }
             case REMOVE -> {
-                assertProvided(owner, website);
+                assertProvided(website);
                 return new RemovePasswordVaultCommand(vault, owner, website);
             }
             case RETRIEVE -> {
-                assertProvided(website, owner);
+                assertHasOwner();
+                assertProvided(website);
                 return new RetrieveVaultCommand(vault, owner, website);
             }
         }

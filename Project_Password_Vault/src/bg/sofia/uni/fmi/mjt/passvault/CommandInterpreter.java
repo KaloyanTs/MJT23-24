@@ -25,7 +25,6 @@ public class CommandInterpreter {
     private final VaultCommandBuilder commandBuilder;
     private final Map<String, BiConsumer<String[], Integer>> wordsToActions;
 
-
     static {
         USAGES = new HashMap<>();
         USAGES.put("register", List.of(new KeyValuePair<>("user", 1), new KeyValuePair<>("password", 2),
@@ -62,7 +61,7 @@ public class CommandInterpreter {
 
     public Response intepretate(Request request) {
         String[] parts = request.line().trim().split("\\s+");
-        if (parts.length < 1) {
+        if (parts.length < 1 || parts[0].isEmpty()) {
             return new Response("", null, null);
         }
         if (parts[0].equals("disconnect")) {
@@ -70,6 +69,9 @@ public class CommandInterpreter {
         }
 
         commandBuilder.owner(request.cookie().user());
+        if (WORD_TO_COMMAND_TYPE.get(parts[0]) == null) {
+            return new Response("Unknown command!", null, null);
+        }
         commandBuilder.type(WORD_TO_COMMAND_TYPE.get(parts[0]));
         for (KeyValuePair<String, Integer> pair : USAGES.get(parts[0])) {
             try {
@@ -82,7 +84,7 @@ public class CommandInterpreter {
         try {
             command = commandBuilder.build();
         } catch (BadCommandArgumentsException e) {
-            return new Response("Bad usage... (see manual)", null, null);
+            return new Response(e.getMessage(), null, null);
         }
 
         return command.execute();

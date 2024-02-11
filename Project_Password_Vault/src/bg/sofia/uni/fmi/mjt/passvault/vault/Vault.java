@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Vault {
+    private static final int SECONDS_TO_LOGOUT = 20;
     private final Map<User, UserContainer> data;
     private final ConcurrentSkipListSet<User> activeUsers;
     private final Map<User, ScheduledFuture<?>> activity;
@@ -43,22 +44,19 @@ public class Vault {
         }
     }
 
-    private void assertLoggedIn(User user) throws UserNotLoggedInException {
+    public void assertLoggedIn(User user) throws UserNotLoggedInException {
         if (!activeUsers.contains(user)) {
             throw new UserNotLoggedInException("Not logged in!");
         }
     }
 
     private void updateActivity(User user) {
-        if (!activeUsers.contains(user)) {
-            throw new IllegalStateException("Given user is not logged in");
-        }
-
-        activity.get(user).cancel(false);
+        if (activity.get(user) != null)
+            activity.get(user).cancel(false);
         activity.put(user, executorService.schedule(() -> {
             activeUsers.remove(user);
             System.out.println(user.name() + " forced logout...");
-        }, 1, TimeUnit.MINUTES));
+        }, SECONDS_TO_LOGOUT, TimeUnit.SECONDS));
     }
 
     public Response addPassword(User owner, Website website, User username, Password password)
