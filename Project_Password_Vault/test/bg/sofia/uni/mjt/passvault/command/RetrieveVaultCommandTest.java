@@ -4,7 +4,7 @@ import bg.sofia.uni.fmi.mjt.passvault.command.RetrieveVaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
+import bg.sofia.uni.fmi.mjt.passvault.password.saver.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.PasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;

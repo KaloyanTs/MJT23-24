@@ -1,5 +1,6 @@
-package bg.sofia.uni.fmi.mjt.passvault.password;
+package bg.sofia.uni.fmi.mjt.passvault.password.saver;
 
+import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 

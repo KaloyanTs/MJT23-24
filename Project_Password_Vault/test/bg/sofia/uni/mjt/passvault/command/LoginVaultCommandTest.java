@@ -3,7 +3,7 @@ package bg.sofia.uni.mjt.passvault.command;
 import bg.sofia.uni.fmi.mjt.passvault.command.LoginVaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
+import bg.sofia.uni.fmi.mjt.passvault.password.saver.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.PasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
@@ -47,6 +47,6 @@ public class LoginVaultCommandTest {
         VaultCommand command = new LoginVaultCommand(vault,
             new User("Me"),
             password);
-        assertDoesNotThrow(() -> command.execute());
+        assertDoesNotThrow(command::execute);
     }
 }

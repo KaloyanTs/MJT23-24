@@ -2,7 +2,7 @@ package bg.sofia.uni.fmi.mjt.passvault.vault;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
+import bg.sofia.uni.fmi.mjt.passvault.password.saver.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.utility.KeyValuePair;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
@@ -17,11 +17,11 @@ public class UserContainer {
     private final PasswordSaver saver;
 
     public UserContainer(User owner, PasswordSaver saver) {
-        //todo create a file in which passwords will be kept
         this.owner = owner;
         this.saver = saver;
         this.saver.newOwner(owner);
         container = new HashMap<>();
+        saver.newOwner(owner);
     }
 
     public void addPassword(Website website, User user, Password password) {

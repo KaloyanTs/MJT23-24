@@ -2,7 +2,7 @@ package bg.sofia.uni.mjt.passvault.command.interpreter;
 
 import bg.sofia.uni.fmi.mjt.passvault.client.Request;
 import bg.sofia.uni.fmi.mjt.passvault.command.interpreter.CommandInterpreter;
-import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
+import bg.sofia.uni.fmi.mjt.passvault.password.saver.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.PasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;

@@ -42,6 +42,8 @@ public class Password implements Serializable {
     }
 
     public String getDecrypted() {
+        //return passwordEncrypted;
+        //todo return line below when found the problem
         return decrypt(passwordEncrypted);
     }
 
@@ -65,8 +67,7 @@ public class Password implements Serializable {
         }
     }
 
-    public static String encrypt(String input) {
-        //todo make private
+    private static String encrypt(String input) {
         try {
             byte[] encryptedBytes = ENCRYPT_CIPHER.doFinal(input.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(encryptedBytes);
@@ -75,8 +76,7 @@ public class Password implements Serializable {
         }
     }
 
-    public static String decrypt(String encryptedString) {
-        //todo make private
+    private static String decrypt(String encryptedString) {
         try {
             byte[] decryptedBytes = DECRYPT_CIPHER.doFinal(Base64.getDecoder().decode(encryptedString));
             return new String(decryptedBytes, StandardCharsets.UTF_8);
@@ -91,5 +91,9 @@ public class Password implements Serializable {
 
     public static boolean areEqual(Password p1, Password p2) {
         return p1.passwordEncrypted.equals(p2.passwordEncrypted);
+    }
+
+    public String getEncrypted() {
+        return passwordEncrypted;
     }
 }
