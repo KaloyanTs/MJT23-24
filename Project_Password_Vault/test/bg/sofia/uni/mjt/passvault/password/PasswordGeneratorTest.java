@@ -13,7 +13,7 @@ public class PasswordGeneratorTest {
 
         String password = generator.generatePassword(15).getDecrypted();
         for (char c : password.toCharArray()) {
-            assertTrue(c>40 && c<126);
+            assertTrue(c > 40 && c < 127);
         }
     }
 }

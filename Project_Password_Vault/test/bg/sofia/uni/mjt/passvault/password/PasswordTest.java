@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PasswordTest {
 
@@ -35,5 +37,14 @@ public class PasswordTest {
     @Test
     void testGetCipheredMD5() {
         assertEquals("8c55222e234196647c8717e5003050f5", password.getCiphered("MD5"));
+    }
+
+    @Test
+    void testAreEqual() {
+        Password p1 = Password.of("abcdefg");
+        Password p2 = Password.of("abcdefg");
+        Password p3 = Password.of("abcdEfg");
+        assertTrue(Password.areEqual(p1, p2));
+        assertFalse(Password.areEqual(p1, p3));
     }
 }

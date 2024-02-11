@@ -2,6 +2,7 @@ package bg.sofia.uni.fmi.mjt.passvault.vault;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
+import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.utility.KeyValuePair;
 import bg.sofia.uni.fmi.mjt.passvault.website.Website;
@@ -11,22 +12,25 @@ import java.util.Map;
 
 public class UserContainer {
 
-    private User owner;
-    private Map<Website, KeyValuePair<User, Password>> container;
+    private final User owner;
+    private final Map<Website, KeyValuePair<User, Password>> container;
+    private final PasswordSaver saver;
 
-    public UserContainer(User owner) {
+    public UserContainer(User owner, PasswordSaver saver) {
         //todo create a file in which passwords will be kept
         this.owner = owner;
+        this.saver = saver;
+        this.saver.newOwner(owner);
         container = new HashMap<>();
     }
 
     public void addPassword(Website website, User user, Password password) {
-        //todo append password to file
+        saver.savePassword(owner, website, user, password);
         container.put(website, new KeyValuePair<>(user, password));
     }
 
     public void removePassword(Website website) {
-        //todo remove from file
+        saver.removePassword(owner, website);
         container.remove(website);
     }
 

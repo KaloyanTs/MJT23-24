@@ -4,6 +4,7 @@ import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
+import bg.sofia.uni.fmi.mjt.passvault.password.PasswordSaver;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.PasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.utility.KeyValuePair;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
@@ -29,10 +30,12 @@ public class Vault {
     private final Map<User, ScheduledFuture<?>> activity;
     private final ScheduledExecutorService executorService;
     private final PasswordChecker passwordChecker;
+    private final PasswordSaver passwordSaver;
     private final Map<User, Password> userPassword;
 
-    public Vault(PasswordChecker passwordChecker) {
+    public Vault(PasswordChecker passwordChecker, PasswordSaver passwordSaver) {
         this.passwordChecker = passwordChecker;
+        this.passwordSaver = passwordSaver;
         this.executorService = Executors.newSingleThreadScheduledExecutor();
         this.data = new ConcurrentHashMap<>();
         this.activity = new HashMap<>();
@@ -83,7 +86,7 @@ public class Vault {
             throw new UnsupportedOperationException("Unexpected problem while writing to a file", e);
         }
         userPassword.put(user, password);
-        data.put(user, new UserContainer(user));
+        data.put(user, new UserContainer(user, passwordSaver));
         return new Response("User registered successfully!", null, null);
     }
 

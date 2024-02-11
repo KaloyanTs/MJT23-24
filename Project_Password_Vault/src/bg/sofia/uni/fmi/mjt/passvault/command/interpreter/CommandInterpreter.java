@@ -1,4 +1,4 @@
-package bg.sofia.uni.fmi.mjt.passvault;
+package bg.sofia.uni.fmi.mjt.passvault.command.interpreter;
 
 import bg.sofia.uni.fmi.mjt.passvault.client.Request;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
