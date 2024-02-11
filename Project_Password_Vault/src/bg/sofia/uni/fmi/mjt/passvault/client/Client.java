@@ -59,16 +59,11 @@ public class Client {
             System.out.println(responseFromServer.user().name());
         }
         if (responseFromServer.password() != null) {
-            System.out.println(responseFromServer.password().getDecrypted());
-            //------------------------------
-            //todo debug (problem with deciphering different passwords
-            //------------------------------
-            //todo writing and reading from files on load...
+            System.out.println(responseFromServer.password().getRawString());
         }
     }
 
     public static void main(String[] args) {
-
         try (SocketChannel socketChannel = SocketChannel.open();
              Scanner scanner = new Scanner(System.in)) {
             socketChannel.connect(new InetSocketAddress(SERVER_HOST, SERVER_PORT));
@@ -84,12 +79,15 @@ public class Client {
                 Request request = new Request(new Cookie(currentUser), message);
                 sendRequest(request, socketChannel);
                 Response responseFromServer = readResponse(socketChannel);
+                if (responseFromServer.content() == null) {
+                    System.out.println("Disconnected from vault.");
+                    return;
+                }
                 if (message.startsWith("login") && responseFromServer.user() != null) {
                     currentUser = responseFromServer.user();
                 }
                 proceedResponse(responseFromServer);
             }
-
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("There is a problem with the network communication", e);
         }

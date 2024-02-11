@@ -24,7 +24,9 @@ public class RetrieveVaultCommand implements VaultCommand {
     @Override
     public Response execute() {
         try {
-            return vault.retrieveCredentials(owner, website);
+            Response res = vault.retrieveCredentials(owner, website);
+            System.out.println(res.password().getDecrypted());
+            return res;
         } catch (NoPasswordRegisteredException e) {
             return new Response(
                 "\"" + owner.name() + "\" has no password stored for website \"" + website.url() + "\"" +

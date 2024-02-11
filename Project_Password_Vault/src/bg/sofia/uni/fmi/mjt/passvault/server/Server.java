@@ -74,7 +74,7 @@ public class Server {
                     sc.close();
                     continue;
                 }
-                sendResponse(response, buffer, sc);
+                sendResponse(response.enableRawString(), buffer, sc);
             } else if (key.isAcceptable()) {
                 ServerSocketChannel sockChannel = (ServerSocketChannel) key.channel();
                 SocketChannel accept = sockChannel.accept();

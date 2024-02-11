@@ -65,7 +65,7 @@ public class CommandInterpreter {
             return new Response("", null, null);
         }
         if (parts[0].equals("disconnect")) {
-            return null;
+            return new Response(null, null, null);
         }
         if (request.cookie() != null) {
             commandBuilder.owner(request.cookie().user());
@@ -88,5 +88,9 @@ public class CommandInterpreter {
             return new Response(e.getMessage(), null, null);
         }
         return command.execute();
+    }
+
+    public void endSession() {
+        vault.closeVault();
     }
 }

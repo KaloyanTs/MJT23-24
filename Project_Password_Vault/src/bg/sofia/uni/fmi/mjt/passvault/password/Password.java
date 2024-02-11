@@ -1,13 +1,17 @@
 package bg.sofia.uni.fmi.mjt.passvault.password;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 public class Password implements Serializable {
 
@@ -15,21 +19,15 @@ public class Password implements Serializable {
     private static final int HEX_NUM = 0xff;
     private static final int BITS = 256;
     private static final String ALGORITHM = "AES";
-    private static final Cipher ENCRYPT_CIPHER;
-    private static final Cipher DECRYPT_CIPHER;
     private static final SecretKey SECRET_KEY;
-
-    private final String passwordEncrypted;
+    private byte[] encryptedContent;
+    private final String rawString;
 
     static {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
             keyGenerator.init(BITS);
             SECRET_KEY = keyGenerator.generateKey();
-            DECRYPT_CIPHER = Cipher.getInstance(ALGORITHM);
-            DECRYPT_CIPHER.init(Cipher.DECRYPT_MODE, SECRET_KEY);
-            ENCRYPT_CIPHER = Cipher.getInstance(ALGORITHM);
-            ENCRYPT_CIPHER.init(Cipher.ENCRYPT_MODE, SECRET_KEY);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Unexpected problem occurred...", e);
         } catch (Exception e) {
@@ -37,14 +35,17 @@ public class Password implements Serializable {
         }
     }
 
-    private Password(String password) {
-        passwordEncrypted = encrypt(password);
+    private Password(String str, boolean isRawString) {
+        if (isRawString) {
+            this.rawString = str;
+        } else {
+            encryptedContent = encryptArray(str);
+            rawString = null;
+        }
     }
 
     public String getDecrypted() {
-        //return passwordEncrypted;
-        //todo return line below when found the problem
-        return decrypt(passwordEncrypted);
+        return decryptToString(encryptedContent);
     }
 
     public String getCiphered(String cipher) {
@@ -67,33 +68,71 @@ public class Password implements Serializable {
         }
     }
 
-    private static String encrypt(String input) {
+    private byte[] encryptArray(String str) {
+        ByteArrayInputStream inputStreamToEncrypt = new ByteArrayInputStream(str.getBytes());
+        ByteArrayOutputStream outputStreamEncrypted = new ByteArrayOutputStream();
+        encrypt(inputStreamToEncrypt, outputStreamEncrypted);
+        return outputStreamEncrypted.toByteArray();
+    }
+
+    private String decryptToString(byte[] str) {
+        ByteArrayOutputStream outputStreamDecrypted = new ByteArrayOutputStream();
+        ByteArrayInputStream inputStreamEncrypted = new ByteArrayInputStream(str);
+        decrypt(inputStreamEncrypted, outputStreamDecrypted);
+        return outputStreamDecrypted.toString();
+    }
+
+    private void encrypt(InputStream inputStream, OutputStream outputStream) {
+        Cipher cipher;
         try {
-            byte[] encryptedBytes = ENCRYPT_CIPHER.doFinal(input.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(encryptedBytes);
+            cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, SECRET_KEY);
+
+            try (var cipheredOutput = new CipherOutputStream(outputStream, cipher)) {
+                byte[] dataBytes = inputStream.readAllBytes();
+                cipheredOutput.write(dataBytes);
+            }
         } catch (Exception e) {
-            throw new IllegalStateException("Something unexpected occurred while encrypting...", e);
+            throw new RuntimeException("Error with encryption...", e);
         }
     }
 
-    private static String decrypt(String encryptedString) {
+    private void decrypt(InputStream inputStream, OutputStream outputStream) {
+        Cipher cipher;
         try {
-            byte[] decryptedBytes = DECRYPT_CIPHER.doFinal(Base64.getDecoder().decode(encryptedString));
-            return new String(decryptedBytes, StandardCharsets.UTF_8);
+            cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE, SECRET_KEY);
+
+            try (var cipheredOutput = new CipherOutputStream(outputStream, cipher)) {
+                byte[] dataBytes = inputStream.readAllBytes();
+                cipheredOutput.write(dataBytes);
+            }
         } catch (Exception e) {
-            throw new IllegalStateException("Something unexpected occurred while decrypting...", e);
+            throw new RuntimeException("Error with decryption...", e);
         }
+    }
+
+    public static Password of(String str, boolean rawString) {
+        return new Password(str, rawString);
     }
 
     public static Password of(String str) {
-        return new Password(str);
+        return new Password(str, false);
     }
 
     public static boolean areEqual(Password p1, Password p2) {
-        return p1.passwordEncrypted.equals(p2.passwordEncrypted);
+        return p1.getDecrypted().equals(p2.getDecrypted());
     }
 
-    public String getEncrypted() {
-        return passwordEncrypted;
+    public byte[] getEncrypted() {
+        return encryptedContent;
+    }
+
+    public String getRawString() {
+        if (rawString != null) {
+            return rawString;
+        } else {
+            throw new IllegalStateException("Cannot invoke getRawString when not created with this option...");
+        }
     }
 }

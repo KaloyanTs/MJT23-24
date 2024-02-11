@@ -22,7 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Vault {
-    private static final int SECONDS_TO_LOGOUT = 13;
+    private static final int SECONDS_TO_LOGOUT = 30;
     private final Map<User, UserContainer> data;
     private final ConcurrentSkipListSet<User> activeUsers;
     private final Map<User, ScheduledFuture<?>> activity;
@@ -30,11 +30,12 @@ public class Vault {
     private final PasswordChecker passwordChecker;
     private final PasswordSaver passwordSaver;
     private final Map<User, Password> userPassword;
+    private static final int THREADS = 10;
 
     public Vault(PasswordChecker passwordChecker, PasswordSaver passwordSaver) {
         this.passwordChecker = passwordChecker;
         this.passwordSaver = passwordSaver;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.executorService = Executors.newScheduledThreadPool(THREADS);
         this.data = new ConcurrentHashMap<>();
         this.activity = new HashMap<>();
         this.userPassword = new HashMap<>();
@@ -103,10 +104,14 @@ public class Vault {
         throws NoPasswordRegisteredException, UserNotLoggedInException {
         assertLoggedIn(owner);
         KeyValuePair<User, Password> res = data.get(owner).retrieve(website);
-        return new Response("Password retrieved successfully", res.key(), res.value());
+        return new Response("Credentials retrieved successfully!", res.key(), res.value());
     }
 
     public PasswordChecker getPasswordChecker() {
         return passwordChecker;
+    }
+
+    public void closeVault() {
+        executorService.shutdown();
     }
 }
