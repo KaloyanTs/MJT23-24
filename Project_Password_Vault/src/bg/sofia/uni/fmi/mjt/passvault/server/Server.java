@@ -31,17 +31,67 @@ public class Server {
         INTERPRETER = new CommandInterpreter(new Vault(new WebPasswordChecker(), new FilePasswordSaver()));
     }
 
+    private static void sendResponse(Response response, ByteBuffer buffer, SocketChannel sc) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
+        outputStream.writeObject(response);
+        outputStream.flush();
+        byte[] responseData = byteArrayOutputStream.toByteArray();
+        buffer.clear();
+        buffer.put(responseData);
+        buffer.flip();
+        sc.write(buffer);
+    }
+
+    private static Request readRequest(ByteBuffer buffer)
+        throws IOException, ClassNotFoundException {
+        buffer.flip();
+
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+
+        return (Request) ois.readObject();
+    }
+
+    private static void proceedClients(Selector selector, Iterator<SelectionKey> keyIterator, ByteBuffer buffer)
+        throws IOException, ClassNotFoundException {
+        while (keyIterator.hasNext()) {
+            SelectionKey key = keyIterator.next();
+            if (key.isReadable()) {
+                SocketChannel sc = (SocketChannel) key.channel();
+                buffer.clear();
+                int r = sc.read(buffer);
+                if (r < 0) {
+                    System.out.println("Client has closed the connection...");
+                    sc.close();
+                    continue;
+                }
+                Request clientRequest = readRequest(buffer);
+                Response response = INTERPRETER.intepretate(clientRequest);
+                if (response == null) {
+                    System.out.println("Client desires to close the connection...");
+                    sc.close();
+                    continue;
+                }
+                sendResponse(response, buffer, sc);
+            } else if (key.isAcceptable()) {
+                ServerSocketChannel sockChannel = (ServerSocketChannel) key.channel();
+                SocketChannel accept = sockChannel.accept();
+                accept.configureBlocking(false);
+                accept.register(selector, SelectionKey.OP_READ);
+            }
+            keyIterator.remove();
+        }
+    }
+
     public static void main(String[] args) {
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
-
             serverSocketChannel.bind(new InetSocketAddress(SERVER_HOST, SERVER_PORT));
             serverSocketChannel.configureBlocking(false);
-
             Selector selector = Selector.open();
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-
             ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
-
             while (true) {
                 int readyChannels = selector.select();
                 if (readyChannels == 0) {
@@ -49,56 +99,8 @@ public class Server {
                 }
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
-
-                while (keyIterator.hasNext()) {
-                    SelectionKey key = keyIterator.next();
-                    if (key.isReadable()) {
-                        SocketChannel sc = (SocketChannel) key.channel();
-
-                        buffer.clear();
-                        int r = sc.read(buffer);
-                        if (r < 0) {
-                            System.out.println("Client has closed the connection...");
-                            sc.close();
-                            continue;
-                        }
-
-                        buffer.flip();
-
-                        byte[] data = new byte[buffer.remaining()];
-                        buffer.get(data);
-                        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-
-                        Request clientRequest = (Request) ois.readObject();
-                        Response response = INTERPRETER.intepretate(clientRequest);
-                        if (response == null) {
-                            System.out.println("Client desires to close the connection...");
-                            sc.close();
-                            continue;
-                        }
-
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        ObjectOutputStream outputStream = new ObjectOutputStream(byteArrayOutputStream);
-                        outputStream.writeObject(response);
-                        outputStream.flush();
-                        byte[] responseData = byteArrayOutputStream.toByteArray();
-                        buffer.clear();
-                        buffer.put(responseData);
-                        buffer.flip();
-                        sc.write(buffer);
-
-                    } else if (key.isAcceptable()) {
-                        ServerSocketChannel sockChannel = (ServerSocketChannel) key.channel();
-                        SocketChannel accept = sockChannel.accept();
-                        accept.configureBlocking(false);
-                        accept.register(selector, SelectionKey.OP_READ);
-                    }
-
-                    keyIterator.remove();
-                }
-
+                proceedClients(selector, keyIterator, buffer);
             }
-
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("There is a problem with the server", e);
         }

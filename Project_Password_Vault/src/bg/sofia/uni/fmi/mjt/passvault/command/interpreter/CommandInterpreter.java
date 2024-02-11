@@ -30,7 +30,7 @@ public class CommandInterpreter {
         USAGES.put("register", List.of(new KeyValuePair<>("user", 1), new KeyValuePair<>("password", 2),
             new KeyValuePair<>("password-duplicate", THREE)));
         USAGES.put("login", List.of(new KeyValuePair<>("user", 1), new KeyValuePair<>("password", 2)));
-        USAGES.put("logout", List.of(new KeyValuePair<>("user", 1)));
+        USAGES.put("logout", List.of());
         USAGES.put("retrieve-credentials", List.of(new KeyValuePair<>("website", 1)));
         USAGES.put("generate-password", List.of(new KeyValuePair<>("website", 1), new KeyValuePair<>("user", 2)));
         USAGES.put("add-password", List.of(new KeyValuePair<>("website", 1), new KeyValuePair<>("user", 2),
@@ -67,7 +67,6 @@ public class CommandInterpreter {
         if (parts[0].equals("disconnect")) {
             return null;
         }
-
         if (request.cookie() != null) {
             commandBuilder.owner(request.cookie().user());
         }
@@ -88,7 +87,6 @@ public class CommandInterpreter {
         } catch (BadCommandArgumentsException e) {
             return new Response(e.getMessage(), null, null);
         }
-
         return command.execute();
     }
 }

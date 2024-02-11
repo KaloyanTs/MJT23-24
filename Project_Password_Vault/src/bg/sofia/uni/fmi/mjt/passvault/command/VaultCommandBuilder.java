@@ -89,14 +89,29 @@ public class VaultCommandBuilder {
         }
     }
 
+    private VaultCommand registerCommand() throws BadCommandArgumentsException {
+        assertProvided(user, password, passwordDuplicate);
+        if (!Password.areEqual(password, passwordDuplicate)) {
+            throw new BadCommandArgumentsException("Passwords does not match!");
+        }
+        return new RegisterVaultCommand(vault, user, password);
+    }
+
+    private VaultCommand addCommand() throws BadCommandArgumentsException {
+        assertHasOwner();
+        assertProvided(user, website);
+        if (password == null) {
+            assertProvided(passwordLength);
+            return new GeneratePaswordVaultCommand(vault, owner, website, user, passwordLength);
+        } else {
+            return new AddPasswordVaultCommand(vault, owner, website, user, password);
+        }
+    }
+
     public VaultCommand build() throws BadCommandArgumentsException {
         switch (type) {
             case REGISTER -> {
-                assertProvided(user, password, passwordDuplicate);
-                if (!Password.areEqual(password, passwordDuplicate)) {
-                    throw new BadCommandArgumentsException("Passwords does not match!");
-                }
-                return new RegisterVaultCommand(vault, user, password);
+                return registerCommand();
             }
             case LOGIN -> {
                 assertProvided(user, password);
@@ -107,14 +122,7 @@ public class VaultCommandBuilder {
                 return new LogoutVaultCommand(vault, owner);
             }
             case ADD -> {
-                assertHasOwner();
-                assertProvided(user, website);
-                if (password == null) {
-                    assertProvided(passwordLength);
-                    return new GeneratePaswordVaultCommand(vault, owner, website, user, passwordLength);
-                } else {
-                    return new AddPasswordVaultCommand(vault, owner, website, user, password);
-                }
+                return addCommand();
             }
             case REMOVE -> {
                 assertProvided(website);
