@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.passvault;
 
+import bg.sofia.uni.fmi.mjt.passvault.client.Request;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommandBuilder;
 import bg.sofia.uni.fmi.mjt.passvault.exception.BadCommandArgumentsException;
@@ -31,15 +32,16 @@ public class CommandInterpreter {
             new KeyValuePair<>("password-duplicate", THREE)));
         USAGES.put("login", List.of(new KeyValuePair<>("user", 1), new KeyValuePair<>("password", 2)));
         USAGES.put("logout", List.of(new KeyValuePair<>("user", 1)));
-        USAGES.put("retrieve-credentials", List.of(new KeyValuePair<>("website", 1), new KeyValuePair<>("user", 2)));
+        USAGES.put("retrieve-credentials", List.of(new KeyValuePair<>("website", 1)));
         USAGES.put("generate-password", List.of(new KeyValuePair<>("website", 1), new KeyValuePair<>("user", 2)));
         USAGES.put("add-password", List.of(new KeyValuePair<>("website", 1), new KeyValuePair<>("user", 2),
             new KeyValuePair<>("password", THREE)));
-        USAGES.put("remove-password", List.of(new KeyValuePair<>("website", 1), new KeyValuePair<>("user", 2)));
+        USAGES.put("remove-password", List.of(new KeyValuePair<>("website", 1)));
 
         WORD_TO_COMMAND_TYPE = new HashMap<>();
         WORD_TO_COMMAND_TYPE.put("add-password", VaultCommandBuilder.CommandType.ADD);
-        WORD_TO_COMMAND_TYPE.put("retrieve-password", VaultCommandBuilder.CommandType.RETRIEVE);
+        WORD_TO_COMMAND_TYPE.put("generate-password", VaultCommandBuilder.CommandType.ADD);
+        WORD_TO_COMMAND_TYPE.put("retrieve-credentials", VaultCommandBuilder.CommandType.RETRIEVE);
         WORD_TO_COMMAND_TYPE.put("remove-password", VaultCommandBuilder.CommandType.REMOVE);
         WORD_TO_COMMAND_TYPE.put("login", VaultCommandBuilder.CommandType.LOGIN);
         WORD_TO_COMMAND_TYPE.put("logout", VaultCommandBuilder.CommandType.LOGOUT);
@@ -58,24 +60,29 @@ public class CommandInterpreter {
             (args, index) -> commandBuilder.passwordDuplicate(Password.of(args[index])));
     }
 
-    public Response intepretate(String commandLine) {
-        String[] parts = commandLine.trim().split("\\s+");
+    public Response intepretate(Request request) {
+        String[] parts = request.line().trim().split("\\s+");
         if (parts.length < 1) {
-            return new Response("", null);
+            return new Response("", null, null);
         }
         if (parts[0].equals("disconnect")) {
             return null;
         }
 
+        commandBuilder.owner(request.cookie().user());
         commandBuilder.type(WORD_TO_COMMAND_TYPE.get(parts[0]));
         for (KeyValuePair<String, Integer> pair : USAGES.get(parts[0])) {
-            wordsToActions.get(pair.key()).accept(parts, pair.value());
+            try {
+                wordsToActions.get(pair.key()).accept(parts, pair.value());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                return new Response("Bad number of arguments...", null, null);
+            }
         }
         VaultCommand command;
         try {
             command = commandBuilder.build();
         } catch (BadCommandArgumentsException e) {
-            return new Response("Bad usage... (see manual)", null);
+            return new Response("Bad usage... (see manual)", null, null);
         }
 
         return command.execute();

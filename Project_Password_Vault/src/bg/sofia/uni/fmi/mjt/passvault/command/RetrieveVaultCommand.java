@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.passvault.command;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.NoPasswordRegisteredException;
+import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
 import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotRegisteredException;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
@@ -9,27 +10,30 @@ import bg.sofia.uni.fmi.mjt.passvault.website.Website;
 
 public class RetrieveVaultCommand implements VaultCommand {
     private final Vault vault;
-    private final User user;
+    private final User owner;
     private final Website website;
 
-    public RetrieveVaultCommand(Vault vault, User user, Website website) {
-        if (vault == null || user == null || website == null) {
+    public RetrieveVaultCommand(Vault vault, User owner, Website website) {
+        if (vault == null || owner == null || website == null) {
             throw new IllegalArgumentException("Null cannot be an argument...");
         }
         this.vault = vault;
-        this.user = user;
+        this.owner = owner;
         this.website = website;
     }
 
     @Override
     public Response execute() {
         try {
-            return vault.retrieveCredentials(website, user);
+            return vault.retrieveCredentials(owner, website);
         } catch (NoPasswordRegisteredException e) {
-            return new Response("\"" + user.name() + "\" is not registered in the vault.", null);
+            return new Response("\"" + owner.name() + "\" is not registered in the vault.", null, null);
         } catch (UserNotRegisteredException e) {
-            return new Response("\"" + user.name() + "\" has no password stored for website \"" + website.url() + "\"" +
-                ".", null);
+            return new Response(
+                "\"" + owner.name() + "\" has no password stored for website \"" + website.url() + "\"" +
+                    ".", null, null);
+        } catch (UserNotLoggedInException e) {
+            return new Response(e.getMessage(), null, null);
         }
     }
 }

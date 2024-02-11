@@ -1,9 +1,11 @@
 package bg.sofia.uni.fmi.mjt.passvault.user;
 
-public record User(String name) {
-    //todo consider containing its password
+import java.io.Serializable;
 
-    public static User of(String str) {
-        return new User(str);
+public record User(String name) implements Comparable<User>, Serializable {
+
+    @Override
+    public int compareTo(User u) {
+        return name.compareTo(u.name);
     }
 }

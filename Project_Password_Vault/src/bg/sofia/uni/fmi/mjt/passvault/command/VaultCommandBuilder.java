@@ -24,8 +24,12 @@ public class VaultCommandBuilder {
     private Password passwordDuplicate;
     private Website website;
     private Integer passwordLength;
+    private User owner;
 
     public VaultCommandBuilder(Vault vault) {
+        if (vault == null) {
+            throw new IllegalArgumentException("Vault is null...");
+        }
         this.vault = vault;
         this.passwordDuplicate = null;
         this.passwordLength = null;
@@ -33,12 +37,19 @@ public class VaultCommandBuilder {
         this.user = null;
         this.password = null;
         this.website = null;
+        this.owner = null;
     }
 
     public VaultCommandBuilder type(CommandType commandType) {
         this.type = commandType;
         return this;
     }
+
+    public VaultCommandBuilder owner(User owner) {
+        this.owner = owner;
+        return this;
+    }
+
 
     public VaultCommandBuilder user(User user) {
         this.user = user;
@@ -91,21 +102,21 @@ public class VaultCommandBuilder {
                 return new LogoutVaultCommand(vault, user);
             }
             case ADD -> {
-                assertProvided(user, website);
+                assertProvided(owner, user, website);
                 if (password == null) {
                     assertProvided(passwordLength);
-                    return new GeneratePaswordVaultCommand(vault, user, website, passwordLength);
+                    return new GeneratePaswordVaultCommand(vault, owner, website, user, passwordLength);
                 } else {
-                    return new AddPasswordVaultCommand(vault, user, website, password);
+                    return new AddPasswordVaultCommand(vault, owner, website, user, password);
                 }
             }
             case REMOVE -> {
-                assertProvided(user, website);
-                return new RemovePasswordVaultCommand(vault, user, website);
+                assertProvided(owner, website);
+                return new RemovePasswordVaultCommand(vault, owner, website);
             }
             case RETRIEVE -> {
-                assertProvided(website, user);
-                return new RetrieveVaultCommand(vault, user, website);
+                assertProvided(website, owner);
+                return new RetrieveVaultCommand(vault, owner, website);
             }
         }
         throw new UnsupportedOperationException("Unknown command type...");

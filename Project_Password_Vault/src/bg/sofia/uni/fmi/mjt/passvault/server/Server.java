@@ -1,12 +1,15 @@
 package bg.sofia.uni.fmi.mjt.passvault.server;
 
 import bg.sofia.uni.fmi.mjt.passvault.CommandInterpreter;
+import bg.sofia.uni.fmi.mjt.passvault.client.Request;
 import bg.sofia.uni.fmi.mjt.passvault.password.checker.WebPasswordChecker;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -18,9 +21,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Server {
-    public static final int SERVER_PORT = 7777;
+    public static final int SERVER_PORT = 6154;
     private static final String SERVER_HOST = "localhost";
-    private static final int BUFFER_SIZE = 1024;
+    private static final int BUFFER_SIZE = 4096;
     private static final CommandInterpreter INTERPRETER;
 
     static {
@@ -61,8 +64,12 @@ public class Server {
 
                         buffer.flip();
 
-                        String receivedString = new String(buffer.array(), 0, buffer.limit());
-                        Response response = INTERPRETER.intepretate(receivedString);
+                        byte[] data = new byte[buffer.remaining()];
+                        buffer.get(data);
+                        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
+
+                        Request clientRequest = (Request) ois.readObject();
+                        Response response = INTERPRETER.intepretate(clientRequest);
                         if (response == null) {
                             System.out.println("Client desires to close the connection...");
                             sc.close();
@@ -91,8 +98,8 @@ public class Server {
 
             }
 
-        } catch (IOException e) {
-            throw new RuntimeException("There is a problem with the server socket", e);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("There is a problem with the server", e);
         }
     }
 }

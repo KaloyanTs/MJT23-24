@@ -65,7 +65,8 @@ public class Password implements Serializable {
         }
     }
 
-    private static String encrypt(String input) {
+    public static String encrypt(String input) {
+        //todo make private
         try {
             byte[] encryptedBytes = ENCRYPT_CIPHER.doFinal(input.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(encryptedBytes);
@@ -74,7 +75,8 @@ public class Password implements Serializable {
         }
     }
 
-    private static String decrypt(String encryptedString) {
+    public static String decrypt(String encryptedString) {
+        //todo make private
         try {
             byte[] decryptedBytes = DECRYPT_CIPHER.doFinal(Base64.getDecoder().decode(encryptedString));
             return new String(decryptedBytes, StandardCharsets.UTF_8);

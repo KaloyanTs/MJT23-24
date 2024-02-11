@@ -1,5 +1,6 @@
 package bg.sofia.uni.fmi.mjt.passvault.command;
 
+import bg.sofia.uni.fmi.mjt.passvault.exception.UserNotLoggedInException;
 import bg.sofia.uni.fmi.mjt.passvault.utility.Response;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
@@ -19,6 +20,10 @@ public class LogoutVaultCommand implements VaultCommand {
 
     @Override
     public Response execute() {
-        return vault.logout(user);
+        try {
+            return vault.logout(user);
+        } catch (UserNotLoggedInException e) {
+            return new Response(e.getMessage(), null, null);
+        }
     }
 }

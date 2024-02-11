@@ -10,10 +10,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
-// NIO, blocking
 public class Client {
 
-    private static final int SERVER_PORT = 7777;
+    private static final int SERVER_PORT = 6154;
     private static final String SERVER_HOST = "localhost";
     private static final int BUFFER_SIZE = 512;
 
@@ -40,7 +39,7 @@ public class Client {
                         retrieve-credentials <website> <user>
                         generate-password <website> <user>
                         add-password <website> <user> <password>
-                        remove-password <website> <user>
+                        remove-password <website>
                         disconnect""");
                     continue;
                 }
@@ -53,19 +52,27 @@ public class Client {
 
                 BUFFER.clear();
                 socketChannel.read(BUFFER);
-                //todo debug here
                 BUFFER.flip();
 
                 byte[] data = new byte[BUFFER.remaining()];
                 BUFFER.get(data);
-                ByteArrayInputStream bais = new ByteArrayInputStream(data);
-                ObjectInputStream ois = new ObjectInputStream(bais);
+                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
 
                 Response responseFromServer = (Response) ois.readObject();
                 System.out.println(responseFromServer.content());
+                if (responseFromServer.user() != null) {
+                    System.out.println(responseFromServer.user().name());
+                }
                 if (responseFromServer.password() != null) {
                     System.out.println(responseFromServer.password().getDecrypted());
+                    //------------------------------
                     //todo debug (problem with deciphering different passwords
+                    //------------------------------
+                    //todo implement cookies (vault is collection  of map<user, Map<Website, Pair<User, Password>>>)
+                    //todo client keeps his credentials after logging in and sends them back to server every time
+                    //todo modify Response for cookies
+                    //todo writing and reading from files on load...
+                    //todo implement UserContainer and use it in vault (map<User, UserContainer>)...
                 }
             }
 
