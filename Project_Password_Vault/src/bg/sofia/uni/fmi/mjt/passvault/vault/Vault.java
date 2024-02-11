@@ -88,7 +88,6 @@ public class Vault {
     }
 
     public Response login(User user, Password password) {
-        //todo consider if correct
         if (userPassword.get(user) == null) {
             return new Response("User is not registered!", null, null);
         }
