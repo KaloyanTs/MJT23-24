@@ -27,8 +27,6 @@ public class RetrieveVaultCommand implements VaultCommand {
         try {
             return vault.retrieveCredentials(owner, website);
         } catch (NoPasswordRegisteredException e) {
-            return new Response("\"" + owner.name() + "\" is not registered in the vault.", null, null);
-        } catch (UserNotRegisteredException e) {
             return new Response(
                 "\"" + owner.name() + "\" has no password stored for website \"" + website.url() + "\"" +
                     ".", null, null);

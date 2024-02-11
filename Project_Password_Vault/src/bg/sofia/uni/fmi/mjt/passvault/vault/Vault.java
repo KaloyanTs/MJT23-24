@@ -101,7 +101,7 @@ public class Vault {
     }
 
     public Response retrieveCredentials(User owner, Website website)
-        throws NoPasswordRegisteredException, UserNotRegisteredException, UserNotLoggedInException {
+        throws NoPasswordRegisteredException, UserNotLoggedInException {
         assertLoggedIn(owner);
         KeyValuePair<User, Password> res = data.get(owner).retrieve(website);
         return new Response("Password retrieved successfully", res.key(), res.value());
