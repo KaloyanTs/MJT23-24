@@ -22,7 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Vault {
-    private static final int SECONDS_TO_LOGOUT = 30;
+    private static final int SECONDS_TO_LOGOUT = 60;
     private final Map<User, UserContainer> data;
     private final ConcurrentSkipListSet<User> activeUsers;
     private final Map<User, ScheduledFuture<?>> activity;
