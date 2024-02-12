@@ -92,7 +92,7 @@ public class VaultCommandBuilder {
 
     private VaultCommand registerCommand() throws BadCommandArgumentsException {
         assertProvided(user, password, passwordDuplicate);
-        if (!Password.areEqual(password, passwordDuplicate)) {
+        if (!password.equals(passwordDuplicate)) {
             throw new BadCommandArgumentsException("Passwords does not match!");
         }
         return new RegisterVaultCommand(vault, user, password);

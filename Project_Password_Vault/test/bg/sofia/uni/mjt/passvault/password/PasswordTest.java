@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class PasswordTest {
 
@@ -49,9 +48,7 @@ public class PasswordTest {
         Password p1 = Password.of("abcdefg");
         Password p2 = Password.of("abcdefg");
         Password p3 = Password.of("abcdEfg");
-        assertTrue(Password.areEqual(p1, p2),
-            "Password with equal contents must be equal");
-        assertFalse(Password.areEqual(p1, p3),
-            "Passwords with different contents must not be equal");
+        assertEquals(p1, p2, "Password with equal contents must be equal");
+        assertNotEquals(p1, p3, "Passwords with different contents must not be equal");
     }
 }

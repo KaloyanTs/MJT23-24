@@ -120,8 +120,14 @@ public class Password implements Serializable {
         return new Password(str, false);
     }
 
-    public static boolean areEqual(Password p1, Password p2) {
-        return p1.getDecrypted().equals(p2.getDecrypted());
+    @Override
+    public int hashCode() {
+        return getDecrypted().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.hashCode() == obj.hashCode();
     }
 
     public byte[] getEncrypted() {

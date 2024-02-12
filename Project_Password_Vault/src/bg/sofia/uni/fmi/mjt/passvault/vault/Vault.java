@@ -91,7 +91,7 @@ public class Vault {
         if (userPassword.get(user) == null) {
             return new Response("User is not registered!", null, null);
         }
-        if (!Password.areEqual(userPassword.get(user), password)) {
+        if (!userPassword.get(user).equals(password)) {
             return new Response("Wrong password!", null, null);
         }
         activeUsers.add(user);
