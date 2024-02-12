@@ -30,12 +30,11 @@ public class Vault {
     private final PasswordChecker passwordChecker;
     private final PasswordSaver passwordSaver;
     private final Map<User, Password> userPassword;
-    private static final int THREADS = 10;
 
     public Vault(PasswordChecker passwordChecker, PasswordSaver passwordSaver) {
         this.passwordChecker = passwordChecker;
         this.passwordSaver = passwordSaver;
-        this.executorService = Executors.newScheduledThreadPool(THREADS);
+        this.executorService = Executors.newSingleThreadScheduledExecutor();
         this.data = new ConcurrentHashMap<>();
         this.activity = new HashMap<>();
         this.userPassword = new HashMap<>();
@@ -53,8 +52,9 @@ public class Vault {
     }
 
     private void updateActivity(User user) {
-        if (activity.get(user) != null)
+        if (activity.get(user) != null) {
             activity.get(user).cancel(false);
+        }
         activity.put(user, executorService.schedule(() -> {
             activeUsers.remove(user);
             System.out.println(user.name() + " forced logout...");
