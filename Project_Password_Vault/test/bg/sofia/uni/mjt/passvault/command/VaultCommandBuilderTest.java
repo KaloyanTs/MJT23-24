@@ -8,6 +8,7 @@ import bg.sofia.uni.fmi.mjt.passvault.command.RetrieveVaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommand;
 import bg.sofia.uni.fmi.mjt.passvault.command.VaultCommandBuilder;
 import bg.sofia.uni.fmi.mjt.passvault.exception.BadCommandArgumentsException;
+import bg.sofia.uni.fmi.mjt.passvault.exception.NoCommandTypeGivenException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
@@ -30,30 +31,35 @@ public class VaultCommandBuilderTest {
 
     @Test
     void testNullVaultThrows() {
-        assertThrows(IllegalArgumentException.class, () -> new VaultCommandBuilder(null));
+        assertThrows(IllegalArgumentException.class, () -> new VaultCommandBuilder(null),
+            "VaultCommandBuilder must be injected with a valid Vault");
     }
 
     @Test
     void testBuildNoTypeFails() {
-        assertThrows(NullPointerException.class, () -> builder.build());
+        assertThrows(NoCommandTypeGivenException.class, () -> builder.build(),
+            "When commandType is unknown, appropriate exception is thrown");
     }
 
     @Test
     void testBuildNoSufficientArguments() {
         assertThrows(BadCommandArgumentsException.class, () ->
-            builder
-                .type(VaultCommandBuilder.CommandType.LOGIN)
-                .user(new User("Me"))
-                .build());
+                builder
+                    .type(VaultCommandBuilder.CommandType.LOGIN)
+                    .user(new User("Me"))
+                    .build(),
+            "Login needs user and password");
         assertThrows(BadCommandArgumentsException.class, () ->
-            builder
-                .type(VaultCommandBuilder.CommandType.REGISTER)
-                .password(Password.of("Pass"))
-                .build());
+                builder
+                    .type(VaultCommandBuilder.CommandType.REGISTER)
+                    .password(Password.of("Pass"))
+                    .build(),
+            "Register needs user, password and password duplicate");
         assertThrows(BadCommandArgumentsException.class, () ->
-            builder
-                .type(VaultCommandBuilder.CommandType.RETRIEVE)
-                .build());
+                builder
+                    .type(VaultCommandBuilder.CommandType.RETRIEVE)
+                    .build(),
+            "Retrieve needs also a website");
     }
 
     @Test
@@ -63,7 +69,8 @@ public class VaultCommandBuilderTest {
             .password(Password.of("abcd"))
             .passwordDuplicate(Password.of("abcd"))
             .build();
-        assertEquals(RegisterVaultCommand.class, command.getClass());
+        assertEquals(RegisterVaultCommand.class, command.getClass(),
+            "Builder does not build command of appropriate class");
     }
 
     @Test
@@ -72,7 +79,8 @@ public class VaultCommandBuilderTest {
             .user(new User("Me"))
             .password(Password.of("abcd"))
             .passwordDuplicate(Password.of("acd"));
-        assertThrows(BadCommandArgumentsException.class, () -> builder.build());
+        assertThrows(BadCommandArgumentsException.class, () -> builder.build(),
+            "Password and password duplicate don't match");
     }
 
     @Test
@@ -83,7 +91,8 @@ public class VaultCommandBuilderTest {
             .owner(new User("Me"))
             .password(Password.of("oinvdiosnd"))
             .build();
-        assertEquals(AddPasswordVaultCommand.class, command.getClass());
+        assertEquals(AddPasswordVaultCommand.class, command.getClass(),
+            "Builder does not build command of appropriate class");
     }
 
     @Test
@@ -93,7 +102,8 @@ public class VaultCommandBuilderTest {
             .password(Password.of("dfsddsfs"))
             .website(new Website("dfsd"))
             .build();
-        assertEquals(RetrieveVaultCommand.class, command.getClass());
+        assertEquals(RetrieveVaultCommand.class, command.getClass(),
+            "Builder does not build command of appropriate class");
     }
 
     @Test
@@ -102,7 +112,8 @@ public class VaultCommandBuilderTest {
             .owner(new User("Me"))
             .website(new Website("dfsd"))
             .build();
-        assertEquals(LogoutVaultCommand.class, command.getClass());
+        assertEquals(LogoutVaultCommand.class, command.getClass(),
+            "Builder does not build command of appropriate class");
     }
 
     @Test
@@ -114,6 +125,7 @@ public class VaultCommandBuilderTest {
             .password(null)
             .passwordLength(8354)
             .build();
-        assertEquals(GeneratePaswordVaultCommand.class, command.getClass());
+        assertEquals(GeneratePaswordVaultCommand.class, command.getClass(),
+            "Builder does not build command of appropriate class");
     }
 }

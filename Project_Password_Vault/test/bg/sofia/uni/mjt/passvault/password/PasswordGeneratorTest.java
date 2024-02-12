@@ -13,7 +13,8 @@ public class PasswordGeneratorTest {
 
         String password = generator.generatePassword(15).getDecrypted();
         for (char c : password.toCharArray()) {
-            assertTrue(c > 40 && c < 127);
+            assertTrue(c > 40 && c < 127,
+                "All symbols in the password are only letters digits, punctual and other popular symbols");
         }
     }
 }

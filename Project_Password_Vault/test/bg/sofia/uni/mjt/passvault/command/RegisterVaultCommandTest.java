@@ -36,7 +36,7 @@ public class RegisterVaultCommandTest {
             null,
             new User("odni"),
             null
-        ));
+        ),"Creating command with some null argument results in an exception");
     }
 
     @Test

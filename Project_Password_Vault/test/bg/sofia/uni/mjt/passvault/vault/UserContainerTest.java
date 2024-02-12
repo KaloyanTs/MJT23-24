@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -28,7 +29,8 @@ public class UserContainerTest {
 
     @Test
     void testGetOwner() {
-        assertEquals(user, container.getOwner());
+        assertSame(user, container.getOwner(),
+            "Owner must be the same object as when constructed");
     }
 
     @Test
@@ -36,7 +38,8 @@ public class UserContainerTest {
         Website website = new Website("facebook.com");
         Password myPass = Password.of("Pass");
         container.addPassword(website, user, myPass);
-        assertEquals(new KeyValuePair<>(user, myPass), container.retrieve(website));
+        assertEquals(new KeyValuePair<>(user, myPass), container.retrieve(website),
+            "Added credentials must be able to be retrieved");
     }
 
     @Test
@@ -44,7 +47,8 @@ public class UserContainerTest {
         Website website = new Website("facebook.com");
         Password myPass = Password.of("Pass");
         container.addPassword(website, user, myPass);
-        assertThrows(NoPasswordRegisteredException.class, () -> container.retrieve(new Website("abv.bg")));
+        assertThrows(NoPasswordRegisteredException.class, () -> container.retrieve(new Website("abv.bg")),
+            "Not stored username and password must not be able to be retrieved");
     }
 
     @Test
@@ -55,7 +59,8 @@ public class UserContainerTest {
         assertEquals(new KeyValuePair<>(user, myPass), container.retrieve(website));
         container.removePassword(website);
         assertThrows(NoPasswordRegisteredException.class,
-            () -> container.retrieve(website));
+            () -> container.retrieve(website),
+            "Removed username and password must not be able to be retrieved");
 
     }
 }

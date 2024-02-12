@@ -39,7 +39,8 @@ public class RetrieveVaultCommandTest {
     @Test
     void testCreationFails() {
         assertThrows(IllegalArgumentException.class, () -> new RetrieveVaultCommand(null,
-            new User("dofns"), new Website("soionodad")));
+                new User("dofns"), new Website("soionodad")),
+            "Creating command with some null argument results in an exception");
     }
 
     @Test
@@ -52,7 +53,8 @@ public class RetrieveVaultCommandTest {
             new Website("google.com")
         );
         Response response = command.execute();
-        assertTrue(response.content().contains("no password stored"));
+        assertTrue(response.content().contains("no password stored"),
+            "When no password is stored for given website response contains appropriate info");
     }
 
     @Test
@@ -64,7 +66,8 @@ public class RetrieveVaultCommandTest {
             new Website("google.com")
         );
         Response response = command.execute();
-        assertTrue(response.content().contains("Not logged in"));
+        assertTrue(response.content().contains("Not logged in"),
+            "Performing command when owner not logged in results in appropriate response");
     }
 
     @Test
@@ -78,7 +81,9 @@ public class RetrieveVaultCommandTest {
             new Website("google.com")
         );
         Response response = command.execute();
-        assertFalse(response.content().contains("no password stored"));
-        assertFalse(response.content().contains("Not logged in"));
+        assertFalse(response.content().contains("no password stored"),
+            "When some password is stored and user logged in response comes from the vault");
+        assertFalse(response.content().contains("Not logged in"),
+            "When some password is stored and user logged in response comes from the vault");
     }
 }

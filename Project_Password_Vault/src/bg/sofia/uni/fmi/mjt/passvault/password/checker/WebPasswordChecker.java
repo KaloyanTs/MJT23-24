@@ -13,12 +13,8 @@ import java.util.Base64;
 
 public class WebPasswordChecker implements PasswordChecker {
 
-    //private static final String apiKey = "YOUR_KEY_HERE";
-    //private static final String apiSecret = "YOUR_SECRET_HERE";
-    //todo uncomment before submit
-    private static final String API_KEY = "de4f91a94a7d42a3807c616eccdfd42c";
-    private static final String API_SECRET = "wvP=s14&YzF1_b#@YQ3MTXn^Vz3=bs*5";
-    //todo comment before submit
+    private static final String API_KEY = "YOUR_KEY_HERE";
+    private static final String API_SECRET = "YOUR_SECRET_HERE";
     private static final int PREFIX_LENGTH = 10;
     private static final int COMPROMISED = 200;
 

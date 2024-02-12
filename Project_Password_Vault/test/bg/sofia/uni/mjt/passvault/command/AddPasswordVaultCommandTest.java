@@ -41,7 +41,7 @@ public class AddPasswordVaultCommandTest {
             new User("odns"),
             new Website(""),
             null,
-            null));
+            null), "Creating command with some null argument results in an exception");
     }
 
     @Test
@@ -55,7 +55,7 @@ public class AddPasswordVaultCommandTest {
             new User("Me"),
             compromised);
         Response response = command.execute();
-        assertTrue(response.content().contains("compromised"));
+        assertTrue(response.content().contains("compromised"), "Adding password first checks if it is compromised");
     }
 
     @Test
@@ -68,7 +68,8 @@ public class AddPasswordVaultCommandTest {
             new User("Me"),
             compromised);
         Response response = command.execute();
-        assertTrue(response.content().contains("Not logged in"));
+        assertTrue(response.content().contains("Not logged in"),
+            "Performing command when owner not logged in results in appropriate response");
     }
 
     @Test
@@ -82,7 +83,9 @@ public class AddPasswordVaultCommandTest {
             new User("Me"),
             safe);
         Response response = command.execute();
-        assertFalse(response.content().contains("compromised"));
-        assertFalse(response.content().contains("Not logged in"));
+        assertFalse(response.content().contains("compromised"),
+            "When no compromised password and user logged in response comes from the vault");
+        assertFalse(response.content().contains("Not logged in"),
+            "When no compromised password and user logged in response comes from the vault");
     }
 }

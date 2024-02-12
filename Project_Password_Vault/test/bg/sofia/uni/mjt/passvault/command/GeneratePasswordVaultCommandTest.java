@@ -36,12 +36,13 @@ public class GeneratePasswordVaultCommandTest {
     @Test
     void testCreationFails() {
         assertThrows(IllegalArgumentException.class, () -> new GeneratePaswordVaultCommand(
-            null,
-            new User("dsf"),
-            new Website("google.com"),
-            new User("d"),
-            45
-        ));
+                null,
+                new User("dsf"),
+                new Website("google.com"),
+                new User("d"),
+                45
+            ),
+            "Creating command with some null argument results in an exception");
     }
 
     @Test
@@ -54,7 +55,8 @@ public class GeneratePasswordVaultCommandTest {
             new User("Me"),
             34);
         Response response = command.execute();
-        assertTrue(response.content().contains("Not logged in"));
+        assertTrue(response.content().contains("Not logged in"),
+            "Performing command when owner not logged in results in appropriate response");
     }
 
     @Test
@@ -68,6 +70,7 @@ public class GeneratePasswordVaultCommandTest {
             new User("Me"),
             34);
         Response response = command.execute();
-        assertFalse(response.content().contains("Not logged in"));
+        assertFalse(response.content().contains("Not logged in"),
+            "When user logged in response comes from the vault");
     }
 }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -39,7 +39,7 @@ public class RemovePasswordVaultCommandTest {
             null,
             new User("dsf"),
             new Website("sdasd")
-        ));
+        ), "Creating command with some null argument results in an exception");
     }
 
     @Test
@@ -50,7 +50,8 @@ public class RemovePasswordVaultCommandTest {
         VaultCommand command = new RemovePasswordVaultCommand(vault,
             new User("Me"),
             new Website("oidbi"));
-        assertDoesNotThrow(command::execute);
+        assertFalse(command.execute().content().contains("Not logged in"),
+            "When user logged in response comes from the vault");
     }
 
     @Test
@@ -62,6 +63,7 @@ public class RemovePasswordVaultCommandTest {
             new Website("osduh")
         );
         Response response = command.execute();
-        assertTrue(response.content().contains("Not logged in"));
+        assertTrue(response.content().contains("Not logged in"),
+            "Performing command when owner not logged in results in appropriate response");
     }
 }

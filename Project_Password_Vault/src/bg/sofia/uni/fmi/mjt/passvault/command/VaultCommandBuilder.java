@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.passvault.command;
 
 import bg.sofia.uni.fmi.mjt.passvault.exception.BadCommandArgumentsException;
+import bg.sofia.uni.fmi.mjt.passvault.exception.NoCommandTypeGivenException;
 import bg.sofia.uni.fmi.mjt.passvault.password.Password;
 import bg.sofia.uni.fmi.mjt.passvault.user.User;
 import bg.sofia.uni.fmi.mjt.passvault.vault.Vault;
@@ -109,6 +110,9 @@ public class VaultCommandBuilder {
     }
 
     public VaultCommand build() throws BadCommandArgumentsException {
+        if (type == null) {
+            throw new NoCommandTypeGivenException("Without a command type np command can be built");
+        }
         switch (type) {
             case REGISTER -> {
                 return registerCommand();

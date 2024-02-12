@@ -36,7 +36,7 @@ public class LoginVaultCommandTest {
             null,
             new User("dsf"),
             password
-        ));
+        ), "Creating command with some null argument results in an exception");
     }
 
     @Test

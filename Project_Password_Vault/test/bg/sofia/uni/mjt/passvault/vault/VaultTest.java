@@ -25,18 +25,24 @@ public class VaultTest {
     @Test
     void testLoggingInFailsNotRegistered() {
         Response response = vault.login(new User("newUser"), Password.of("weak"));
-        assertTrue(response.content().contains("not registered"));
-        assertNull(response.password());
-        assertNull(response.user());
+        assertTrue(response.content().contains("not registered"),
+            "Login when not registered must result in appropriate response");
+        assertNull(response.password(),
+            "Login when not registered must result in appropriate response");
+        assertNull(response.user(),
+            "Login when not registered must result in appropriate response");
     }
 
     @Test
     void testLoggingInFailsBadPassword() {
         vault.registerUser(new User("user1"), Password.of("user1Password"));
         Response response = vault.login(new User("user1"), Password.of("userPassword"));
-        assertTrue(response.content().contains("password"));
-        assertNull(response.password());
-        assertNull(response.user());
+        assertTrue(response.content().contains("password"),
+            "Login with wrong password must result in appropriate response");
+        assertNull(response.password(),
+            "Login with wrong password must result in appropriate response");
+        assertNull(response.user(),
+            "Login with wrong password must result in appropriate response");
     }
 
     @Test
@@ -45,7 +51,8 @@ public class VaultTest {
         Response response = vault.login(new User("user2"), Password.of("user1Password"));
         assertTrue(response.content().contains("success"));
         assertNull(response.password());
-        assertEquals(new User("user2"), response.user());
+        assertEquals(new User("user2"), response.user(),
+            "When registered and matching password given user must be logged in");
     }
 
     @Test
@@ -54,14 +61,16 @@ public class VaultTest {
         vault.registerUser(new User("user4"), Password.of("user1Password"));
         vault.login(new User("user4"), Password.of("user1Password"));
         Response response = vault.addPassword(new User("user4"), new Website("google"), new User("googleUser4"),
-            Password.of(
-                "blablabla"));
-        assertTrue(response.content().contains("added"));
+            Password.of("blablabla"));
+        assertTrue(response.content().contains("added"),
+            "Adding password must result in appropriate response");
     }
 
     @Test
     void testRemovePassword() throws UserNotLoggedInException {
-        assertThrows(UserNotLoggedInException.class, () -> vault.removePassword(new User("ownomoiod"), null));
+        assertThrows(UserNotLoggedInException.class,
+            () -> vault.removePassword(new User("ownomoiod"), null),
+            "Removing password when not logged in must result in appropriate response");
         vault.registerUser(new User("user4"), Password.of("user1Password"));
         vault.login(new User("user4"), Password.of("user1Password"));
         vault.addPassword(new User("user4"), new Website("google"), new User("googleUser4"),
@@ -69,8 +78,11 @@ public class VaultTest {
                 "blablabla"));
         Response response = vault.removePassword(new User("user4"), new Website("google"));
 
-        assertTrue(response.content().contains("removed"));
-        assertEquals(null, response.user());
-        assertEquals(null, response.password());
+        assertTrue(response.content().contains("removed"),
+            "Removing password successfully must result in appropriate response");
+        assertNull(response.user(),
+            "When removed, the username must not be returned");
+        assertNull(response.password(),
+            "When removed, the password must not be returned");
     }
 }

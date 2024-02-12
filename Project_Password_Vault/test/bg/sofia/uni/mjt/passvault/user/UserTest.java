@@ -13,7 +13,9 @@ public class UserTest {
         User a = new User("abc");
         User b = new User("abc");
         User c = new User("abcd");
-        assertEquals(0, a.compareTo(b));
-        assertNotEquals(0, a.compareTo(c));
+        assertEquals(0, a.compareTo(b),
+            "Users with equal names must be equal");
+        assertNotEquals(0, a.compareTo(c),
+            "Users with different names must not be equal");
     }
 }

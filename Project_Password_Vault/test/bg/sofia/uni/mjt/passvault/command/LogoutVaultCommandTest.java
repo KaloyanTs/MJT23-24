@@ -37,7 +37,7 @@ public class LogoutVaultCommandTest {
         assertThrows(IllegalArgumentException.class, () -> new LogoutVaultCommand(
             null,
             new User("dsf")
-        ));
+        ), "Creating command with some null argument results in an exception");
     }
 
     @Test
@@ -57,6 +57,7 @@ public class LogoutVaultCommandTest {
             new User("Me")
         );
         Response response = command.execute();
-        assertTrue(response.content().contains("Not logged in"));
+        assertTrue(response.content().contains("Not logged in"),
+            "Performing command when owner not logged in results in appropriate response");
     }
 }
