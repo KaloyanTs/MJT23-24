@@ -89,7 +89,7 @@ public class Vault {
     public Response logout(User user) throws UserNotLoggedInException {
         assertLoggedIn(user);
         activeUsers.remove(user);
-        return new Response("User has already been logged out!", null, null);
+        return new Response("User has been logged out!", null, null);
     }
 
     public Response login(User user, Password password) {
