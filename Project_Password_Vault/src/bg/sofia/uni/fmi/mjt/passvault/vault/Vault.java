@@ -16,17 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
 public class Vault {
-    private static final int SECONDS_TO_LOGOUT = 60;
+    private static final int MILLISECONDS_TO_LOGOUT = 60_000;
     private final Map<User, UserContainer> data;
     private final ConcurrentSkipListSet<User> activeUsers;
-    private final Map<User, ScheduledFuture<?>> activity;
-    private final ScheduledExecutorService executorService;
+    private final Map<User, Future<?>> activity;
+    private final ExecutorService executorService;
     private final PasswordChecker passwordChecker;
     private final PasswordSaver passwordSaver;
     private final Map<User, Password> userPassword;
@@ -34,7 +33,7 @@ public class Vault {
     public Vault(PasswordChecker passwordChecker, PasswordSaver passwordSaver) {
         this.passwordChecker = passwordChecker;
         this.passwordSaver = passwordSaver;
-        this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.executorService = Executors.newVirtualThreadPerTaskExecutor();
         this.data = new ConcurrentHashMap<>();
         this.activity = new HashMap<>();
         this.userPassword = new HashMap<>();
@@ -55,10 +54,16 @@ public class Vault {
         if (activity.get(user) != null) {
             activity.get(user).cancel(false);
         }
-        activity.put(user, executorService.schedule(() -> {
-            activeUsers.remove(user);
-            System.out.println(user.name() + " forced logout...");
-        }, SECONDS_TO_LOGOUT, TimeUnit.SECONDS));
+        activity.put(user, executorService.submit(() -> {
+                try {
+                    Thread.sleep(MILLISECONDS_TO_LOGOUT);
+                } catch (InterruptedException e) {
+                    throw new IllegalStateException("Unexpected interruption...", e);
+                }
+                activeUsers.remove(user);
+                System.out.println(user.name() + " forced logout...");
+            }
+        ));
     }
 
     public Response addPassword(User owner, Website website, User username, Password password)
@@ -84,7 +89,7 @@ public class Vault {
     public Response logout(User user) throws UserNotLoggedInException {
         assertLoggedIn(user);
         activeUsers.remove(user);
-        return new Response("User has already been logged out!", null, null);
+        return new Response("User has been logged out!", null, null);
     }
 
     public Response login(User user, Password password) {

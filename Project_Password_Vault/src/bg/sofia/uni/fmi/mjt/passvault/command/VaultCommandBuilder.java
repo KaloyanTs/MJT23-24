@@ -111,32 +111,26 @@ public class VaultCommandBuilder {
 
     public VaultCommand build() throws BadCommandArgumentsException {
         if (type == null) {
-            throw new NoCommandTypeGivenException("Without a command type np command can be built");
+            throw new NoCommandTypeGivenException("Without a command type no command can be built");
         }
         switch (type) {
-            case REGISTER -> {
+            case REGISTER:
                 return registerCommand();
-            }
-            case LOGIN -> {
+            case LOGIN:
                 assertProvided(user, password);
                 return new LoginVaultCommand(vault, user, password);
-            }
-            case LOGOUT -> {
+            case LOGOUT:
                 assertHasOwner();
                 return new LogoutVaultCommand(vault, owner);
-            }
-            case ADD -> {
+            case ADD:
                 return addCommand();
-            }
-            case REMOVE -> {
+            case REMOVE:
                 assertProvided(website);
                 return new RemovePasswordVaultCommand(vault, owner, website);
-            }
-            case RETRIEVE -> {
+            case RETRIEVE:
                 assertHasOwner();
                 assertProvided(website);
                 return new RetrieveVaultCommand(vault, owner, website);
-            }
         }
         throw new UnsupportedOperationException("Unknown command type...");
     }
